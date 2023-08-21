@@ -1,19 +1,25 @@
+main {
+    top: 50px;
+}
+
+
 /* Стили для поиска */
 .search-block {
+    margin-bottom: 20px;
     display: flex;
-    justify-content: center;
-    flex-direction: column;
+    flex-wrap: nowrap;
     align-items: center;
     align-content: center;
-    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: row;
 }
 .search-container {
     width: 70%;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -41,13 +47,12 @@
     flex-direction: row;
     align-content: center;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: flex-start;
     width: 1000px;
-    height: 500px;
-    border: 1px solid #ccc;
+    min-height: 500px;
+    /* border: 1px solid #ccc; */
     border-radius: 10px;
-    background-color: rgba(233, 233, 233, 0.6);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
 }
 
 .product-card img {
@@ -75,6 +80,7 @@
 }
 .product-card .about-product {
     width: 500px;
+    min-height: 500px;
     border-left: 1px solid #797979;
     border-radius: 10px;
     padding: 20px;
@@ -88,9 +94,22 @@ p.description-data {
     border-radius: 5px;
     margin-left: 5px;
 }
+.product-operator-buttons input {
+    margin: 10px;
+}
+
+.product-operator-buttons {
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
 
 /* CSS button add */
-input[type='button'].add-to-card {
+input[type='button'].add-to-card, input[type='button'].go-to-card-button {
   appearance: none;
   backface-visibility: hidden;
   background-color: #27ae60;
@@ -121,19 +140,19 @@ input[type='button'].add-to-card {
   white-space: nowrap;
 }
 
-input[type='button'].add-to-card:hover {
+input[type='button'].add-to-card, input[type='button'].go-to-card-button:hover {
   background-color: #1e8449;
   opacity: 1;
   transform: translateY(0);
   transition-duration: .35s;
 }
 
-input[type='button'].add-to-card:active {
+input[type='button'].add-to-card, input[type='button'].go-to-card-button:active {
   transform: translateY(2px);
   transition-duration: .35s;
 }
 
-input[type='button'].add-to-card:hover {
+input[type='button'].add-to-card, input[type='button'].go-to-card-button:hover {
   box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
 }
 
@@ -141,7 +160,7 @@ input[type='button'].add-to-card:hover {
 input[type='button'].remove-from-card-button {
   appearance: none;
   backface-visibility: hidden;
-  background-color: #ae5f27;
+  background-color: #b13434;
   border-radius: 8px;
   border-style: none;
   box-shadow: rgba(39, 174, 96, .15) 0 4px 9px;
@@ -170,7 +189,7 @@ input[type='button'].remove-from-card-button {
 }
 
 input[type='button'].remove-from-card-button:hover {
-  background-color: #844d1e;
+  background-color: #b13434;
   opacity: 1;
   transform: translateY(0);
   transition-duration: .35s;

@@ -4,28 +4,27 @@ from flask import Flask, render_template, request, make_response, redirect, url_
 from database import DbMocK as Database, test as reset_database
 from loguru import logger
 
-RESET_DB = False
+RESET_DB = True
 if RESET_DB:
     reset_database()
 
 app = Flask(__name__)
 
 
-# Определение маршрута Flask для главной страницы
 @logger.catch
 @app.route('/')
 def index():
+    """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
     categories = Database().execute('SELECT * FROM categories WHERE id in (1, 2)',
                                     'fetchall')
-
     return render_template('index.html', categories=categories)
 
 
-# Определение маршрута Flask для путешествия по иерархии категорий
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
+    """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
     cat_id = Database().execute(
         f"SELECT * FROM categories WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}')",
@@ -42,9 +41,21 @@ def category(category_name):
 
     if cat_id is None:
         subcategories = None
+        cookies = request.cookies.get('formData', None)
+        cart_data = json.loads(cookies)
         products = Database().execute(f"SELECT * FROM products WHERE category_id in "
                                       f"(SELECT id FROM categories WHERE name='{category_name}')",
                                       'fetchall')  # Получение товаров в выбранной категории
+        if len(cart_data):
+            logger.debug("Продукты:")
+            logger.debug(cart_data)
+
+            for _product in products:
+                if str(_product['id']) in cart_data:
+                    _product['in_card'] = cart_data[str(_product['id'])]
+                    logger.debug(f"id: {_product['id']} | {_product['name']}: {_product['in_card']} in card")
+        else:
+            pass
 
         return render_template('category.html',
                                prev_category=prev_category,
@@ -68,17 +79,17 @@ def category(category_name):
                            products=products)
 
 
-# Определение маршрута Flask для просмотра товара
 @logger.catch
 @app.route('/product/<product_name>')
 def product(product_name):
+    """# Определение маршрута Flask для просмотра товара"""
     # Получение информации о товаре
     product_info = Database().execute(f"SELECT * FROM products WHERE name like '%{product_name}%'",
                                       'fetchall')[0]
-    cat_name = Database().execute(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
-                                  'fetchone')['name']
+    category_name = Database().execute(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
+                                       'fetchone')['name']
     return render_template('product.html',
-                           category_name=cat_name,
+                           category_name=category_name,
                            product=product_info)
 
 
@@ -114,7 +125,6 @@ def cart():
             # получение данных с формы
             phone = request.form.get('phone')
             full_name = request.form.get('full_name')
-            order_sum = request.form.get('order_sum')
             order_place = request.form.get('order_place')
             order_time = request.form.get('order_time')
             logger.info(f"Полученные данные:\n"
@@ -134,19 +144,29 @@ def cart():
 @logger.catch
 @app.route('/cart/c', methods=['GET', 'POST'])
 def cart_clear():
+    """Метод для очистки cookie фалов"""
     return render_template('cart.html', products=None, order=None, clear_cookie=True)
 
 
 @logger.catch
 @app.route('/about')
 def about():
+    """Старинца с информацией об организации"""
     return render_template('not-ready.html')
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
+    """Старинца с информацией о доставке"""
     return render_template('not-ready.html')
+
+
+@logger.catch
+@app.route('/admin')
+def admin():
+    """Старинца админки"""
+    return render_template('admin.html')
 
 
 if __name__ == '__main__':

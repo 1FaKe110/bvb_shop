@@ -4,8 +4,8 @@
     <title>{{ product.name }}</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
@@ -35,14 +35,6 @@
             <input class="search-text" type="text" name="search-text" id="search-text"
                    placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
         </div>
-
-        <div class="router">
-            <div class="router-block">
-                <p>Категория: <a href="{{ url_for('category', category_name=category_name) }}">{{ category_name }}
-                    / </a> {{
-                    product.name }}</p>
-            </div>
-        </div>
     </div>
     <div class="product">
         <div class="product-card">
@@ -53,8 +45,19 @@
                 <div class="product-name">
                     <h5 class="name">Наименование: {{ product.name }}</h5>
                 </div>
+                <div class="product-operator-buttons">
+                    <input type="button" class="add-to-card" role="button" onclick="addToCart()"
+                           value="Добавить в корзину">
+                </div>
             </div>
             <div class="about-product">
+
+                <div class="router">
+                    <div class="router-block">
+                        <p>Категория: <a href="{{ url_for('category', category_name=category_name) }}">{{ category_name }}
+                            / </a> {{ product.name }}</p>
+                    </div>
+                </div>
                 <p class="product-name-p">Наименование: {{ product.name }}</p>
 
                 <p class="brand">Производитель:
@@ -67,9 +70,6 @@
                 </div>
                 <p class="price">Цена: {{ product.price }} р. </p>
                 <p class="order-type">Способ оплаты: Наличными при получении</p>
-                <div class="product-operator-buttons">
-                    <input type="button" class="add-to-card" role="button" onclick="addToCart()" value="Добавить в корзину">
-                </div>
             </div>
         </div>
     </div>
@@ -81,16 +81,16 @@
         var formDataCookie = getCookie('formData');
         if (formDataCookie) {
             var formData = JSON.parse(formDataCookie);
-            if ({{ product.id }} in formData) {
+            if ({{product.id }} in formData) {
                 formData[{{ product.id }}] += 1;
             } else {
                 formData[{{ product.id }}] = 1;
             }
         } else {
             var formData = {};
-            formData[ {{ product.id }} ] = 1;
+            formData[{{ product.id }}] = 1;
         }
-        if (formData[{{ product.id }}] > {{ product.amount }} ) {
+        if (formData[{{ product.id }}] > {{ product.amount }}) {
             formData[{{ product.id }}] = {{ product.amount }}
         }
 
@@ -115,41 +115,56 @@
 
             buttons.appendChild(inputButton);
         }
+        if (document.querySelector('.go-to-card-button') == null) {
+            // Create a new input element of type 'input' with type button
+            var inputButton = document.createElement("input");
+
+            // set params to button
+            inputButton.type = "button";
+            inputButton.value = "Перейти корзину";
+            inputButton.className = "go-to-card-button";
+            inputButton.addEventListener("click", goToCard);
+
+            buttons.appendChild(inputButton);
+        }
         addButton = document.querySelector('.add-to-card');
         let product_id = {{ product.id }};
         addButton.value = "Добавить еще | уже " + formData[product_id.toString()];
     }
 
+    function goToCard() {
+        window.location.href = "/cart"
+    }
+
     // Если есть сохраненные данные формы, заполнить форму при загрузке страницы
-    window.onload = function() {
-        var form = document.querySelector('.product-card');
-        var buttons = document.querySelector('.product-operator-buttons');
+    window.onload = function () {
         var formDataCookie = getCookie('formData');
         if (!formDataCookie) {
             return
         }
         var formData = JSON.parse(formDataCookie);
-        console.log('ID {{ product.id }} продукта в cookie? ' + {{ product.id }} in formData)
-
-        if ({{ product.id }} in formData) {
+        console.log('ID {{ product.id }} продукта в cookie? ' + {{ product.id }} in formData );
+        if ({{product.id}} in formData) {
             check_buttons(formData)
         }
     }
 
     function removeFromCard() {
         var form = document.querySelector('.product-card');
-        var button = document.querySelector('.remove-from-card-button');
+        var remove_button = document.querySelector('.remove-from-card-button');
+        var cart_button = document.querySelector('.go-to-card-button');
         var formDataCookie = getCookie('formData');
         if (formDataCookie) {
             var formData = JSON.parse(formDataCookie);
             console.log("ID {{ product.id }} продукта в cookie? " + {{ product.id }} in formData);
             console.log(formData);
-            if ({{ product.id }} in formData) {
+            if ({{ product.id }} in formData ) {
                 let key = {{ product.id }};
-                addButton = document.querySelector('.add-to-card');
+                addButton = form.querySelector('.add-to-card');
                 if (formData[key.toString()] <= 1) {
                     delete formData[key.toString()];
-                    button.remove();
+                    remove_button.remove();
+                    cart_button.remove();
                     addButton.value = "Добавить в корзину";
                 } else {
                     console.log('удаляю 1 товар с id ' + key + ' из корзины')
@@ -164,4 +179,8 @@
 
 </script>
 </body>
+
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
 </html>

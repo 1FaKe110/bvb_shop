@@ -3,9 +3,9 @@
 <head>
     <title>Категория: {{ category_name }}</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
@@ -68,13 +68,23 @@
                         <p class="product-description">{{ product.description }}</p>
                     </div>
                     <div class="product-price-block">
-                        <p class="product-price-value">{{ product.price }} р.</p>
+                        <div class="price-block">
+                            <p class="product-price-value">{{ product.price }} р.</p>
+                        </div>
+                        <div class="add-block">
                         <input type="button" class="add-to-card"
                                onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})" value="+">
-                        <p class="amount-in-cart">{{ product.in_card }}</p>
-                        <input type="button" class="remove-from-card-button" onclick="removeFromCard({{product.id}})"
+                        </div>
+                        <div class="amount-block">
+                            <p class="amount-in-cart">{{ product.in_card }}</p>
+                        </div>
+                        <div class="remove-block">
+                            <input type="button" class="remove-from-card-button" onclick="removeFromCard({{product.id}})"
                                value="-">
-                        <p class="sum-item-price">{{ product.in_card * product.price }} р.</p>
+                        </div>
+                        <div class="sum-block">
+                            <p class="sum-item-price">{{ product.in_card * product.price }} р.</p>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -95,47 +105,49 @@
             {% endif %}
             {% if products %}
             <div class="confirm-order">
-                <h5 class="confirm-order-h">
+                <h4 class="confirm-order-h">
                     Подтверждение заказа
-                </h5>
-                <form method="post" class="submit-form">
+                </h4>
+                <form method="post" class="submit-form" onsubmit="alert_confirm()">
                     <div class="confirm-description-block">
                         <p class="confirm description">Введите номер телефона для подтверждения заказа. Мы Вам перезвоним в
                             ближайшее время.</p>
                         <p class="confirm description">При получении заказа при себе необходимо иметь паспорт и телефон</p>
                     </div>
-                    <div class="phone">
-                        <p>Номер телефона: </p>
-                        <input class="submit-input" type="tel" id="phone" name="phone" placeholder="+79992223131"
-                               pattern="(+7|8)[0-9]{10}" autocomplete="on" enterkeyhint="next"
-                               maxlength="12" minlength="11" required>
+                    <div class="input-fields">
+                        <div class="phone">
+                            <p>Номер телефона: </p>
+                            <input class="submit-input" type="tel" id="phone" name="phone" placeholder="+79992223131"
+                                   pattern="(+7|8)[0-9]{10}" autocomplete="on" enterkeyhint="next"
+                                   maxlength="12" minlength="11" required>
+                        </div>
+                        <div class="full_name">
+                            <p>ФИО:</p>
+                            <input class="submit-input" type="text" id="full_name" name="full_name"
+                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" required>
+                        </div>
                     </div>
-                    <div class="full_name">
-                        <p>ФИО:</p>
-                        <input class="submit-input" type="text" id="full_name" name="full_name"
-                               placeholder="Иванов Иван Иванович" enterkeyhint="next" required>
-                    </div>
-                    <div class="order_place">
-                        <p>Адрес доставки:</p>
-                        <input class="submit-input" type="text" id="order_place" name="order_place"
-                               placeholder="Адрес" autocomplete="street-address" enterkeyhint="next" required>
-                    </div>
-                    <div class="order_date">
-                        <p>Дата доставки:</p>
-                        <input class="submit-input" type="date" id="order_time" name="order_time"
-                               placeholder="Дата доставки" enterkeyhint="done" required>
-                        <script>
-                            let order_date = document.querySelector('#order_time');
-                            var d = new Date();
-                            d.setDate(d.getDate() + 2);
-                            order_date.min = d.toISOString().split("T")[0];
-                            order_date.value = d.toISOString().split("T")[0];
-                        </script>
+                    <div class="input-fields">
+                        <div class="order_place">
+                            <p>Адрес доставки:</p>
+                            <input class="submit-input" type="text" id="order_place" name="order_place"
+                                   placeholder="Адрес" autocomplete="street-address" enterkeyhint="next" required>
+                        </div>
+                        <div class="order_date">
+                            <p>Дата доставки:</p>
+                            <input class="submit-input" type="date" id="order_time" name="order_time"
+                                   placeholder="Дата доставки" enterkeyhint="done" required>
+                            <script>
+                                let order_date = document.querySelector('#order_time');
+                                var d = new Date();
+                                d.setDate(d.getDate() + 3);
+                                order_date.min = d.toISOString().split("T")[0];
+                                order_date.value = d.toISOString().split("T")[0];
+                            </script>
+                        </div>
                     </div>
                     <div class="order_sum">
-                        <p>Сумма заказа: </p>
-                        <input id="order_sum" name="order_sum" value="{{order.sum}}" placeholder="{{order.sum}}"
-                               readonly>
+                        <p>Сумма заказа: {{ order.sum }} </p>
                     </div>
                     <div class="submit">
                         <input class="submit-input-confirm" type="submit" value="Подтвердить заказ">

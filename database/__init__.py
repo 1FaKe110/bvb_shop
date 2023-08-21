@@ -82,8 +82,17 @@ class DbMocK:
                     user_name TEXT NOT NULL,
                     user_phone TEXT NOT NULL,
                     order_price FLOAT NOT NULL,
-                    order_content TEXT NOT NULL
-                    status INTEGER
+                    order_content TEXT NOT NULL,
+                    status_id INTEGER NOT NULL
+                )
+            ''')
+        logger.debug('Creating table: admins')
+        self.cur.execute('''
+                CREATE TABLE IF NOT EXISTS orders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_name TEXT NOT NULL,
+                    user_phone TEXT NOT NULL,
+                    is_admin BOOL DEFAULT False
                 )
             ''')
         self.__commit__()
@@ -92,8 +101,8 @@ class DbMocK:
     def fill(self):
         logger.debug('Filling table: categories')
         # Добавление примера данных категорий (можно заменить на вашу базу данных)
-        self.cur.execute("INSERT INTO categories (name, parent_id) VALUES ('Сантехника', NULL);")
-        self.cur.execute("INSERT INTO categories (name, parent_id) VALUES ('Электрика', NULL);")
+        self.cur.execute("INSERT INTO categories (name, parent_id, image_path) VALUES ('Сантехника', NULL, '../static/images/categories/plumbing.jpg');")
+        self.cur.execute("INSERT INTO categories (name, parent_id, image_path) VALUES ('Электрика', NULL, '../static/images/categories/Electrics.jpg');")
         self.cur.execute("INSERT INTO categories (name, parent_id, image_path) values ('Краны', 1, 'https://png.pngtree.com/png-clipart/20200701/original/pngtree-water-pipe-switch-faucet-png-image_5410968.jpg');")
         self.cur.execute("INSERT INTO categories (name, parent_id) values ('Насосы', 1);")
         self.cur.execute("INSERT INTO categories (name, parent_id) values ('Аквасторож', 1);")
@@ -208,6 +217,9 @@ class DbMocK:
             f"INSERT INTO products (name, price, brand, category_id) VALUES ('Кран угловой 1\\2х3\\4', 3500.0, 'гг', {category_id})")
         self.__commit__()
 
+        logger.debug('Filling table: users')
+        self.cur.execute(f"INSERT INTO users (name, parent_id) values ('C носиком', '{parent_id}');")
+
     @logger.catch
     def drop(self):
         logger.trace('Drop all tables')
@@ -216,6 +228,7 @@ class DbMocK:
         self.cur.execute("DROP TABLE IF EXISTS products;")
         self.cur.execute("DROP TABLE IF EXISTS images;")
         self.cur.execute("DROP TABLE IF EXISTS brands;")
+        self.cur.execute("DROP TABLE IF EXISTS orders;")
         self.__commit__()
 
     @logger.catch

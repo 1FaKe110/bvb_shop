@@ -3,7 +3,7 @@
 <head>
     <title>Магазин сантехники</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
+    <!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main_page.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -48,26 +48,30 @@
             </div>
             <div class="categories">
                 {% for category in categories %}
-                <a class="category-href" href="{{ url_for('category', category_name=category.name) }}">
-                    <div class="category-card">
-                        {% if category.image_path == '../static/images/categories/categories-blank.png' %}
-                        <div class="img">
-                            <span class="material-icons">list</span>
+                <div class="category-block">
+                    <a class="category-href" href="{{ url_for('category', category_name=category.name) }}">
+                        <div class="category-card">
+                            {% if category.image_path == '../static/images/categories/categories-blank.png' %}
+                            <div class="img">
+                                <span class="material-icons">list</span>
+                            </div>
+                            {% else %}
+                            <div class="img">
+                                <img src="{{ category.image_path }}" alt="{{category.name}}"/>
+                            </div>
+                            {% endif %}
+                            <p class="category-name">{{ category.name}}</p>
                         </div>
-                        {% else %}
-                        <div class="img">
-                            <img src="{{ category.image_path }}" alt="{{category.name}}"/>
-                        </div>
-                        {% endif %}
-                        <p class="category-name">{{ category.name}}</p>
-                    </div>
-                </a>
+                    </a>
+                </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 </main>
 
-</ul>
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
 </body>
 </html>
