@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Админка - Товары</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+    <h1>Админка - Товары</h1>
+
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="/">Главная</a>
+            </li>
+            <li class="nav-li-active">
+                <a class="nav-a" href="/">Админка</a>
+            </li>
+            <li class="nav-li"><a class="nav-a" href="/">О Нас / связаться с нами</a></li>
+            <li class="nav-li"><a class="nav-a" href="/">Доставка</a></li>
+            <li class="nav-li"><a class="nav-a" href="/">Корзина</a></li>
+            <!-- Можно добавить другие разделы сайта -->
+        </ul>
+    </nav>
+
+    <form method="POST" action="{{ url_for('admin_products') }}">
+        <label for="product_name">Name:</label>
+        <input type="text" id="product_name" name="product_name" placeholder="Введите название товара" required>
+
+        <label for="product_price">Price:</label>
+        <input type="text" id="product_price" name="product_price" placeholder="Введите цену товара" required>
+
+        <label for="product_name">Brand:</label>
+        <input type="text" id="product_brand" name="product_brand" placeholder="Введите брэнд товара" required>
+
+        <label for="product_name">Category id:</label>
+        <input type="text" id="product_category_id" name="product_category_id" placeholder="Введите номер категории товара" required>
+
+        <button type="submit">Добавить</button>
+    </form>
+    <ul>
+        {% for product in products %}
+            <li>{{ product }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

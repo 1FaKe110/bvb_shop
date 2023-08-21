@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li-active">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<main>
+
+    <div class="search-block">
+        <div class="search-container">
+            <input class="search-text" type="text" name="search-text" id="search-text"
+                   placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
+        </div>
+
+        <div class="router">
+            <div class="router-block">
+                <p>Категория: <a href="{{ url_for('category', category_name=category_name) }}">{{ category_name }}
+                    / </a> {{
+                    product.name }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="product">
+        <div class="product-card">
+            <div class="image-block">
+                <div class="image">
+                    <img src="{{ product.image_path }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-name">
+                    <h5 class="name">Наименование: {{ product.name }}</h5>
+                </div>
+            </div>
+            <div class="about-product">
+                <p class="product-name-p">Наименование: {{ product.name }}</p>
+
+                <p class="brand">Производитель:
+                    <a class="brand-url" href="https://www.google.com/search?q={{ product.brand }}" target="_blank">{{
+                        product.brand }}</a></p>
+                <p class="amount">Остаток: {{ product.amount }} шт.</p>
+                <div class="description">
+                    <p class="description-title">Описание:</p>
+                    <p class="description-data">{{ product.description }}</p>
+                </div>
+                <p class="price">Цена: {{ product.price }} р. </p>
+                <p class="order-type">Способ оплаты: Наличными при получении</p>
+                <div class="product-operator-buttons">
+                    <input type="button" class="add-to-card" role="button" onclick="addToCart()" value="Добавить в корзину">
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    // Сохранение данных формы в cookies при отправке
+    function addToCart() {
+        var form = document.querySelector('.product-card');
+        var formDataCookie = getCookie('formData');
+        if (formDataCookie) {
+            var formData = JSON.parse(formDataCookie);
+            if ({{ product.id }} in formData) {
+                formData[{{ product.id }}] += 1;
+            } else {
+                formData[{{ product.id }}] = 1;
+            }
+        } else {
+            var formData = {};
+            formData[ {{ product.id }} ] = 1;
+        }
+        if (formData[{{ product.id }}] > {{ product.amount }} ) {
+            formData[{{ product.id }}] = {{ product.amount }}
+        }
+
+        document.cookie = 'formData=' + JSON.stringify(formData) + '; path=/';
+        console.log(document.cookie)
+
+        check_buttons(formData)
+    }
+
+    function check_buttons(formData) {
+        var buttons = document.querySelector('.product-operator-buttons');
+
+        if (document.querySelector('.remove-from-card-button') == null) {
+            // Create a new input element of type 'input' with type button
+            var inputButton = document.createElement("input");
+
+            // set params to button
+            inputButton.type = "button";
+            inputButton.value = "Убрать из корзины";
+            inputButton.className = "remove-from-card-button";
+            inputButton.addEventListener("click", removeFromCard);
+
+            buttons.appendChild(inputButton);
+        }
+        addButton = document.querySelector('.add-to-card');
+        let product_id = {{ product.id }};
+        addButton.value = "Добавить еще | уже " + formData[product_id.toString()];
+    }
+
+    // Если есть сохраненные данные формы, заполнить форму при загрузке страницы
+    window.onload = function() {
+        var form = document.querySelector('.product-card');
+        var buttons = document.querySelector('.product-operator-buttons');
+        var formDataCookie = getCookie('formData');
+        if (!formDataCookie) {
+            return
+        }
+        var formData = JSON.parse(formDataCookie);
+        console.log('ID {{ product.id }} продукта в cookie? ' + {{ product.id }} in formData)
+
+        if ({{ product.id }} in formData) {
+            check_buttons(formData)
+        }
+    }
+
+    function removeFromCard() {
+        var form = document.querySelector('.product-card');
+        var button = document.querySelector('.remove-from-card-button');
+        var formDataCookie = getCookie('formData');
+        if (formDataCookie) {
+            var formData = JSON.parse(formDataCookie);
+            console.log("ID {{ product.id }} продукта в cookie? " + {{ product.id }} in formData);
+            console.log(formData);
+            if ({{ product.id }} in formData) {
+                let key = {{ product.id }};
+                addButton = document.querySelector('.add-to-card');
+                if (formData[key.toString()] <= 1) {
+                    delete formData[key.toString()];
+                    button.remove();
+                    addButton.value = "Добавить в корзину";
+                } else {
+                    console.log('удаляю 1 товар с id ' + key + ' из корзины')
+                    formData[key.toString()] -= 1;
+                    addButton.value = "Добавить еще | уже " + formData[key.toString()];
+                }
+            }
+            document.cookie = 'formData=' + JSON.stringify(formData) + '; path=/';
+            console.log(document.cookie);
+        }
+    }
+
+</script>
+</body>
+</html>

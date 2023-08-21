@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Страница не готова</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<main>
+    <h5 class="aljbgl">Страница не готова</h5>
+</main>
+</body>
+</html>

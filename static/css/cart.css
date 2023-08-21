@@ -1,0 +1,233 @@
+.card-items {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+#card {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.card-items .image-block-mini {
+    width: 100px;
+    margin: 10px;
+    padding: 10px;
+    border-right: 1px dotted black;
+}
+.card-items .product-info-mini {
+    border-right: 1px dotted black;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    width: 600px;
+}
+.card-items .product-info-mini .product-description {
+    font-style: oblique;
+    font-size: 12px;
+}
+.card-items .product-info-mini .product-name a {
+    text-decoration: None;
+}
+.card-items .product-info-mini .product-name {
+    text-decoration: None;
+    font-style: normal;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.card-items .product-price-block {
+    width: 300px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px;
+}
+.card-items .product-price-block p {
+    margin: 10px;
+    padding: 10px;
+    font-style: normal;
+    text-wrap: nowrap;
+}
+.card-items .product-price-block p.product-price-value {
+    border-right: 1px dotted black;
+    text-wrap: nowrap;
+}
+
+.card-items div .image-block-mini img {
+    width: 100px;
+    height: 100px;
+}
+
+
+/* CSS button add */
+input[type='button'].add-to-card, input[type='submit'].submit-input-confirm {
+  appearance: none;
+  backface-visibility: hidden;
+  background-color: #27ae60;
+  border-radius: 8px;
+  border-style: none;
+  box-shadow: rgba(39, 174, 96, .15) 0 4px 9px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.5;
+  outline: none;
+  overflow: hidden;
+  padding: 13px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transform: translate3d(0, 0, 0);
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+input[type='button'].add-to-card:hover, input[type='submit'].submit-input-confirm:hover {
+  background-color: #1e8449;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: .35s;
+}
+
+input[type='button'].add-to-card:active, input[type='submit'].submit-input-confirm:active {
+  transform: translateY(2px);
+  transition-duration: .35s;
+}
+
+input[type='button'].add-to-card:hover, input[type='submit'].submit-input-confirm:hover {
+  box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
+}
+
+/* CSS button remove */
+input[type='button'].remove-from-card-button {
+  appearance: none;
+  backface-visibility: hidden;
+  background-color: #ae5f27;
+  border-radius: 8px;
+  border-style: none;
+  box-shadow: rgba(39, 174, 96, .15) 0 4px 9px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.5;
+  outline: none;
+  overflow: hidden;
+  padding: 13px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transform: translate3d(0, 0, 0);
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+input[type='button'].remove-from-card-button:hover {
+  background-color: #844d1e;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: .35s;
+}
+
+input[type='button'].remove-from-card-button:active {
+  transform: translateY(2px);
+  transition-duration: .35s;
+}
+
+input[type='button'].remove-from-card-button:hover {
+  box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
+}
+
+/* стили формы подтверждения заказа */
+div.confirm-order {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+form.submit-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+    padding: 15px;
+    width: 60%
+}
+
+form.submit-form .phone, .full_name, .order_place, .order_date, .order_sum {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+}
+form.submit-form .phone p, .full_name p, .order_place p, .order_date p, .order_sum p {
+    margin-right: 15px;
+    display: flex;
+}
+div.submit {
+    margin-top: 10px;
+}
+
+div.order_sum input {
+    text-align: center;
+    border: 0px;
+}
+
+
+div.order_sum input:active {
+    border: 0px;
+}
+
+div.order_sum input:hover {
+    border: 0px;
+}
