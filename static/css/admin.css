@@ -9,6 +9,26 @@ form.addProduct div p, form.addCategory div p {
     width: 150px;
 }
 
+td {
+    border-right: 1px solid black;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+th {
+    width: fit-content;
+    text-wrap: nowrap;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-right: 1px solid black;
+    padding: 10px;
+    font-family: inherit;
+    padding: 0;
+    height: 18px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
 
 /* Стили для полей ввода */
 input[type='text'], input[type='number'], option, select {
@@ -16,8 +36,8 @@ input[type='text'], input[type='number'], option, select {
     border: 0;
     font-family: inherit;
     padding: 0;
-    height: 32px;
-    font-size: 16px;
+    height: 18px;
+    font-size: 14px;
     font-weight: 500;
     background: none;
     border-bottom: 1px solid #545454;

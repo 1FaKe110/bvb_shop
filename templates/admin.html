@@ -51,7 +51,7 @@
         <form method="post">
             <tr>
                 <td class="tr-id">
-                    {{ category.id }}
+                    .{{ category.id }}
                 </td>
                 <td>
                     {{ category.parent_id }}
@@ -93,7 +93,7 @@
             <th>Описание</th>
             <th>Закупочная цена</th>
             <th>Продажная цена</th>
-            <th>Цена в долларах?</th>
+            <th>В долларах?</th>
             <th>Остаток</th>
             <th>Родительская категория</th>
             <th>Изображение</th>
@@ -106,7 +106,7 @@
             <tbody>
             {% for product in products %}
                 <tr>
-                    <td name="tr-id">{{product.id}}</td>
+                    <td name="tr-id">.{{product.id}}</td>
                     <td>
                         <input type="text" name="pr-name" id="pr-name" value="{{product.name}}">
                     </td>
@@ -120,10 +120,18 @@
                         <input type="number" min="1" name="pr-by_price" id="pr-by_price" value="{{product.by_price}}">
                     </td>
                     <td>
-                        <input type="text" name="pr-price" id="pr-price" value="{{product.price}}">
+                        <input type="number" name="pr-price" id="pr-price" value="{{product.price}}">
                     </td>
                     <td>
-                        <input type="checkbox" name="pr-price" id="pr-price_dependency" value="{{ product.price_dependency }}">
+                        <select id="pr-price_dependency" name="pr-price_dependency">
+                            {% if product.price_dependency == 1 %}
+                            <option selected="selected" value="1">Да</option>
+                            <option value="0">Нет</option>
+                            {% else %}
+                            <option value="1">Да</option>
+                            <option selected="selected" value="0">Нет</option>
+                            {% endif %}
+                        </select>
                     </td>
                     <td>
                         <input type="number" min="0"  name="pr-amount" id="pr-amount" value="{{product.amount}}">
@@ -133,7 +141,7 @@
                             <option selected="selected" value="{{product.category_id}}"> > {{product.category_id}}</option>
                             {% for category in categories %}
                             {% if category.parent_id %}
-                            <option value="{{category.id}}"> > {{category.parent_id}} > {{category.name}}</option>
+                            <option value="{{category.id}}">{{category.parent_id}} | {{category.name}}</option>
                             {% else %}
                             <option value="{{category.id}}">{{category.name}}</option>
                             {% endif %}
