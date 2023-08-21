@@ -29,21 +29,21 @@ class DbMocK:
                 image_path TEXT DEFAULT ('../static/images/categories/categories-blank.png')
         )''')
         self.__commit__()
-
-        logger.debug('Creating table: category_matrix')
+        logger.debug('Creating table: dollar')
+        # Создание таблицы категорий товаров, если она не существует
         self.cur.execute('''
-                CREATE TABLE IF NOT EXISTS category_matrix (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL
-                )
-            ''')
+            CREATE TABLE IF NOT EXISTS dollar (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                price float DEFAULT (80)
+        )''')
         self.__commit__()
         logger.debug('Creating table: products')
         self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
-                    price FLOAT NOT NULL,
+                    by_price FLOAT DEFAULT (10),
+                    price FLOAT DEFAULT (NULL),
                     amount INT NOT NULL DEFAULT (10),
                     brand TEXT NOT NULL,
                     price_dependency BOOL DEFAULT (false), 
@@ -53,6 +53,19 @@ class DbMocK:
                     image_path TEXT NOT NULL DEFAULT ('../static/images/products/products-blank.png')
                 )
             ''')
+        self.__commit__()
+        self.cur.execute('''
+                CREATE TRIGGER set_price_value
+                AFTER INSERT ON products
+                FOR EACH ROW
+                WHEN NEW.price IS NULL
+                BEGIN
+                  UPDATE products
+                  SET price = (NEW.by_price * (select price from dollar) * 0.5)
+                  WHERE NEW.id = NEW.rowid;
+                END;
+            ''')
+        self.__commit__()
         logger.debug('Creating table: images')
         self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS images (
@@ -65,6 +78,7 @@ class DbMocK:
                     image_path TEXT NOT NULL DEFAULT "../static/images/products/"
                 )
             ''')
+        self.__commit__()
         logger.debug('Creating table: brands')
         self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS brands (
@@ -75,6 +89,7 @@ class DbMocK:
                     image_path TEXT NOT NULL DEFAULT "../static/images/products/"
                 )
             ''')
+        self.__commit__()
         logger.debug('Creating table: orders')
         self.cur.execute('''
                 CREATE TABLE IF NOT EXISTS orders (
@@ -86,13 +101,17 @@ class DbMocK:
                     status_id INTEGER NOT NULL
                 )
             ''')
-        logger.debug('Creating table: admins')
+        self.__commit__()
+        logger.debug('Creating table: users')
         self.cur.execute('''
-                CREATE TABLE IF NOT EXISTS orders (
+                CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_name TEXT NOT NULL,
-                    user_phone TEXT NOT NULL,
-                    is_admin BOOL DEFAULT False
+                    name TEXT NOT NULL,
+                    phone TEXT NOT NULL,
+                    email TEXT,
+                    password TEXT,
+                    is_admin BOOL DEFAULT False,
+                    is_registered BOOL DEFAULT False
                 )
             ''')
         self.__commit__()
@@ -101,9 +120,12 @@ class DbMocK:
     def fill(self):
         logger.debug('Filling table: categories')
         # Добавление примера данных категорий (можно заменить на вашу базу данных)
-        self.cur.execute("INSERT INTO categories (name, parent_id, image_path) VALUES ('Сантехника', NULL, '../static/images/categories/plumbing.jpg');")
-        self.cur.execute("INSERT INTO categories (name, parent_id, image_path) VALUES ('Электрика', NULL, '../static/images/categories/Electrics.jpg');")
-        self.cur.execute("INSERT INTO categories (name, parent_id, image_path) values ('Краны', 1, 'https://png.pngtree.com/png-clipart/20200701/original/pngtree-water-pipe-switch-faucet-png-image_5410968.jpg');")
+        self.cur.execute(
+            "INSERT INTO categories (name, parent_id, image_path) VALUES ('Сантехника', NULL, '../static/images/categories/plumbing.jpg');")
+        self.cur.execute(
+            "INSERT INTO categories (name, parent_id, image_path) VALUES ('Электрика', NULL, '../static/images/categories/Electrics.jpg');")
+        self.cur.execute(
+            "INSERT INTO categories (name, parent_id, image_path) values ('Краны', 1, 'https://png.pngtree.com/png-clipart/20200701/original/pngtree-water-pipe-switch-faucet-png-image_5410968.jpg');")
         self.cur.execute("INSERT INTO categories (name, parent_id) values ('Насосы', 1);")
         self.cur.execute("INSERT INTO categories (name, parent_id) values ('Аквасторож', 1);")
         self.cur.execute("INSERT INTO categories (name, parent_id) values ('Американки', 1);")
@@ -198,17 +220,20 @@ class DbMocK:
 
         logger.debug(f'Filling table: products with cat_id = {category_id}')
 
-        self.cur.execute(f"INSERT INTO products (name, price, brand, category_id, image_path) "
-                         f"VALUES ('Кран с носиком 1\\2', 300.0, 'sololift', {category_id},"
+        self.cur.execute(f"INSERT INTO products (name, price, price_dependency, brand, category_id, image_path) "
+                         f"VALUES ('Кран с носиком 1\\2', 300.0, true, 'sololift', {category_id},"
                          f" 'https://santexkom.ru/upload/iblock/ac8/ac88967bf614c62b5afc9ecebd6b727b.jpg')")
+        self.__commit__()
         self.cur.execute(f"INSERT INTO products (name, price, brand, category_id) "
                          f"VALUES ('Кран с носиком 3\\4', 300.0, 'sololift', {category_id})")
+        self.__commit__()
 
         self.__commit__()
         category_id = self.cur.execute(
             f"SELECT id FROM categories WHERE parent_id='{parent_id}' and name='Угловой'").fetchone()['id']
         self.cur.execute(
-            f"INSERT INTO products (name, price, brand, category_id) VALUES ('Кран угловой 1\\2х1\\2', 300.0, 'tim', {category_id})")
+            f"INSERT INTO products (name, price, price_dependency, brand, category_id) VALUES "
+            f"('Кран угловой 1\\2х1\\2', 16.0, true, 'tim', {category_id})")
         self.cur.execute(
             f"INSERT INTO products (name, price, brand, category_id) VALUES ('Кран угловой 1\\2х3\\4', 3500.0, 'tim', {category_id})")
         self.cur.execute(
@@ -218,17 +243,19 @@ class DbMocK:
         self.__commit__()
 
         logger.debug('Filling table: users')
-        self.cur.execute(f"INSERT INTO users (name, parent_id) values ('C носиком', '{parent_id}');")
+        self.cur.execute(f"INSERT INTO users (name, phone) values ('ВВ ПУТИН', '+79999451487');")
+        self.__commit__()
 
     @logger.catch
     def drop(self):
         logger.trace('Drop all tables')
+        self.cur.execute("DROP TABLE IF EXISTS brands;")
         self.cur.execute("DROP TABLE IF EXISTS categories;")
         self.cur.execute("DROP TABLE IF EXISTS category_matrix;")
-        self.cur.execute("DROP TABLE IF EXISTS products;")
         self.cur.execute("DROP TABLE IF EXISTS images;")
-        self.cur.execute("DROP TABLE IF EXISTS brands;")
         self.cur.execute("DROP TABLE IF EXISTS orders;")
+        self.cur.execute("DROP TABLE IF EXISTS products;")
+        self.cur.execute("DROP TABLE IF EXISTS users;")
         self.__commit__()
 
     @logger.catch

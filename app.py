@@ -163,10 +163,14 @@ def delivery():
 
 
 @logger.catch
-@app.route('/admin')
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
     """Старинца админки"""
-    return render_template('admin.html')
+    categories = Database().execute("Select * from categories", 'fetchall')
+    products = Database().execute("Select * from products", 'fetchall')
+    return render_template('admin.html',
+                           categories=categories,
+                           products=products)
 
 
 if __name__ == '__main__':

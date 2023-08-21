@@ -1,0 +1,50 @@
+form.addProduct div, form.addCategory div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+}
+form.addProduct div p, form.addCategory div p {
+    width: 150px;
+}
+
+
+/* Стили для полей ввода */
+input[type='text'], input[type='number'], option, select {
+    text-align: center;
+    border: 0;
+    font-family: inherit;
+    padding: 0;
+    height: 32px;
+    font-size: 16px;
+    font-weight: 500;
+    background: none;
+    border-bottom: 1px solid #545454;
+    border-radius: 1px;
+    color: #223254;
+    transition: all 0.15s ease-in-out;
+}
+
+input[type='text']:focus, input[type='number']:focus, option:focus, select:focus {
+    outline: none;
+}
+
+input[type='text']:active, input[type='number']:active, option:active, select:active {
+    outline: none;
+
+}
+
+input[type='text']:focus, input[type='number']:focus, option:focus, select:focus + .border path {
+    stroke: #07f;
+}
+
+input[type='text']:valid, input[type='number']:valid, option:valid, select:valid + .border path {
+    animation: elasticInput 0.8s ease forwards;
+    transform: translate(0, 0) scale(1);
+}
+
+::placeholder {
+    color: #9098a9;
+    text-align: center;
+}

@@ -4,9 +4,9 @@
     <title>admin panel</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">-->
-<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">-->
-<!--    <script src="{{ url_for('static', filename='js/script.js') }}"></script>-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -31,19 +31,208 @@
     </nav>
 </div>
 <main>
-<div class="categories">
-    <div class="category-block">
-        <div class="about">
-            <div class="category-name">
-                <input type="text" name="category-name" id="category-name" value="CATEGORY">
-            </div>
-        </div>
-        <div class="manage-buttons">
-            <input type="button" value="remove"/>
-        </div>
-    </div>
+    <h1>Админка</h1>
+    <h2>Категории</h2>
+    <input type="text" id="categorySearchInput" placeholder="Поиск по категориям"
+           onkeyup="searchTable('categoryTable', 'categorySearchInput')">
+    <table id="categoryTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Родительский ID</th>
+            <th>Название</th>
+            <th>Изображение</th>
+            <th>Путь к изображению</th>
+            <th>Подтверждение изменения</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+        <form method="post">
+            <tr>
+                <td class="tr-id">
+                    {{ category.id }}
+                </td>
+                <td>
+                    {{ category.parent_id }}
+                </td>
+                <td>
+                    <input type="text" name="ct-name" id="ct-name" value="{{category.name}}">
+                </td>
+                <td>
+                    {% if category.image_path == '../static/images/categories/categories-blank.png' %}
+                    <span class="material-icons">list</span>
+                    {% else %}
+                    <img class="category-image" src="{{category.image_path}}" alt="{{category.name}}"
+                         style="width: 50px; height: 50px;">
+                    {% endif %}
+                </td>
+                <td>
+                    <input type="file" name="сt-image_path" id="сt-image_path" value="{{category.image_path}}">
+                </td>
+                <td>
+                    <input type="submit" value="submit">
+                    <input type="button" value="delete" onclick="remove({{category.id}})">
+                </td>
+            </tr>
+        </form>
+        {% endfor %}
+        </tbody>
+    </table>
 
-</div>
+    <h2>Товары</h2>
+    <input type="text" id="productSearchInput"
+           placeholder="Поиск по товарам"
+           onkeyup="searchTable('productTable', 'productSearchInput')">
+    <table id="productTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Брэнд</th>
+            <th>Описание</th>
+            <th>Закупочная цена</th>
+            <th>Продажная цена</th>
+            <th>Цена в долларах?</th>
+            <th>Остаток</th>
+            <th>Родительская категория</th>
+            <th>Изображение</th>
+            <th>Путь к изображению</th>
+            <th>Подтверждение изменения</th>
+        </tr>
+        </thead>
+
+        <form>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td name="tr-id">{{product.id}}</td>
+                    <td>
+                        <input type="text" name="pr-name" id="pr-name" value="{{product.name}}">
+                    </td>
+                    <td>
+                        <input type="text" name="pr-brand" id="pr-brand" value="{{product.brand}}">
+                    </td>
+                    <td>
+                        <input type="text" name="pr-description" id="pr-description" value="{{product.description}}">
+                    </td>
+                    <td>
+                        <input type="number" min="1" name="pr-by_price" id="pr-by_price" value="{{product.by_price}}">
+                    </td>
+                    <td>
+                        <input type="text" name="pr-price" id="pr-price" value="{{product.price}}">
+                    </td>
+                    <td>
+                        <input type="checkbox" name="pr-price" id="pr-price_dependency" value="{{ product.price_dependency }}">
+                    </td>
+                    <td>
+                        <input type="number" min="0"  name="pr-amount" id="pr-amount" value="{{product.amount}}">
+                    </td>
+                    <td>
+                        <select id="categoryParentNameChoose" name="categoryParentName">
+                            <option selected="selected" value="{{product.category_id}}"> > {{product.category_id}}</option>
+                            {% for category in categories %}
+                            {% if category.parent_id %}
+                            <option value="{{category.id}}"> > {{category.parent_id}} > {{category.name}}</option>
+                            {% else %}
+                            <option value="{{category.id}}">{{category.name}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        {% if product.image_path == '../static/images/products/products-blank.png' %}
+                        <span class="material-icons">qr_code_2</span>
+                        {% else %}
+                        <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"
+                             style="width: 50px; height: 50px;">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="file" name="pr-image_path" id="pr-image_path" value="{{product.image_path}}">
+                    </td>
+                    <td>
+                        <input type="submit" value="submit">
+                        <input type="button" value="delete" onclick="remove({{product.id}})">
+                    </td>
+                </tr>
+            {% endfor %}
+            </form>
+        </tbody>
+    </table>
+
+    <h2>Добавление категории</h2>
+    <form method="post" class="addCategory">
+
+        <div class="category_name">
+            <p>Название категории:</p>
+            <input type="text" id="categoryName" name="categoryName" required>
+        </div>
+        <div class="product_category">
+            <p>ID родительской категории:</p>
+            <select id="categoryParentNameChoise" name="categoryParentName">
+                <option value="Null">Родительская категория</option>
+                {% for category in categories %}
+                {% if category.parent_id %}
+                <option value="{{category.id}}"> > {{category.parent_id}} > {{category.name}}</option>
+                {% else %}
+                <option value="{{category.id}}">{{category.name}}</option>
+                {% endif %}
+                {%endfor%}
+            </select>
+        </div>
+
+        <button type="submit">Добавить категорию</button>
+    </form>
+
+    <h2>Добавление товара</h2>
+    <form method="post" class="addProduct">
+        <div class="product_name">
+            <p>Название товара:</p>
+            <input class="input-text" type="text" id="productName" name="productName" required>
+        </div>
+        <div class="product_category">
+            <p>Категория:</p>
+            <select class="input-text" id="productCategory" name="productCategory">
+                {% for category in categories %}
+                <option value="{{category.id}}">{{category.name}}</option>
+                {%endfor%}
+            </select>
+        </div>
+
+        <div class="product_brand">
+            <p>Брэнд:</p>
+            <input class="input-fields" type="text" id="productBrand" name="productBrand" required>
+        </div>
+        <div class="product_description">
+            <p>Описание:</p>
+            <input class="input-fields" type="text" id="productDescription" name="productDescription" required>
+        </div>
+        <div class="product_by_price">
+            <p>Закупочная цена:</p>
+            <input class="input-fields" type="text" id="productByPrice" name="productByPrice" required>
+        </div>
+        <div class="product_sell_price">
+            <p>Продажная цена:</p>
+            <input class="input-fields" type="text" id="productSellPrice" name="productSellPrice" required>
+        </div>
+        <div class="product_dollar">
+            <p>Цена в долларах?:</p>
+            <input class="input-fields" type="checkbox" id="productDollar" name="productDollar" required>
+        </div>
+        <div class="product_amount">
+            <p>Остаток:</p>
+            <input class="input-fields" type="text" id="productAmount" name="productAmount" required>
+        </div>
+        <div class="product_image">
+            <p>Путь к изображению:</p>
+            <input class="input-fields" type="file" id="productImagePath" name="productImagePath" required>
+        </div>
+        <button type="submit">Добавить товар</button>
+    </form>
 </main>
 </body>
+<footer style="min-height: 200px;">
+
+</footer>
 </html>
