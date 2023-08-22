@@ -778,3 +778,153 @@
 2023-08-21 17:18:35.225 | DEBUG    | database:<listcomp>:284 - {'id': 4, 'name': 'Кран угловой 1\\2х3\\4', 'by_price': 10.0, 'price': 3500.0, 'amount': 10, 'brand': 'tim', 'price_dependency': 0, 'category_id': 83, 'image_id': None, 'description': 'тут какое-то описание', 'image_path': '../static/images/products/products-blank.png'}
 2023-08-21 17:18:35.225 | DEBUG    | database:<listcomp>:284 - {'id': 5, 'name': 'Кран угловой 1\\2х3\\8', 'by_price': 10.0, 'price': 3500.0, 'amount': 10, 'brand': 'tim', 'price_dependency': 0, 'category_id': 83, 'image_id': None, 'description': 'тут какое-то описание', 'image_path': '../static/images/products/products-blank.png'}
 2023-08-21 17:18:35.225 | DEBUG    | database:<listcomp>:284 - {'id': 6, 'name': 'Кран угловой 1\\2х3\\4', 'by_price': 10.0, 'price': 3500.0, 'amount': 10, 'brand': 'гг', 'price_dependency': 0, 'category_id': 83, 'image_id': None, 'description': 'тут какое-то описание', 'image_path': '../static/images/products/products-blank.png'}
+2023-08-22 11:07:47.739 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:07:47.755 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:07:47.756 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:07:47.789 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:07:47.808 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:07:47.823 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:07:47.839 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:07:47.863 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:07:47.913 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:07:47.980 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:08:37.546 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:08:37.561 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:08:37.561 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:08:37.589 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:08:37.603 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:08:37.617 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:08:37.630 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:08:37.646 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:08:37.675 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:08:37.715 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:08:40.061 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:08:40.074 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:08:40.075 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:08:40.105 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:08:40.129 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:08:40.144 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:08:40.158 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:08:40.181 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:08:40.215 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:08:40.264 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:08:42.601 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:08:42.617 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:08:42.617 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:08:42.646 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:08:42.659 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:08:42.675 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:08:42.689 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:08:42.704 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:08:42.733 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:08:42.777 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:21:57.519 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:21:57.532 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:21:57.532 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:21:57.565 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:21:57.588 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:21:57.607 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:21:57.621 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:21:57.634 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:21:57.660 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:21:57.700 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:23:37.394 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:23:37.408 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:23:37.408 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:23:37.430 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:23:37.446 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:23:37.460 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:23:37.473 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:23:37.487 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:23:37.515 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:23:37.587 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:25:52.370 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:25:52.389 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:25:52.389 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:25:52.415 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:25:52.434 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:25:52.448 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:25:52.461 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:25:52.474 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:25:52.502 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:25:52.540 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 11:26:30.190 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 11:26:30.207 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 11:26:30.208 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 11:26:30.234 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 11:26:30.255 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 11:26:30.268 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 11:26:30.282 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 11:26:30.299 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 11:26:30.329 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 11:26:30.374 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 12:48:38.439 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 12:48:38.452 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 12:48:38.452 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 12:48:38.478 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 12:48:38.492 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 12:48:38.504 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 12:48:38.517 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 12:48:38.531 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 12:48:38.558 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 12:48:38.593 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 12:52:55.763 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 12:52:55.777 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 12:52:55.777 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 12:52:55.803 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 12:52:55.817 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 12:52:55.830 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 12:52:55.844 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 12:52:55.857 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 12:52:55.890 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 12:52:55.927 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 12:54:19.594 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 12:54:19.614 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 12:54:19.614 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 12:54:19.645 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 12:54:19.658 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 12:54:19.671 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 12:54:19.696 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 12:54:19.715 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 12:54:19.743 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 12:54:19.783 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 12:54:29.158 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 12:54:29.175 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 12:54:29.176 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 12:54:29.202 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 12:54:29.217 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 12:54:29.237 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 12:54:29.257 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 12:54:29.274 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 12:54:29.306 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 12:54:29.350 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 12:59:50.705 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 12:59:50.726 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 12:59:50.727 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 12:59:50.757 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 12:59:50.770 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 12:59:50.784 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 12:59:50.799 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 12:59:50.819 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 12:59:50.850 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 12:59:50.926 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 14:53:29.743 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 14:53:29.760 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 14:53:29.760 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 14:53:29.786 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 14:53:29.819 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 14:53:29.832 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 14:53:29.845 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 14:53:29.865 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 14:53:29.893 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 14:53:29.934 | DEBUG    | database:fill:245 - Filling table: users
+2023-08-22 14:55:17.580 | DEBUG    | database:create:22 - Creating table: categories
+2023-08-22 14:55:17.594 | DEBUG    | database:create:32 - Creating table: dollar
+2023-08-22 14:55:17.594 | DEBUG    | database:create:40 - Creating table: products
+2023-08-22 14:55:17.627 | DEBUG    | database:create:69 - Creating table: images
+2023-08-22 14:55:17.640 | DEBUG    | database:create:82 - Creating table: brands
+2023-08-22 14:55:17.653 | DEBUG    | database:create:93 - Creating table: orders
+2023-08-22 14:55:17.666 | DEBUG    | database:create:105 - Creating table: users
+2023-08-22 14:55:17.679 | DEBUG    | database:fill:121 - Filling table: categories
+2023-08-22 14:55:17.707 | DEBUG    | database:fill:221 - Filling table: products with cat_id = 82
+2023-08-22 14:55:17.746 | DEBUG    | database:fill:245 - Filling table: users
