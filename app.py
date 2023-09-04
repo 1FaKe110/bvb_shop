@@ -1,14 +1,21 @@
 import json
+from time import sleep
 
 from flask import Flask, render_template, request, make_response, redirect, url_for
-from database import DbMocK as Database, test as reset_database
+from flask_uploads import UploadSet, configure_uploads, IMAGES
+from database import Database
 from loguru import logger
 
-RESET_DB = True
+RESET_DB = False
 if RESET_DB:
+    from database.filler import reset_database
+
     reset_database()
 
 app = Flask(__name__)
+app.config['UPLOADED_IMAGES_DEST'] = './static/images/all'
+images = UploadSet('images', IMAGES)
+configure_uploads(app, (images,))
 
 
 @logger.catch
@@ -135,8 +142,44 @@ def cart():
                         f" Время доставки - {order_time}\n"
                         f" Корзина:")
             logger.info(f'  id |   amount | name |')
+
+            logger.debug("Проверяю наличие пользователя в бд")
+            user_id = Database().execute(
+                f"Select id from users where phone = '{phone}'",
+                'fetchone'
+            )
+
+            if user_id is None:
+                logger.debug("Пользователя нет. Добавляю нового пользователя")
+                Database().execute(
+                    f"INSERT into users (username, phone) values ('{full_name}', '{phone}')"
+                )
+                sleep(0.3)
+                logger.debug('Пользователь добавлен')
+                user_id = Database().execute(
+                    f"Select id from users where phone = '{phone}'",
+                    'fetchone'
+                )
+
+            logger.debug(f"Пользователь {phone} c {user_id}")
+            user_id = user_id['id']
+            last_order_id = Database().execute(
+                "Select max(order_id) as last_num from orders",
+                'fetchone')['last_num']
+
             for row in products:
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
+
+                match last_order_id:
+                    case None:
+                        next_order_id = 1
+                    case _:
+                        next_order_id = last_order_id + 1
+
+                Database().execute(
+                    'INSERT into orders (order_id, user_id, status_id, position_id, address, datetime) values'
+                    f"({next_order_id}, {user_id}, 001, {row['id']}, '{order_place}', '{order_time}')",
+                    'fetchone')
 
             return redirect(url_for('cart_clear'))
 
@@ -166,11 +209,51 @@ def delivery():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     """Старинца админки"""
+
+    match request.method:
+        case 'POST':
+            form = request.form.to_dict()
+            logger.debug(form)
+
+            if 'ct-name' in form:
+                logger.debug('Меняем что-то в категориях')
+                ct_id = form.get('ct-id').replace('.', '')
+                Database().execute(
+                    f"UPDATE categories SET name='{form['ct-name']}', "
+                    f"image_path='{'./static/images/all/' + form['сt-image_path']}' "
+                    f"WHERE id={ct_id};"
+                )
+
+            if 'pr-name' in form:
+                logger.debug('Меняем что-то в продуктах')
+                ...
+
+            if 'new-ct-categoryName' in form:
+                logger.debug('Добавляем новую категорию')
+                ...
+
+            if 'new-pr-productName' in form:
+                logger.debug('Добавляем новый продукт')
+                ...
+
     categories = Database().execute("Select * from categories", 'fetchall')
     products = Database().execute("Select * from products", 'fetchall')
+
     return render_template('admin.html',
                            categories=categories,
                            products=products)
+
+
+@app.route('/admin/upload', methods=['POST'])
+def upload():
+    if 'image' in request.files:
+        filename = images.save(request.files['image'])
+        logger.info(filename)
+        # Обработка сохраненного файла, например, сохранение файла в базе данных или другие операции
+
+        return redirect(url_for('admin', _method='POST'))
+
+    return redirect(url_for('admin'))
 
 
 if __name__ == '__main__':

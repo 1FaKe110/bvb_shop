@@ -1,6 +1,8 @@
 import telebot
 import schedule
 import time
+from database import Database
+from loguru import logger
 
 # Создание экземпляра бота с указанным токеном
 BOT_TOKEN = '6542986021:AAGhL8Yf4bTLdI5cf48Pf6ryksmaFJW6-7c'
@@ -13,8 +15,11 @@ def send_unread_order_messages():
     """Декоратор для задания периодического задания"""
 
     # Здесь должна быть логика для получения заказов в статусе "не прочитано" из базы данных
-    unread_orders = ...
-
+    logger.debug('Получаю все заказы со статусом "не прочитано"')
+    unread_orders = Database().execute(
+        'select * from orders where status_id = 1',
+        'fetchall'
+    )
     for order in unread_orders:
         send_order_message(order)
 
@@ -32,7 +37,8 @@ def send_order_message(order):
     Дата доставки: {order['delivery_date']}
     Адрес доставки: {order['delivery_address']}
     """
-    bot.send_message(CHANNEL_ID, message)
+    bot.send_message(chat_id=CHANNEL_ID,
+                     text=message)
 
 
 @bot.message_handler(func=lambda message: True)
@@ -94,10 +100,10 @@ def run_scheduler():
         time.sleep(1)
 
 
-# Запуск бота и планировщика заданий
-if __name__ == "__main__":
-    bot.polling(none_stop=True)
+def main():
     run_scheduler()
+    bot.send_message(CHANNEL_ID, '1234')
+    bot.polling(none_stop=True)
     order = {
         'id': 134,
         'phone': '+79774986485',
@@ -112,3 +118,8 @@ if __name__ == "__main__":
     }
 
     send_order_message(order)
+
+
+# Запуск бота и планировщика заданий
+if __name__ == "__main__":
+    main()

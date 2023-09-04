@@ -48,13 +48,14 @@
         </thead>
         <tbody>
         {% for category in categories %}
-        <form method="post">
+        <form method="post" action="/admin/upload" >
             <tr>
                 <td class="tr-id">
-                    .{{ category.id }}
+                    <input type="text" name="ct-id" id="ct-id" value=".{{ category.id }}" style="width: 30px;" readonly>
                 </td>
                 <td>
-                    {{ category.parent_id }}
+                    <input type="text" name="ct-parent_id" id="ct-parent_id" value="{{ category.parent_id }}"
+                           style="width: 90px;" readonly>
                 </td>
                 <td>
                     <input type="text" name="ct-name" id="ct-name" value="{{category.name}}">
@@ -68,7 +69,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <input type="file" name="сt-image_path" id="сt-image_path" value="{{category.image_path}}">
+                    <input type="file" name="сt-image_path" id="сt-image_path" value="{{category.image_path}}" src="category.image_path">
                 </td>
                 <td>
                     <input type="submit" value="submit">
@@ -101,71 +102,72 @@
             <th>Подтверждение изменения</th>
         </tr>
         </thead>
-
-        <form>
-            <tbody>
-            {% for product in products %}
-                <tr>
-                    <td name="tr-id">.{{product.id}}</td>
-                    <td>
-                        <input type="text" name="pr-name" id="pr-name" value="{{product.name}}">
-                    </td>
-                    <td>
-                        <input type="text" name="pr-brand" id="pr-brand" value="{{product.brand}}">
-                    </td>
-                    <td>
-                        <input type="text" name="pr-description" id="pr-description" value="{{product.description}}">
-                    </td>
-                    <td>
-                        <input type="number" min="1" name="pr-by_price" id="pr-by_price" value="{{product.by_price}}">
-                    </td>
-                    <td>
-                        <input type="number" name="pr-price" id="pr-price" value="{{product.price}}">
-                    </td>
-                    <td>
-                        <select id="pr-price_dependency" name="pr-price_dependency">
-                            {% if product.price_dependency == 1 %}
-                            <option selected="selected" value="1">Да</option>
-                            <option value="0">Нет</option>
-                            {% else %}
-                            <option value="1">Да</option>
-                            <option selected="selected" value="0">Нет</option>
-                            {% endif %}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" min="0"  name="pr-amount" id="pr-amount" value="{{product.amount}}">
-                    </td>
-                    <td>
-                        <select id="categoryParentNameChoose" name="categoryParentName">
-                            <option selected="selected" value="{{product.category_id}}"> > {{product.category_id}}</option>
-                            {% for category in categories %}
-                            {% if category.parent_id %}
-                            <option value="{{category.id}}">{{category.parent_id}} | {{category.name}}</option>
-                            {% else %}
-                            <option value="{{category.id}}">{{category.name}}</option>
-                            {% endif %}
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        {% if product.image_path == '../static/images/products/products-blank.png' %}
-                        <span class="material-icons">qr_code_2</span>
+        <tbody>
+        {% for product in products %}
+        <form id="{{product.id}}">
+            <tr>
+                <td>
+                    <input type="text" name="pr-id" id="pr-id" value=".{{product.id}}" readonly style="width: 30px;">
+                </td>
+                <td>
+                    <input type="text" name="pr-name" id="pr-name" value="{{product.name}}">
+                </td>
+                <td>
+                    <input type="text" name="pr-brand" id="pr-brand" value="{{product.brand}}">
+                </td>
+                <td>
+                    <input type="text" name="pr-description" id="pr-description" value="{{product.description}}">
+                </td>
+                <td>
+                    <input type="number" min="1" name="pr-by_price" id="pr-by_price" value="{{product.by_price}}">
+                </td>
+                <td>
+                    <input type="number" name="pr-price" id="pr-price" value="{{product.price}}">
+                </td>
+                <td>
+                    <select id="pr-price_dependency" name="pr-price_dependency">
+                        {% if product.price_dependency == 1 %}
+                        <option selected="selected" value="1">Да</option>
+                        <option value="0">Нет</option>
                         {% else %}
-                        <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"
-                             style="width: 50px; height: 50px;">
+                        <option value="1">Да</option>
+                        <option selected="selected" value="0">Нет</option>
                         {% endif %}
-                    </td>
-                    <td>
-                        <input type="file" name="pr-image_path" id="pr-image_path" value="{{product.image_path}}">
-                    </td>
-                    <td>
-                        <input type="submit" value="submit">
-                        <input type="button" value="delete" onclick="remove({{product.id}})">
-                    </td>
-                </tr>
-            {% endfor %}
-            </form>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" min="0" name="pr-amount" id="pr-amount" value="{{product.amount}}">
+                </td>
+                <td>
+                    <select id="categoryParentNameChoose" name="categoryParentName">
+                        <option selected="selected" value="{{product.category_id}}"> > {{product.category_id}}</option>
+                        {% for category in categories %}
+                        {% if category.parent_id %}
+                        <option value="{{category.id}}">{{category.parent_id}} | {{category.name}}</option>
+                        {% else %}
+                        <option value="{{category.id}}">{{category.name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    {% if product.image_path == '../static/images/products/products-blank.png' %}
+                    <span class="material-icons">qr_code_2</span>
+                    {% else %}
+                    <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"
+                         style="width: 50px; height: 50px;">
+                    {% endif %}
+                </td>
+                <td>
+                    <input type="file" name="pr-image_path" id="pr-image_path" value="{{product.image_path}}">
+                </td>
+                <td>
+                    <input type="submit" value="submit">
+                    <input type="button" value="delete" onclick="remove({{product.id}})">
+                </td>
+            </tr>
+        </form>
+        {% endfor %}
         </tbody>
     </table>
 
@@ -174,11 +176,11 @@
 
         <div class="category_name">
             <p>Название категории:</p>
-            <input type="text" id="categoryName" name="categoryName" required>
+            <input type="text" id="new-ct-categoryName" name="categoryName" required>
         </div>
         <div class="product_category">
             <p>ID родительской категории:</p>
-            <select id="categoryParentNameChoise" name="categoryParentName">
+            <select id="new-ct-categoryParentNameChoise" name="categoryParentName">
                 <option value="Null">Родительская категория</option>
                 {% for category in categories %}
                 {% if category.parent_id %}
@@ -197,11 +199,11 @@
     <form method="post" class="addProduct">
         <div class="product_name">
             <p>Название товара:</p>
-            <input class="input-text" type="text" id="productName" name="productName" required>
+            <input class="input-text" type="text" id="new-pr-productName" name="productName" required>
         </div>
         <div class="product_category">
             <p>Категория:</p>
-            <select class="input-text" id="productCategory" name="productCategory">
+            <select class="input-text" id="new-pr-productCategory" name="productCategory">
                 {% for category in categories %}
                 <option value="{{category.id}}">{{category.name}}</option>
                 {%endfor%}
@@ -210,31 +212,31 @@
 
         <div class="product_brand">
             <p>Брэнд:</p>
-            <input class="input-fields" type="text" id="productBrand" name="productBrand" required>
+            <input class="input-fields" type="text" id="new-pr-productBrand" name="productBrand" required>
         </div>
         <div class="product_description">
             <p>Описание:</p>
-            <input class="input-fields" type="text" id="productDescription" name="productDescription" required>
+            <input class="input-fields" type="text" id="new-pr-productDescription" name="productDescription" required>
         </div>
         <div class="product_by_price">
             <p>Закупочная цена:</p>
-            <input class="input-fields" type="text" id="productByPrice" name="productByPrice" required>
+            <input class="input-fields" type="text" id="new-pr-productByPrice" name="productByPrice" required>
         </div>
         <div class="product_sell_price">
             <p>Продажная цена:</p>
-            <input class="input-fields" type="text" id="productSellPrice" name="productSellPrice" required>
+            <input class="input-fields" type="text" id="new-pr-productSellPrice" name="productSellPrice" required>
         </div>
         <div class="product_dollar">
             <p>Цена в долларах?:</p>
-            <input class="input-fields" type="checkbox" id="productDollar" name="productDollar" required>
+            <input class="input-fields" type="checkbox" id="new-pr-productDollar" name="productDollar" required>
         </div>
         <div class="product_amount">
             <p>Остаток:</p>
-            <input class="input-fields" type="text" id="productAmount" name="productAmount" required>
+            <input class="input-fields" type="text" id="new-pr-productAmount" name="productAmount" required>
         </div>
         <div class="product_image">
             <p>Путь к изображению:</p>
-            <input class="input-fields" type="file" id="productImagePath" name="productImagePath" required>
+            <input class="input-fields" type="file" id="new-pr-productImagePath" name="productImagePath" required>
         </div>
         <button type="submit">Добавить товар</button>
     </form>
