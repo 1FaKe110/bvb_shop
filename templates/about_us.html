@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Об Организации</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li-active">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<main>
+    <h1>О Нас</h1>
+    <p>Добро пожаловать в интернет-магазин "Сантехника и электрика"! Мы предлагаем широкий ассортимент качественной сантехники и электротоваров для вашего дома.</p>
+    <p>Наша компания занимается поставкой товаров только от проверенных производителей, чтобы обеспечить высокое качество и надежность каждого продукта.</p>
+    <p>Мы гордимся тем, что наши клиенты получают только лучшие товары и отличное обслуживание. Наша команда с радостью поможет вам выбрать и приобрести необходимые товары.</p>
+    <p>Мы стремимся предложить нашим клиентам максимальное удобство при покупках, поэтому мы предоставляем быструю доставку и удобные способы оплаты.</p>
+    <p>Если у вас возникнут вопросы или вам понадобится помощь, <span class="highlight">наша служба поддержки всегда готова ответить на ваши вопросы и предоставить необходимую информацию</span>.</p>
+    <p class="thank-you">Спасибо, что выбрали нас! Мы надеемся, что ваши покупки у нас принесут вам полную удовлетворенность и удовольствие.</p>
+</main>
+
+
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
+</body>
+</html>

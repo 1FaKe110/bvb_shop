@@ -1,15 +1,9 @@
-import sqlite3
-
 from loguru import logger
-
 import database
 
 
 class DbFiller(database.Database):
     def __init__(self):
-        self.__conn = sqlite3.connect('database.db', check_same_thread=False)
-        self.__conn.row_factory = database.dict_factory
-        self.cur = self.__conn.cursor()
         super().__init__()
 
     @logger.catch
@@ -93,6 +87,7 @@ class DbFiller(database.Database):
                     user_id INTEGER NOT NULL,
                     status_id INTEGER NOT NULL,
                     position_id INTEGER NOT NULL,
+                    amount INTEGER NOT NULL,
                     address TEXT NOT NULL,
                     datetime DATETIME NOT NULL
                 )

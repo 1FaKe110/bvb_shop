@@ -1,0 +1,28 @@
+/* Общие стили */
+main {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+/* Дополнительные стили */
+.highlight {
+    color: #007bff;
+    font-weight: 700;
+}
+
+.thank-you {
+    margin-top: 40px;
+}

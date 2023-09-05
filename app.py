@@ -2,9 +2,9 @@ import json
 from time import sleep
 
 from flask import Flask, render_template, request, make_response, redirect, url_for
-from flask_uploads import UploadSet, configure_uploads, IMAGES
 from database import Database
 from loguru import logger
+from telegram_bot.Bot import Telebot
 
 RESET_DB = False
 if RESET_DB:
@@ -13,9 +13,11 @@ if RESET_DB:
     reset_database()
 
 app = Flask(__name__)
-app.config['UPLOADED_IMAGES_DEST'] = './static/images/all'
-images = UploadSet('images', IMAGES)
-configure_uploads(app, (images,))
+bot = Telebot()
+
+# app.config['UPLOADED_IMAGES_DEST'] = './static/images/all'
+# images = UploadSet('images', IMAGES)
+# configure_uploads(app, (images,))
 
 
 @logger.catch
@@ -134,18 +136,10 @@ def cart():
             full_name = request.form.get('full_name')
             order_place = request.form.get('order_place')
             order_time = request.form.get('order_time')
-            logger.info(f"Полученные данные:\n"
-                        f" Имя - {full_name}\n"
-                        f" Телефон - {phone}\n"
-                        f" Сумма заказа - {order['sum']}\n"
-                        f" Место доставки - {order_place}\n"
-                        f" Время доставки - {order_time}\n"
-                        f" Корзина:")
-            logger.info(f'  id |   amount | name |')
 
             logger.debug("Проверяю наличие пользователя в бд")
             user_id = Database().execute(
-                f"Select id from users where phone = '{phone}'",
+                f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                 'fetchone'
             )
 
@@ -157,7 +151,7 @@ def cart():
                 sleep(0.3)
                 logger.debug('Пользователь добавлен')
                 user_id = Database().execute(
-                    f"Select id from users where phone = '{phone}'",
+                    f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                     'fetchone'
                 )
 
@@ -167,19 +161,29 @@ def cart():
                 "Select max(order_id) as last_num from orders",
                 'fetchone')['last_num']
 
+            match last_order_id:
+                case None:
+                    next_order_id = 1
+                case _:
+                    next_order_id = last_order_id + 1
+
+            logger.info(f"Полученные данные:\n"
+                        f" Имя - {full_name}\n"
+                        f" Телефон - {phone}\n"
+                        f" Сумма заказа - {order['sum']}\n"
+                        f" Место доставки - {order_place}\n"
+                        f" Время доставки - {order_time}\n"
+                        f" Корзина:")
             for row in products:
+                logger.info(f'  id |   amount | name |')
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
 
-                match last_order_id:
-                    case None:
-                        next_order_id = 1
-                    case _:
-                        next_order_id = last_order_id + 1
 
                 Database().execute(
-                    'INSERT into orders (order_id, user_id, status_id, position_id, address, datetime) values'
-                    f"({next_order_id}, {user_id}, 001, {row['id']}, '{order_place}', '{order_time}')",
-                    'fetchone')
+                    'INSERT into orders (order_id, user_id, status_id, position_id, amount, address, datetime) values'
+                    f"({next_order_id}, {user_id}, 001, {row['id']}, {row['in_card']}, '{order_place}', '{order_time}')")
+
+            bot.__send_order__(next_order_id)
 
             return redirect(url_for('cart_clear'))
 
@@ -195,7 +199,7 @@ def cart_clear():
 @app.route('/about')
 def about():
     """Старинца с информацией об организации"""
-    return render_template('not-ready.html')
+    return render_template('about_us.html')
 
 
 @logger.catch
@@ -244,16 +248,14 @@ def admin():
                            products=products)
 
 
-@app.route('/admin/upload', methods=['POST'])
-def upload():
-    if 'image' in request.files:
-        filename = images.save(request.files['image'])
-        logger.info(filename)
-        # Обработка сохраненного файла, например, сохранение файла в базе данных или другие операции
-
-        return redirect(url_for('admin', _method='POST'))
-
-    return redirect(url_for('admin'))
+# @app.route('/admin/upload', methods=['POST'])
+# def upload():
+#    if 'image' in request.files:
+#       filename = images.save(request.files['image'])
+#       logger.info(filename)
+#       return redirect(url_for('admin', _method='POST'))
+#
+#    return redirect(url_for('admin'))
 
 
 if __name__ == '__main__':

@@ -1,14 +1,10 @@
 import sqlite3
 from loguru import logger
-import os
-
-os.chdir(os.getcwd())
-logger.add('./logs/dbmock/DbMock.log')
 
 
 class Database:
     def __init__(self):
-        self.__conn = sqlite3.connect('database.db', check_same_thread=False)
+        self.__conn = sqlite3.connect('/home/ifake/BVB_SHOP_SITE/database.db', check_same_thread=False)
         self.__conn.row_factory = dict_factory
         self.cur = self.__conn.cursor()
 
