@@ -26,3 +26,10 @@ p {
 .thank-you {
     margin-top: 40px;
 }
+
+main > ul > li {
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 5px;
+}

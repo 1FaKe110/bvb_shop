@@ -86,5 +86,21 @@ function check_buttons(formData, product_id, product_price) {
     let product_sum = parseInt(formData[product_id.toString()]) * parseInt(product_price)
     console.log('Общая сумма в для товара c id = [' + product_id + ']: ' + product_sum);
     form.querySelector('p.sum-item-price').text = product_sum;
+}
 
+
+// Загрузка данных из cookie при загрузке страницы
+document.addEventListener('DOMContentLoaded', function () {
+    console.log(document.getElementById('phone'), document.getElementById('full_name'), document.getElementById('order_place'))
+    document.getElementById('phone').value = getCookie('phone') || '';
+    document.getElementById('full_name').value = getCookie('full_name') || '';
+    document.getElementById('order_place').value = getCookie('order_place') || '';
+});
+
+// Сохранение данных в cookie при отправке формы
+function saveFormData() {
+    console.log('Сохраняю данные формы в куки файлы')
+    document.cookie = 'phone=' + document.getElementById('phone').value + '; path=/';
+    document.cookie = 'full_name=' + document.getElementById('full_name').value + '; path=/'
+    document.cookie = 'order_place=' + document.getElementById('order_place').value + '; path=/'
 }

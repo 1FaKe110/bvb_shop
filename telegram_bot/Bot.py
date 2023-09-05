@@ -39,8 +39,8 @@ class Telebot:
             'fetchone'
         )
 
-        message = (f"ID заказа: ```{order['id']}```\n"
-                   f"Номер телефона: ```{order['phone']}```\n"
+        message = (f"ID заказа: ``` {order['id']}```\n"
+                   f"Номер телефона: ``` {order['phone']}```\n"
                    f"ФИО:``` {order['fio']} ```\n"
                    f"Позиции:\n")
 
@@ -64,12 +64,12 @@ class Telebot:
         total_price = 0
         for pos in order['positions']:
             total_price += pos['price'] * pos['amount']
-            message += (f"``` {pos['id']} | {pos['name']} | {pos['price']} p. | "
+            message += (f"``` ID {pos['id']}: {pos['name']} | {pos['price']} p. | "
                         f"{pos['amount']} шт. | категория id {pos['cat_id']} - {pos['cat_name']}```\n")
 
         message += (f"Сумма заказа: ``` {total_price} р.```\n"
-                    f"Дата доставки: ```{order['delivery_date']}```\n"
-                    f"Адрес доставки: ```{order['delivery_address']}```\n")
+                    f"Дата доставки: ``` {order['delivery_date']}```\n"
+                    f"Адрес доставки: ``` {order['delivery_address']}```\n")
         logger.debug(message)
         self.bot.send_message(chat_id=CHANNEL_ID,
                               parse_mode="Markdown",

@@ -2,10 +2,25 @@
 body {
     display: block;
     background: linear-gradient(-30deg, #f8f8f8, #fdfdfd);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Плавное появление элементов */
     /*background: linear-gradient(-30deg, #2f2c2c, #2d312f);*/
+}
+
+/* Стили для показа элементов после загрузки страницы */
+body.loaded {
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
+}
+
+
+/* Стили для скрытия анимации загрузки после загрузки страницы */
+.loading-overlay {
+    opacity: 0;
+    transition: opacity 0.5s ease-out; /* Плавное исчезновение элементов */
 }
 
 html, body {

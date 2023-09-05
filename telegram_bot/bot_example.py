@@ -49,15 +49,15 @@ def handle_status_updates(message):
     status_code = None
 
     if message_text == "не прочитано":
-        status_code = "001"
+        status_code = "1"
     elif message_text == "на выполнении":
-        status_code = "102"
+        status_code = "2"
     elif message_text == "выполнено":
-        status_code = "201"
+        status_code = "3"
     elif message_text == "отменено":
-        status_code = "401"
+        status_code = "4"
     elif message_text == "возобновлено":
-        status_code = "301"
+        status_code = "5"
 
     if status_code:
         # Обработка изменения статуса заказа

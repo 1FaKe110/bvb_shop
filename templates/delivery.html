@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Об Организации</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li-active">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+<main>
+    <h1>Доставка</h1>
+    <p>Мы предлагаем удобные условия доставки товаров в нашем интернет-магазине "Сантехника и электрика".</p>
+    <p>Наши заказы доставляются в течение 2-5 рабочих дней после подтверждения заказа.</p>
+    <p>Мы предоставляем доставку на всей территории города. Если вы находитесь за пределами города, свяжитесь с нами, чтобы обсудить возможность доставки.</p>
+    <p>Стоимость доставки зависит от веса и объема товаров, а также от вашего местоположения.</p>
+    <ul>
+        <li>До 20кг в пределах МКАД - бесплатно</li>
+        <li>Дальше МКАД - 10 руб\км</li>
+        <li>Более 20кг  - 10 руб\кг</li>
+        <li>Вышеперечисленные пункты складываются</li>
+    </ul>
+    <p>Мы также предоставляем возможность самовывоза из нашего магазина. Этот вариант доступен в форме заказа или его можно изменить при подтверждении заказа с оператором</p>
+    <p>Если у вас возникнут вопросы по доставке или вы нуждаетесь в консультации, пожалуйста, свяжитесь с нами по указанным контактным данным в разделе <a href="{{url_for('about')}}" class="highlight">О Нас / связаться с нами</a></p>
+</main>
+
+
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
+</body>
+</html>

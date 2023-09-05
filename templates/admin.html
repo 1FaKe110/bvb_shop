@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -30,6 +31,7 @@
         </ul>
     </nav>
 </div>
+
 <main>
     <h1>Админка</h1>
     <h2>Категории</h2>
@@ -41,36 +43,38 @@
             <th>ID</th>
             <th>Родительский ID</th>
             <th>Название</th>
-            <th>Изображение</th>
-            <th>Путь к изображению</th>
+            <!--            <th>Изображение</th>-->
+            <!--            <th>Путь к изображению</th>-->
             <th>Подтверждение изменения</th>
         </tr>
         </thead>
         <tbody>
         {% for category in categories %}
-        <form method="post" action="/admin/upload" >
+        <form method="post" action="/admin/upload">
             <tr>
                 <td class="tr-id">
-                    <input type="text" name="ct-id" id="ct-id" value=".{{ category.id }}" style="width: 30px;" readonly>
+                    <input class="id_column" type="text" name="ct-id" id="ct-id" value="{{ category.id }}"
+                           style="width: 30px;" readonly>
                 </td>
                 <td>
                     <input type="text" name="ct-parent_id" id="ct-parent_id" value="{{ category.parent_id }}"
                            style="width: 90px;" readonly>
                 </td>
                 <td>
-                    <input type="text" name="ct-name" id="ct-name" value="{{category.name}}">
+                    <input class="name_column" type="text" name="ct-name" id="ct-name" value="{{category.name}}">
                 </td>
-                <td>
-                    {% if category.image_path == '../static/images/categories/categories-blank.png' %}
-                    <span class="material-icons">list</span>
-                    {% else %}
-                    <img class="category-image" src="{{category.image_path}}" alt="{{category.name}}"
-                         style="width: 50px; height: 50px;">
-                    {% endif %}
-                </td>
-                <td>
-                    <input type="file" name="сt-image_path" id="сt-image_path" value="{{category.image_path}}" src="category.image_path">
-                </td>
+                <!--                <td>-->
+                <!--                    {% if category.image_path == '../static/images/categories/categories-blank.png' %}-->
+                <!--                    <span class="material-icons">list</span>-->
+                <!--                    {% else %}-->
+                <!--                    <img class="category-image" src="{{category.image_path}}" alt="{{category.name}}"-->
+                <!--                         style="width: 50px; height: 50px;">-->
+                <!--                    {% endif %}-->
+                <!--                </td>-->
+                <!--                <td>-->
+                <!--                    <input type="file" name="сt-image_path" id="сt-image_path" value="{{category.image_path}}"-->
+                <!--                           src="category.image_path">-->
+                <!--                </td>-->
                 <td>
                     <input type="submit" value="submit">
                     <input type="button" value="delete" onclick="remove({{category.id}})">
@@ -80,7 +84,7 @@
         {% endfor %}
         </tbody>
     </table>
-
+    <hr>
     <h2>Товары</h2>
     <input type="text" id="productSearchInput"
            placeholder="Поиск по товарам"
@@ -97,8 +101,8 @@
             <th>В долларах?</th>
             <th>Остаток</th>
             <th>Родительская категория</th>
-            <th>Изображение</th>
-            <th>Путь к изображению</th>
+            <!--            <th>Изображение</th>-->
+            <!--            <th>Путь к изображению</th>-->
             <th>Подтверждение изменения</th>
         </tr>
         </thead>
@@ -107,10 +111,11 @@
         <form id="{{product.id}}">
             <tr>
                 <td>
-                    <input type="text" name="pr-id" id="pr-id" value=".{{product.id}}" readonly style="width: 30px;">
+                    <input class="id_column" type="text" name="pr-id" id="pr-id" value="{{product.id}}" readonly
+                           style="width: 30px;">
                 </td>
                 <td>
-                    <input type="text" name="pr-name" id="pr-name" value="{{product.name}}">
+                    <input class="name_column" type="text" name="pr-name" id="pr-name" value="{{product.name}}">
                 </td>
                 <td>
                     <input type="text" name="pr-brand" id="pr-brand" value="{{product.brand}}">
@@ -150,17 +155,17 @@
                         {% endfor %}
                     </select>
                 </td>
-                <td>
-                    {% if product.image_path == '../static/images/products/products-blank.png' %}
-                    <span class="material-icons">qr_code_2</span>
-                    {% else %}
-                    <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"
-                         style="width: 50px; height: 50px;">
-                    {% endif %}
-                </td>
-                <td>
-                    <input type="file" name="pr-image_path" id="pr-image_path" value="{{product.image_path}}">
-                </td>
+                <!--                <td>-->
+                <!--                    {% if product.image_path == '../static/images/products/products-blank.png' %}-->
+                <!--                    <span class="material-icons">qr_code_2</span>-->
+                <!--                    {% else %}-->
+                <!--                    <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"-->
+                <!--                         style="width: 50px; height: 50px;">-->
+                <!--                    {% endif %}-->
+                <!--                </td>-->
+                <!--                <td>-->
+                <!--                    <input type="file" name="pr-image_path" id="pr-image_path" value="{{product.image_path}}">-->
+                <!--                </td>-->
                 <td>
                     <input type="submit" value="submit">
                     <input type="button" value="delete" onclick="remove({{product.id}})">
@@ -170,7 +175,7 @@
         {% endfor %}
         </tbody>
     </table>
-
+    <hr>
     <h2>Добавление категории</h2>
     <form method="post" class="addCategory">
 
@@ -194,7 +199,7 @@
 
         <button type="submit">Добавить категорию</button>
     </form>
-
+    <hr>
     <h2>Добавление товара</h2>
     <form method="post" class="addProduct">
         <div class="product_name">
@@ -240,6 +245,85 @@
         </div>
         <button type="submit">Добавить товар</button>
     </form>
+    <hr>
+    <h2>Заказы</h2>
+    <input type="text" id="orderSearchInput"
+           placeholder="Поиск по заказам"
+           onkeyup="searchTable('orderTable', 'orderSearchInput')">
+    <table id="orderTable">
+        <thead>
+        <tr>
+            <th>ID заказа</th>
+            <th>ID пользователя</th>
+            <th>
+                Позиции
+                <table>
+                    <tr>
+                        <th>ID товара</th>
+                        <th>Наименование</th>
+                        <th>Количество</th>
+                    </tr>
+                </table>
+            </th>
+            <th>Дата доставки</th>
+            <th>Адрес доставки</th>
+            <th>Статус</th>
+        </tr>
+        </thead>
+        {% for order in orders %}
+        <form method="post" id="order_{{order.order_id}}">
+            <tr>
+                <td>
+                    <input class="id_column" type="text" id="{{order.order_id}}" name="order_id{{order.order_id}}"
+                           value="{{order.order_id}}" style="width: 40px" readonly>
+                </td>
+                <td>
+                    <input type="text" id="{{order.user_id}}" name="order_id{{order.user_id}}" value="{{order.user_id}}"
+                           readonly style="width: 40px">
+                </td>
+                <td>
+                    <table>
+                        {% for position in order.positions%}
+                        <tr>
+                            <td>
+                                <input type="number" name="position_id" id="{{position.id}}"
+                                       value="{{position.id}}" style="width: 30px;">
+                            </td>
+                            <td>
+                                <input type="text" name="position_name" id="{{position.name}}"
+                                       value="{{position.name}}" readonly>
+                            </td>
+                            <td>
+                                <input type="number" name="position_amount" id="{{position.amount}}"
+                                       value="{{position.amount}}" style="width: 30px;">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td>
+                    <input type="text" id="{{order.address}}" name="{{order.address}}" value="{{order.address}}"
+                           required style="width: fit-content;">
+                </td>
+                <td>
+                    <input type="date" id="order_datetime{{order.order_id}}" name="{{order.datetime}}"
+                           value="{{order.datetime}}" required>
+                </td>
+                <td>
+                    <select id="order_statuses" name="orderStatus">
+                        {% for status in order_statuses %}
+                        <option value="{{status.id}}">{{status.name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="submit" value="submit">
+                    <input type="button" value="delete" onclick="remove({{order.order_id}})">
+                </td>
+            </tr>
+        </form>
+        {% endfor %}
+    </table>
 </main>
 </body>
 <footer style="min-height: 200px;">

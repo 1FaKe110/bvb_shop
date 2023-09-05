@@ -28,3 +28,7 @@ function clearCookies() {
 function alert_confirm() {
     alert('Заказ успешно создан! Вам скоро перезвонят :)')
 }
+
+window.addEventListener('load', function () {
+    document.body.classList.add('loaded');
+});

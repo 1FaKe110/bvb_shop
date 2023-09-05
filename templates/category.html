@@ -29,9 +29,9 @@
         </ul>
     </nav>
 </div>
+
+
 <main>
-
-
     <div class="content">
         <div class="content-left">
             <div class="sidebar">
@@ -84,7 +84,32 @@
             <div class="products">
                 {% for product in products %}
                 <a class="product-href" href="{{ url_for('product', product_name=product.name) }}">
+                    {% if product.amount > 5 %}
                     <div class="product-card">
+                        {% if product.image_path == '../static/images/products/products-blank.png' %}
+                        <div class="img">
+                            <span class="material-icons">qr_code_2</span>
+                        </div>
+                        {% else %}
+                        <div class="img">
+                            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                        </div>
+                        {% endif %}
+                        <div class="product-name">
+                            <p class="">{{ product.name }}</p>
+                        </div>
+                        {% if product.in_card %}
+                        <div class="product-price-added">
+                            <p class="">{{ product.price }} р.</p>
+                        </div>
+                        {% else %}
+                        <div class="product-price">
+                            <p class="">{{ product.price }} р.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="product-card-almost-empty">
                         {% if product.image_path == '../static/images/products/products-blank.png' %}
                         <div class="img">
                             <span class="material-icons">qr_code_2</span>
@@ -107,6 +132,7 @@
                         </div>
                         {% endif %}
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </a>
             </div>

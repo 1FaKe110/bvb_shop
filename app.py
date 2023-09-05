@@ -15,6 +15,7 @@ if RESET_DB:
 app = Flask(__name__)
 bot = Telebot()
 
+
 # app.config['UPLOADED_IMAGES_DEST'] = './static/images/all'
 # images = UploadSet('images', IMAGES)
 # configure_uploads(app, (images,))
@@ -178,10 +179,10 @@ def cart():
                 logger.info(f'  id |   amount | name |')
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
 
-
                 Database().execute(
                     'INSERT into orders (order_id, user_id, status_id, position_id, amount, address, datetime) values'
-                    f"({next_order_id}, {user_id}, 001, {row['id']}, {row['in_card']}, '{order_place}', '{order_time}')")
+                    f"({next_order_id}, {user_id}, 001, {row['id']}, {row['in_card']}, '{order_place}', '{order_time}')"
+                )
 
             bot.__send_order__(next_order_id)
 
@@ -206,7 +207,7 @@ def about():
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    return render_template('not-ready.html')
+    return render_template('delivery.html')
 
 
 @logger.catch
@@ -242,10 +243,34 @@ def admin():
 
     categories = Database().execute("Select * from categories", 'fetchall')
     products = Database().execute("Select * from products", 'fetchall')
+    orders = Database().execute(
+        "Select order_id, user_id, status_id, address, datetime, ose.id as status_id, ose.name "
+        "from orders o "
+        "inner join order_status_enum ose on ose.id = o.status_id ",
+        'fetchall')
+    for order in orders:
+        order['positions'] = Database().execute(
+            "select p.id as id, "
+            "p.name as name, "
+            "p.price as price, "
+            "o.amount as amount, "
+            "c.id as cat_id, "
+            "c.name as cat_name "
+            "from orders o "
+            "LEFT JOIN products p on p.id = o.position_id "
+            "LEFT JOIN categories c on c.id = p.category_id  "
+            "WHERE TRUE "
+            f"and order_id = {order['order_id']};",
+            "fetchall"
+        )
+
+    order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
 
     return render_template('admin.html',
                            categories=categories,
-                           products=products)
+                           products=products,
+                           orders=orders,
+                           order_statuses=order_statuses)
 
 
 # @app.route('/admin/upload', methods=['POST'])

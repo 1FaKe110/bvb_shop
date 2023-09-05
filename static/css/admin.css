@@ -10,7 +10,7 @@ form.addProduct div p, form.addCategory div p {
 }
 
 td {
-    border-right: 1px solid black;
+    # border-right: 1px solid black;
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -20,7 +20,7 @@ th {
     text-wrap: nowrap;
     margin-left: 10px;
     margin-right: 10px;
-    border-right: 1px solid black;
+    border-right: 1px solid #fefefe;
     padding: 10px;
     font-family: inherit;
     padding: 0;

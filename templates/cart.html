@@ -72,15 +72,16 @@
                             <p class="product-price-value">{{ product.price }} р.</p>
                         </div>
                         <div class="add-block">
-                        <input type="button" class="add-to-card"
-                               onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})" value="+">
+                            <input type="button" class="add-to-card"
+                                   onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})" value="+">
                         </div>
                         <div class="amount-block">
                             <p class="amount-in-cart">{{ product.in_card }}</p>
                         </div>
                         <div class="remove-block">
-                            <input type="button" class="remove-from-card-button" onclick="removeFromCard({{product.id}})"
-                               value="-">
+                            <input type="button" class="remove-from-card-button"
+                                   onclick="removeFromCard({{product.id}})"
+                                   value="-">
                         </div>
                         <div class="sum-block">
                             <p class="sum-item-price">{{ product.in_card * product.price }} р.</p>
@@ -110,9 +111,11 @@
                 </h4>
                 <form method="post" class="submit-form" onsubmit="alert_confirm()">
                     <div class="confirm-description-block">
-                        <p class="confirm description">Введите номер телефона для подтверждения заказа. Мы Вам перезвоним в
+                        <p class="confirm description">Введите номер телефона для подтверждения заказа. Мы Вам
+                            перезвоним в
                             ближайшее время.</p>
-                        <p class="confirm description">При получении заказа при себе необходимо иметь паспорт и телефон</p>
+                        <p class="confirm description">При получении заказа при себе необходимо иметь паспорт и
+                            телефон</p>
                     </div>
                     <div class="input-fields">
                         <div class="phone">
@@ -150,17 +153,9 @@
                         <p>Сумма заказа: {{ order.sum }} </p>
                     </div>
                     <div class="submit">
-                        <input class="submit-input-confirm" type="submit" value="Подтвердить заказ">
+                        <input class="submit-input-confirm" type="submit" onclick="saveFormData()" value="Подтвердить заказ">
                     </div>
                 </form>
-<!--                <script>-->
-<!--                    // Функция для очистки cookie файлов и отправки формы-->
-<!--                    function onSubmit() {-->
-<!--                        // Очистка cookie файлов-->
-<!--                        document.cookie = 'formData=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';-->
-<!--                        return true; // Вернуть true для продолжения отправки формы-->
-<!--                    }-->
-<!--                </script>-->
             </div>
             {% endif %}
         </div>
