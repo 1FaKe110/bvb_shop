@@ -9,6 +9,7 @@ window.onload = function() {
     var form = document.querySelector('.card');
     var formDataCookie = getCookie('formData');
     if (!formDataCookie) {
+        document.cookie = 'formData={}; path=/';
         return
     }
     var formData = JSON.parse(formDataCookie);
@@ -17,6 +18,7 @@ window.onload = function() {
 function clearCookies() {
     var formDataCookie = getCookie('formData');
     if (!formDataCookie) {
+        document.cookie = 'formData={}; path=/';
         return
     }
     var formData = JSON.parse(formDataCookie);
@@ -27,6 +29,10 @@ function clearCookies() {
 
 function alert_confirm() {
     alert('Заказ успешно создан! Вам скоро перезвонят :)')
+}
+
+function admin_alert(text) {
+    alert(text)
 }
 
 window.addEventListener('load', function () {

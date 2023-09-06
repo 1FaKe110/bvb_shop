@@ -1,24 +1,12 @@
 import json
 from time import sleep
-
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, request, make_response, redirect, url_for, abort
 from database import Database
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
-RESET_DB = False
-if RESET_DB:
-    from database.filler import reset_database
-
-    reset_database()
-
 app = Flask(__name__)
 bot = Telebot()
-
-
-# app.config['UPLOADED_IMAGES_DEST'] = './static/images/all'
-# images = UploadSet('images', IMAGES)
-# configure_uploads(app, (images,))
 
 
 @logger.catch
@@ -26,7 +14,7 @@ bot = Telebot()
 def index():
     """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
-    categories = Database().execute('SELECT * FROM categories WHERE id in (1, 2)',
+    categories = Database().execute('SELECT * FROM categories WHERE parent_id is Null',
                                     'fetchall')
     return render_template('index.html', categories=categories)
 
@@ -90,11 +78,11 @@ def category(category_name):
 
 
 @logger.catch
-@app.route('/product/<product_name>')
-def product(product_name):
+@app.route('/product/<product_name>/<product_id>')
+def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
     # Получение информации о товаре
-    product_info = Database().execute(f"SELECT * FROM products WHERE name like '%{product_name}%'",
+    product_info = Database().execute(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                                       'fetchall')[0]
     category_name = Database().execute(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
                                        'fetchone')['name']
@@ -214,7 +202,7 @@ def delivery():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     """Старинца админки"""
-
+    # TODO: Распределить на отдельные страницы, добавить пагинацию
     match request.method:
         case 'POST':
             form = request.form.to_dict()
@@ -244,7 +232,7 @@ def admin():
     categories = Database().execute("Select * from categories", 'fetchall')
     products = Database().execute("Select * from products", 'fetchall')
     orders = Database().execute(
-        "Select order_id, user_id, status_id, address, datetime, ose.id as status_id, ose.name "
+        "Select distinct(order_id), user_id, status_id, address, datetime, ose.id as status_id, ose.name "
         "from orders o "
         "inner join order_status_enum ose on ose.id = o.status_id ",
         'fetchall')
@@ -253,12 +241,9 @@ def admin():
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
-            "o.amount as amount, "
-            "c.id as cat_id, "
-            "c.name as cat_name "
+            "o.amount as amount "
             "from orders o "
             "LEFT JOIN products p on p.id = o.position_id "
-            "LEFT JOIN categories c on c.id = p.category_id  "
             "WHERE TRUE "
             f"and order_id = {order['order_id']};",
             "fetchall"
@@ -273,15 +258,28 @@ def admin():
                            order_statuses=order_statuses)
 
 
-# @app.route('/admin/upload', methods=['POST'])
-# def upload():
-#    if 'image' in request.files:
-#       filename = images.save(request.files['image'])
-#       logger.info(filename)
-#       return redirect(url_for('admin', _method='POST'))
-#
-#    return redirect(url_for('admin'))
+@app.errorhandler(404)
+def page_not_found(error):
+    """Страница 'страница не найдена'"""
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def error_page(error):
+    """Страница 'страница не найдена'"""
+    return render_template('500.html'), 500
+
+
+@app.route('/error_500')
+def nonexistent_page():
+    """Пример эндпоинта, которого нет"""
+    # Генерируем ошибку 404 "Страница не найдена"
+    abort(500)
+
+
+def main():
+    app.run(host='0.0.0.0', port=1111, debug=True)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1111, debug=True)
+    main()

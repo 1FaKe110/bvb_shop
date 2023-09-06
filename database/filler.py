@@ -15,7 +15,7 @@ class DbFiller(database.Database):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 parent_id TEXT DEFAULT ('Сантехника'),
                 name TEXT,
-                image_path TEXT DEFAULT ('../static/images/categories/categories-blank.png')
+                image_path TEXT DEFAULT ('')
         )''')
         self.__commit__()
         logger.debug('Creating table: dollar')
@@ -39,7 +39,7 @@ class DbFiller(database.Database):
                     category_id INTEGER NOT NULL,
                     image_id INTEGER,
                     description TEXT NOT NULL DEFAULT ('тут какое-то описание'),
-                    image_path TEXT NOT NULL DEFAULT ('../static/images/products/products-blank.png')
+                    image_path TEXT NOT NULL DEFAULT ('')
                 )
             ''')
         self.__commit__()

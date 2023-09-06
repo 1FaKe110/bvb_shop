@@ -54,41 +54,53 @@
             </div>
             {% if products %}
             <div class="card-items">
-                {% for product in products %}
-                <div id="card" class="card-{{product.id}}">
-                    <div class="image-block-mini">
-                        {% if product.image != '../static/images/products/products-blank.png' %}
-                        <img src="{{product.image_path}}" alt="product.name"/>
-                        {% else %}
-                        <span class="material-icons">inventory</span>
-                        {% endif %}
-                    </div>
-                    <div class="product-info-mini">
-                        <a class="product-name" href="{{ url_for('product', product_name=product.name) }}">{{product.name}}</a>
-                        <p class="product-description">{{ product.description }}</p>
-                    </div>
-                    <div class="product-price-block">
-                        <div class="price-block">
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Наименование</th>
+                        <th>Цена</th>
+                        <th>Добавить Удалить</th>
+                        <th>Всего</th>
+                        <th>Общая цена</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                    <tr class="card-{{product.id}}">
+                        <td class="image-block-mini">
+                            {% if product.image != '' %}
+                            <img src="{{product.image_path}}" alt="{{product.name}}"/>
+                            {% else %}
+                            <span class="material-icons">inventory</span>
+                            {% endif %}
+                        </td>
+                        <td class="product-name-cell">
+                            <a class="product-name" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">{{product.name}}</a>
+                            <p class="product-description">{{ product.description }}</p>
+                        </td>
+                        <td class="product-price-cell">
                             <p class="product-price-value">{{ product.price }} р.</p>
-                        </div>
-                        <div class="add-block">
+                        </td>
+                        <td class="product-buttons-cell">
                             <input type="button" class="add-to-card"
-                                   onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})" value="+">
-                        </div>
-                        <div class="amount-block">
-                            <p class="amount-in-cart">{{ product.in_card }}</p>
-                        </div>
-                        <div class="remove-block">
+                                   onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})"
+                                   value="+">
                             <input type="button" class="remove-from-card-button"
                                    onclick="removeFromCard({{product.id}})"
                                    value="-">
-                        </div>
-                        <div class="sum-block">
+                        </td>
+                        <td class="product-amount-cell">
+                            <p class="amount-in-cart">{{ product.in_card }}</p>
+                        </td>
+                        <td class="product-sum-cell">
                             <p class="sum-item-price">{{ product.in_card * product.price }} р.</p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
 
                 <div class="cart-total">
                     <div class="total">
@@ -122,7 +134,7 @@
                             <p>Номер телефона: </p>
                             <input class="submit-input" type="tel" id="phone" name="phone" placeholder="+79992223131"
                                    pattern="(+7|8)[0-9]{10}" autocomplete="on" enterkeyhint="next"
-                                   maxlength="12" minlength="11" required>
+                                   maxlength="12" minlength="12" required value="+7">
                         </div>
                         <div class="full_name">
                             <p>ФИО:</p>
@@ -153,7 +165,8 @@
                         <p>Сумма заказа: {{ order.sum }} </p>
                     </div>
                     <div class="submit">
-                        <input class="submit-input-confirm" type="submit" onclick="saveFormData()" value="Подтвердить заказ">
+                        <input class="submit-input-confirm" type="submit" onclick="saveFormData()"
+                               value="Подтвердить заказ">
                     </div>
                 </form>
             </div>

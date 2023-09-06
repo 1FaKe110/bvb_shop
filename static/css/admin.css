@@ -1,9 +1,27 @@
-form.addProduct div, form.addCategory div {
+.top {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+.content {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: center;
-    align-items: center;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+form.addProduct div, form.addCategory div {
+    display: flex;
+    /* margin-left: 30px; */
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: baseline;
 }
 form.addProduct div p, form.addCategory div p {
     width: 150px;
@@ -29,18 +47,34 @@ th {
     font-weight: 500;
 }
 
+.mini-table {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    align-content: space-around;
+    flex-wrap: nowrap;
+    padding: 10px;
+}
+
+td.with-border {
+    border-bottom: 1px solid #00000045;
+    margin: 10px;
+    padding: 0;
+    width: fit-content;
+}
+
 
 /* Стили для полей ввода */
 input[type='text'], input[type='number'], option, select {
     text-align: center;
     border: 0;
     font-family: inherit;
-    padding: 0;
-    height: 18px;
+    padding: 10px;
     font-size: 14px;
     font-weight: 500;
     background: none;
-    border-bottom: 1px solid #545454;
+    border-bottom: 1px solid #e1d4d4;
     border-radius: 1px;
     color: #223254;
     transition: all 0.15s ease-in-out;

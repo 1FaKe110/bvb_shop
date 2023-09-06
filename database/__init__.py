@@ -1,3 +1,4 @@
+import dataclasses
 import sqlite3
 from loguru import logger
 
@@ -24,7 +25,7 @@ class Database:
         """
         :param query: str repr of sql syntax 
         :param func: fetchall | fetchone | None
-        :return: None | Dict
+        :return: None | Dict | List
         """
         logger.debug(f"Query: [{query}] | asserted to {func}")
         self.cur.execute(query)
@@ -60,3 +61,8 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+
+@dataclasses.dataclass
+class Queries:
+    ...

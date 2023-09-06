@@ -61,11 +61,12 @@
             </div>
             {% if subcategories or products %}
             {% if subcategories %}
+            <h2>Категории</h2>
             <div class="categories">
                 {% for subcategory in subcategories %}
                 <a class="category-href" href="{{ url_for('category', category_name=subcategory.name) }}">
                     <div class="category-card">
-                        {% if subcategory.image_path == '../static/images/categories/categories-blank.png' %}
+                        {% if subcategory.image_path == '' %}
                         <div class="img">
                             <span class="material-icons">list</span>
                         </div>
@@ -80,13 +81,14 @@
                 {% endfor %}
             </div>
             {% endif %}
+            <h2>Товары</h2>
             {% if products %}
             <div class="products">
                 {% for product in products %}
-                <a class="product-href" href="{{ url_for('product', product_name=product.name) }}">
+                <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
                     {% if product.amount > 5 %}
                     <div class="product-card">
-                        {% if product.image_path == '../static/images/products/products-blank.png' %}
+                        {% if product.image_path == '' %}
                         <div class="img">
                             <span class="material-icons">qr_code_2</span>
                         </div>
@@ -110,7 +112,7 @@
                     </div>
                     {% else %}
                     <div class="product-card-almost-empty">
-                        {% if product.image_path == '../static/images/products/products-blank.png' %}
+                        {% if product.image_path == '' %}
                         <div class="img">
                             <span class="material-icons">qr_code_2</span>
                         </div>
