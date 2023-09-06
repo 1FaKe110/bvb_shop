@@ -47,12 +47,21 @@ def products():
             logger.debug(form)
 
             logger.debug('Меняем что-то в категориях')
-            pr_id = form.get('pr-id').replace('.', '')
+            pr_id = form.get('pr-id')
+
             Database().execute(
                 f"UPDATE products SET "
-                f"name='{form['ct-name']} "
-                f"brand='{form['ct-name']} "
-                f"WHERE id={pr_id};"
+                f"name='{form['pr-name']}', "
+                f"by_price={form['pr-by_price']}, "
+                f"price={form['pr-price']}, "
+                f"amount={form['pr-amount']}, "
+                f"brand='{form['pr-brand']}', "
+                f"price_dependency={form['pr-price_dependency']}, "
+                f"category_id={form['categoryParentName']}, "
+                f"image_id=Null, "
+                f"description='{form['pr-description']}', "
+                f"image_path='{form.get('categoryImagePath', '../../static/images/products/products-blank.png')}' "
+                f"WHERE id={pr_id}; "
             )
 
     dollar = Database().execute("Select * from dollar where id = 1", 'fetchone')

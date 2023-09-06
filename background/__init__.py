@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from loguru import logger
 from database import Database
 
+
 class Tasks:
 
     @staticmethod
@@ -21,13 +22,17 @@ class Tasks:
             f'UPDATE dollar SET price={usd_rate} WHERE id=1;'
         )
         products_in_dollars = Database().execute(
-            "Select id, by_price "
-            "from products "
-            "where price_dependency = 1",
+            "Select id, by_price, price_dependency "
+            "from products ",
             "fetchall"
         )
+        logger.debug('Обновляю цены товаров')
         for product in products_in_dollars:
-            price = round(product['by_price'] * 1.5 * usd_rate, 0)
+            if product['price_dependency']:
+                price = round(product['by_price'] * 1.5 * usd_rate, 0)
+            else:
+                price = round(product['by_price'] * 1.5, 0)
+
             Database().execute(
                 f'UPDATE products SET price={price} WHERE id={product["id"]};'
             )
