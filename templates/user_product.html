@@ -191,6 +191,10 @@ mainImage.addEventListener('click', function() {
     const modalImage = document.getElementById('modal-image');
     modalImage.src = this.src;
 
+    // Увеличиваем размер увеличенного изображения в 2 раза
+    modalImage.style.width = (this.width * 2) + 'px';
+    modalImage.style.height = (this.height * 2) + 'px';
+
     // Отображаем модальное окно
     modal.style.display = 'block';
 });
