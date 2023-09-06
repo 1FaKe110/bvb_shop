@@ -212,8 +212,7 @@ def admin():
                 logger.debug('Меняем что-то в категориях')
                 ct_id = form.get('ct-id').replace('.', '')
                 Database().execute(
-                    f"UPDATE categories SET name='{form['ct-name']}', "
-                    f"image_path='{'./static/images/all/' + form['сt-image_path']}' "
+                    f"UPDATE categories SET name='{form['ct-name']}' "
                     f"WHERE id={ct_id};"
                 )
 
