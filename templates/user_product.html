@@ -40,7 +40,12 @@
         <div class="product-card">
             <div class="image-block">
                 <div class="image">
-                    <img src="{{ product.image_path }}" alt="{{ product.name }}">
+                    <img class="main-image" src="{{ product.image_path }}" alt="{{ product.name }}">
+                    <!-- Модальное окно для увеличенного изображения -->
+                    <div id="modal" class="modal">
+                        <span class="close">&times;</span>
+                        <img class="modal-content" id="modal-image" src="">
+                    </div>
                 </div>
                 <div class="product-name">
                     <h5 class="name">Наименование: {{ product.name }}</h5>
@@ -176,6 +181,32 @@
             console.log(document.cookie);
         }
     }
+// Получаем ссылки на основное изображение и модальное окно
+const mainImage = document.querySelector('.main-image');
+const modal = document.getElementById('modal');
+
+// Назначаем обработчик клика на основное изображение
+mainImage.addEventListener('click', function() {
+    // Получаем ссылку на увеличенное изображение
+    const modalImage = document.getElementById('modal-image');
+    modalImage.src = this.src;
+
+    // Отображаем модальное окно
+    modal.style.display = 'block';
+});
+
+// Назначаем обработчик клика на кнопку закрытия модального окна
+modal.querySelector('.close').addEventListener('click', function() {
+    // Скрываем модальное окно
+    modal.style.display = 'none';
+});
+
+// Назначаем обработчик клика на область вне увеличенного изображения, чтобы закрыть модальное окно при клике вне него
+window.addEventListener('click', function(event) {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
 
 </script>
 </body>

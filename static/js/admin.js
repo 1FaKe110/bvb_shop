@@ -9,19 +9,19 @@ function searchTable(tableId, searchInputId) {
         let rowData = rows[i].getElementsByTagName("td");
         let foundMatch = false;
 
-        for (let j = 0; j < 1; j++) {
+        for (let j = 0; j < rowData.length; j++) {
             console.log('rowData[j] = ' + rowData[j]);
-            input_tag = rowData[j].getElementsByClassName('id_column');
-            console.log(input_tag);
-            if (input_tag) {
-                var cellData = input_tag[0].value;
+            if (!rowData[j]) {
+                continue;
             }
-//            } else {
-//                try {
-//                    var cellData = rowData[j].textContent || rowData[j].innerText || rowData[j].value;
-//                } catch (TypeError) {
-//                }
-//            }
+
+            input_tag = rowData[j].getElementsByClassName('name_column');
+            console.log(input_tag);
+            if (input_tag.length < 1) {
+                continue;
+            }
+            var cellData = input_tag[0].value;
+
 
             console.log('cellData = ' + cellData)
             if (cellData.toUpperCase().indexOf(filter) > -1) {
