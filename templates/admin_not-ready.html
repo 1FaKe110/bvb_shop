@@ -13,16 +13,19 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+                <a class="nav-a" href="{{url_for('categories')}}">Категории</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+                <a class="nav-a" href="{{url_for('products')}}">Товары</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+                <a class="nav-a" href="{{url_for('orders')}}">Заказы</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+                <a class="nav-a" href="{{url_for('users')}}">Пользователи</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('add_items')}}">Добавление новых данных</a>
             </li>
         </ul>
     </nav>
@@ -30,7 +33,11 @@
 
 
 <main>
-    <h5 class="aljbgl">Страница не готова</h5>
+    <h1>Страница не готова</h1>
+    <p>К сожалению Вы зашли на страницу, которая еще не готова.</p>
+    <p>Просим вернуться на Страница категорий</p>
+    <p><span class="highlight">Спасибо :)</span>.</p>
+    <a class="highlight" href="{{url_for('categories')}}">Страница категорий</a>
 </main>
 
 <footer>

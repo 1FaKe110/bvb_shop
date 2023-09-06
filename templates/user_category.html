@@ -110,7 +110,7 @@
                         </div>
                         {% endif %}
                     </div>
-                    {% else %}
+                    {% elif 0 < product.amount < 5 %}
                     <div class="product-card-almost-empty">
                         {% if product.image_path == '' %}
                         <div class="img">
@@ -122,7 +122,7 @@
                         </div>
                         {% endif %}
                         <div class="product-name">
-                            <p class="">{{ product.id }}. {{ product.name }}</p>
+                            <p class="">{{ product.name }}</p>
                         </div>
                         {% if product.in_card %}
                         <div class="product-price-added">

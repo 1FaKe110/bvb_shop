@@ -16,7 +16,7 @@ def index():
     # Получение списка категорий верхнего уровня
     categories = Database().execute('SELECT * FROM categories WHERE parent_id is Null',
                                     'fetchall')
-    return render_template('index.html', categories=categories)
+    return render_template('user_index.html', categories=categories)
 
 
 @logger.catch
@@ -55,7 +55,7 @@ def category(category_name):
         else:
             pass
 
-        return render_template('category.html',
+        return render_template('user_category.html',
                                prev_category=prev_category,
                                category_name=category_name,
                                category=category,
@@ -69,7 +69,7 @@ def category(category_name):
     products = Database().execute(f"SELECT * FROM products WHERE category_id = '{cat_id['parent_id']}'",
                                   'fetchall')  # Получение товаров в выбранной категории
 
-    return render_template('category.html',
+    return render_template('user_category.html',
                            prev_category=prev_category,
                            category_name=category_name,
                            category=category,
@@ -86,7 +86,7 @@ def product(product_name, product_id):
                                       'fetchall')[0]
     category_name = Database().execute(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
                                        'fetchone')['name']
-    return render_template('product.html',
+    return render_template('user_product.html',
                            category_name=category_name,
                            product=product_info)
 
@@ -100,7 +100,7 @@ def cart():
     logger.debug(f"{cookies = }")
 
     if cookies is None or not len(cookies):
-        return render_template('cart.html', products=None, order=None, clear_cookie=None)
+        return render_template('user_cart.html', products=None, order=None, clear_cookie=None)
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
@@ -117,7 +117,7 @@ def cart():
 
     match request.method:
         case 'GET':
-            return render_template('cart.html', products=products, order=order, clear_cookie=None)
+            return render_template('user_cart.html', products=products, order=order, clear_cookie=None)
 
         case 'POST':
             # получение данных с формы
@@ -181,21 +181,21 @@ def cart():
 @app.route('/cart/c', methods=['GET', 'POST'])
 def cart_clear():
     """Метод для очистки cookie фалов"""
-    return render_template('cart.html', products=None, order=None, clear_cookie=True)
+    return render_template('user_cart.html', products=None, order=None, clear_cookie=True)
 
 
 @logger.catch
 @app.route('/about')
 def about():
     """Старинца с информацией об организации"""
-    return render_template('about_us.html')
+    return render_template('user_about_us.html')
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    return render_template('delivery.html')
+    return render_template('user_delivery.html')
 
 
 @logger.catch
@@ -261,13 +261,13 @@ def admin():
 @app.errorhandler(404)
 def page_not_found(error):
     """Страница 'страница не найдена'"""
-    return render_template('404.html'), 404
+    return render_template('user_404.html'), 404
 
 
 @app.errorhandler(500)
 def error_page(error):
     """Страница 'страница не найдена'"""
-    return render_template('500.html'), 500
+    return render_template('user_500.html'), 500
 
 
 @app.route('/error_500')

@@ -94,7 +94,8 @@ def orders():
 @logger.catch
 @app.route('/users', methods=['GET', 'POST'])
 def users():
-    return render_template('admin_users.html')
+    return render_template('admin_not-ready.html')
+    # return render_template('admin_users.html')
 
 
 @logger.catch
@@ -120,7 +121,7 @@ def add_items():
                     in_dollar = False
                     sell_price = round(by_price * 1.5, 0)
                 amount = form.get('amount', 0)
-                image = form.get('productImagePath', 'Null')
+                image = form.get('productImagePath', '../../static/images/products/products-blank.png')
 
                 Database().execute(
                     "INSERT INTO products "
@@ -154,6 +155,25 @@ def main():
     finally:
         logger.debug("scheduler: shutdown")
         scheduler.shutdown()
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """Страница 'страница не найдена'"""
+    return render_template('admin_404.html'), 404
+
+
+@app.errorhandler(500)
+def error_page(error):
+    """Страница 'страница не найдена'"""
+    return render_template('user_500.html'), 500
+
+
+@app.route('/error_500')
+def nonexistent_page():
+    """Пример эндпоинта, которого нет"""
+    # Генерируем ошибку 404 "Страница не найдена"
+    abort(500)
 
 
 if __name__ == '__main__':
