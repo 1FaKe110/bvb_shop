@@ -87,6 +87,7 @@ class DbFiller(database.Database):
                     user_id INTEGER NOT NULL,
                     status_id INTEGER NOT NULL,
                     position_id INTEGER NOT NULL,
+                    position_price INTEGER NOT NULL,
                     amount INTEGER NOT NULL,
                     address TEXT NOT NULL,
                     datetime DATETIME NOT NULL

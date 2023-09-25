@@ -15,6 +15,15 @@
     align-items: baseline;
 }
 
+main {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+}
+
 form.addProduct div, form.addCategory div {
     display: flex;
     /* margin-left: 30px; */
@@ -31,6 +40,8 @@ td {
     # border-right: 1px solid black;
     padding-left: 10px;
     padding-right: 10px;
+    align-content: center;
+    width: fit-content;
 }
 
 th {
@@ -47,15 +58,6 @@ th {
     font-weight: 500;
 }
 
-.mini-table {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    align-content: space-around;
-    flex-wrap: nowrap;
-    padding: 10px;
-}
 
 td.with-border {
     border-bottom: 1px solid #00000045;

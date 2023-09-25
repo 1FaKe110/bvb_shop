@@ -2,10 +2,12 @@ import dataclasses
 import sqlite3
 from loguru import logger
 
+cwd = '/home/ifake/BVB_SHOP_SITE'
+
 
 class Database:
     def __init__(self):
-        self.__conn = sqlite3.connect('database.db', check_same_thread=False)
+        self.__conn = sqlite3.connect(f'{cwd}/database.db', check_same_thread=False)
         self.__conn.row_factory = dict_factory
         self.cur = self.__conn.cursor()
 
@@ -38,13 +40,13 @@ class Database:
             case 'fetchall':
                 reply = self.cur.fetchall()
                 if reply is not None:
-                    [logger.debug(row) for row in reply]
+                    [logger.trace(row) for row in reply]
                 else:
                     logger.debug(reply)
             case 'fetchone':
                 reply = self.cur.fetchone()
                 if reply is not None:
-                    [logger.debug(row) for row in reply]
+                    [logger.trace(row) for row in reply]
                 else:
                     logger.debug(reply)
             case _:

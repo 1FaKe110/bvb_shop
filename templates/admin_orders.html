@@ -52,20 +52,21 @@
                     </tr>
                 </table>
             </th>
+            <th>Сумма заказа</th>
             <th>Адрес доставки</th>
             <th>Дата доставки</th>
             <th>Статус</th>
         </tr>
         </thead>
         {% for order in orders %}
-        <form method="post" id="order_{{order.order_id}}">
+        <form method="post" onblur="submitForm({{order.order_id}})" id="order_{{order.order_id}}">
             <tr>
                 <td class="with-border">
-                    <input class="id_column" type="text" id="{{order.order_id}}" name="order_id{{order.order_id}}"
+                    <input class="id_column" type="text" id="Id" name="id"
                            value="{{order.order_id}}" style="width: 40px" readonly>
                 </td>
                 <td class="with-border">
-                    <input type="text" id="{{order.user_id}}" name="order_id{{order.user_id}}" value="{{order.user_id}}"
+                    <input type="text" id="{{order.user_id}}" name="orderId" value="{{order.user_id}}"
                            readonly style="width: 40px">
                 </td>
                 <td class="with-border">
@@ -73,15 +74,15 @@
                         {% for position in order.positions%}
                         <tr>
                             <td>
-                                <input type="number" name="position_id" id="{{position.id}}"
+                                <input type="number" name="position_id" id="positionId"
                                        value="{{position.id}}" style="width: 30px;">
                             </td>
                             <td>
-                                <input type="text" name="position_name" id="{{position.name}}"
+                                <input type="text" name="position_name" id="positionName"
                                        value="{{position.name}}" readonly>
                             </td>
                             <td>
-                                <input type="number" name="position_amount" id="{{position.amount}}"
+                                <input type="number" name="position_amount" id="positionAmount"
                                        value="{{position.amount}}" style="width: 30px;">
                             </td>
                         </tr>
@@ -89,11 +90,15 @@
                     </table>
                 </td>
                 <td class="with-border">
-                    <input type="text" id="{{order.address}}" name="{{order.address}}" value="{{order.address}}"
+                    <input type="text" id="sum_{{order.order_id}}" name="orderSum" value="{{order.sum}}"
+                           readonly style="width: fit-content;">
+                </td>
+                <td class="with-border">
+                    <input type="text" id="{{order.address}}" name="orderAddress" value="{{order.address}}"
                            required>
                 </td>
                 <td class="with-border">
-                    <input type="date" id="order_datetime{{order.order_id}}" name="{{order.datetime}}"
+                    <input type="date" id="order_datetime" name="orderDatetime"
                            value="{{order.datetime}}" required>
                 </td>
                 <td class="with-border">
@@ -109,7 +114,7 @@
                 </td>
                 <td class="with-border">
                     <input type="submit" value="submit">
-                    <input type="button" value="delete" onclick="remove({{order.order_id}})">
+                    <input type="button" value="delete" onclick="remove_item('orders', {{order.order_id}})">
                 </td>
             </tr>
         </form>

@@ -81,12 +81,12 @@
                 {% endfor %}
             </div>
             {% endif %}
-            <h2>Товары</h2>
             {% if products %}
+            <h2>Товары</h2>
             <div class="products">
                 {% for product in products %}
                 <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
-                    {% if product.amount > 5 %}
+                    {% if product.amount >= 5 %}
                     <div class="product-card">
                         {% if product.image_path == '' %}
                         <div class="img">

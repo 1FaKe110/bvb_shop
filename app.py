@@ -167,13 +167,22 @@ def cart():
                 logger.info(f'  id |   amount | name |')
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
 
-                Database().execute(
-                    'INSERT into orders (order_id, user_id, status_id, position_id, amount, address, datetime) values'
-                    f"({next_order_id}, {user_id}, 001, {row['id']}, {row['in_card']}, '{order_place}', '{order_time}')"
+                _product = Database().execute(
+                    f"select amount, price from products where id={row['id']}",
+                    'fetchone'
                 )
 
-            bot.__send_order__(next_order_id)
+                Database().execute(
+                    'INSERT into orders '
+                    '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime) values'
+                    f"({next_order_id}, {user_id}, 001, {row['id']}, {_product['price']}, {row['in_card']}, '{order_place}', '{order_time}')"
+                )
 
+                new_amount = _product['amount'] - row['in_card']
+                Database().execute(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")
+                logger.debug(f"Обновил остаток товара с id = {row['id']} в бд: ({_product['amount']} -> {new_amount})")
+
+            bot.__send_order__(next_order_id)
             return redirect(url_for('cart_clear'))
 
 
@@ -196,65 +205,6 @@ def about():
 def delivery():
     """Старинца с информацией о доставке"""
     return render_template('user_delivery.html')
-
-
-@logger.catch
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    """Старинца админки"""
-    # TODO: Распределить на отдельные страницы, добавить пагинацию
-    match request.method:
-        case 'POST':
-            form = request.form.to_dict()
-            logger.debug(form)
-
-            if 'ct-name' in form:
-                logger.debug('Меняем что-то в категориях')
-                ct_id = form.get('ct-id').replace('.', '')
-                Database().execute(
-                    f"UPDATE categories SET name='{form['ct-name']}' "
-                    f"WHERE id={ct_id};"
-                )
-
-            if 'pr-name' in form:
-                logger.debug('Меняем что-то в продуктах')
-                ...
-
-            if 'new-ct-categoryName' in form:
-                logger.debug('Добавляем новую категорию')
-                ...
-
-            if 'new-pr-productName' in form:
-                logger.debug('Добавляем новый продукт')
-                ...
-
-    categories = Database().execute("Select * from categories", 'fetchall')
-    products = Database().execute("Select * from products", 'fetchall')
-    orders = Database().execute(
-        "Select distinct(order_id), user_id, status_id, address, datetime, ose.id as status_id, ose.name "
-        "from orders o "
-        "inner join order_status_enum ose on ose.id = o.status_id ",
-        'fetchall')
-    for order in orders:
-        order['positions'] = Database().execute(
-            "select p.id as id, "
-            "p.name as name, "
-            "p.price as price, "
-            "o.amount as amount "
-            "from orders o "
-            "LEFT JOIN products p on p.id = o.position_id "
-            "WHERE TRUE "
-            f"and order_id = {order['order_id']};",
-            "fetchall"
-        )
-
-    order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
-
-    return render_template('admin.html',
-                           categories=categories,
-                           products=products,
-                           orders=orders,
-                           order_statuses=order_statuses)
 
 
 @app.errorhandler(404)

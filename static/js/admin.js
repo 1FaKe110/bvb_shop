@@ -1,4 +1,5 @@
 function searchTable(tableId, searchInputId) {
+
     console.log(tableId)
     let table = document.getElementById(tableId);
     let searchInput = document.getElementById(searchInputId);
@@ -33,4 +34,15 @@ function searchTable(tableId, searchInputId) {
 
         rows[i].style.display = foundMatch ? "" : "none";
     }
+}
+
+function remove_item(itemType, itemId) {
+    const path = '/' + itemType + '/delete/' + itemId;
+    console.log('Deleting item: ' + path);
+    console.log(fetch(path));
+    location.reload();
+}
+
+function submitForm(itemId) {
+    document.getElementById('order_' + orderId).submit();
 }
