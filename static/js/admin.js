@@ -36,14 +36,20 @@ function searchTable(tableId, searchInputId) {
     }
 }
 
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+
 function remove_item(itemType, itemId) {
     if (!confirm('Правда удаляем?')) {
-        location.reload();
+        // location.reload();
         return
     } else {
         const path = '/' + itemType + '/' + itemId + '/delete';
         console.log('Deleting item: ' + path);
         console.log(fetch(path, {method: "DELETE"}));
+        delay(1000).then(() => console.log('waited 1 sec'))
         location.reload();
     }
 
@@ -57,11 +63,12 @@ function remove_subItem(itemType, itemId, subItemId) {
         const path = '/' + itemType + '/' + itemId + '/delete/' + subItemId;
         console.log('Deleting item: ' + path);
         console.log(fetch(path, {method: "DELETE"}));
+        delay(1000).then(() => console.log('waited 1 sec'))
         location.reload();
     }
 }
 
-function submitForm(itemId) {
+function submitForm(orderId) {
     document.getElementById('order_' + orderId).submit();
 }
 
@@ -83,9 +90,6 @@ async function postData(url = "", data = {}) {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
-postData("https://example.com/answer", { answer: 42 }).then((data) => {
-  console.log(data); // JSON data parsed by `data.json()` call
-});
 
 function submitOrderForm(orderId) {
     let order_info = document.getElementsByClassName('order_info')[0].querySelectorAll('input');
@@ -97,10 +101,15 @@ function submitOrderForm(orderId) {
         'datetime': order_info[4].value
     };
 
-    let status = {'id': document.querySelector('#orderStatus').value}
+    let status_data = {
+        'id': document.querySelector('#orderStatus').value
+    }
 
     let positions = document.getElementsByClassName('position');
     let positions_data = [];
+    let tags;
+    let row_map;
+
     for (let i = 1; i < positions.length; i++) {
         tags = positions[i].querySelectorAll('input');
         row_map = {}
@@ -112,5 +121,10 @@ function submitOrderForm(orderId) {
     }
     console.log(positions_data);
 
-    postData('/order/' + orderId + '/update')
+    let data = {}
+    data['user'] = user_data
+    data['positions'] = positions_data
+    data['order'] = status_data
+
+    postData('/order/' + orderId + '/update', data=data)
 }

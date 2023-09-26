@@ -91,19 +91,19 @@
                     {% for position in order.positions %}
                     <div class="position">
                         <div class="idColumn">
-                            <input type="text" name="PositionId" id="{{position.id}}"
+                            <input type="text" name="Id" id="{{position.id}}"
                                    value="{{position.id}}" readonly>
                         </div>
                         <div class="nameColumn">
-                            <input type="text" name="PositionName" id="name{{position.id}}"
+                            <input type="text" name="Name" id="name{{position.id}}"
                                    value="{{position.name}}" readonly>
                         </div>
                         <div class="priceColumn">
-                            <input type="number" name="PositionPrice" id="price{{position.id}}"
+                            <input type="number" name="Price" id="price{{position.id}}"
                                    value="{{position.price}}" readonly>
                         </div>
                         <div class="amountColumn">
-                            <input type="number" name="PositionAmount" id="amount{{position.id}}"
+                            <input type="number" name="Amount" id="amount{{position.id}}"
                                    value="{{position.amount}}">
                         </div>
                         <div class="removeColumn">
@@ -134,7 +134,7 @@
                 </div>
 
                 <div class="formButtons">
-                    <input type='button' value="Подтвердить изменения" onclick="submitOrderForm()">
+                    <input type='button' value="Подтвердить изменения" onclick="submitOrderForm({{order.order_id}})">
                 </div>
             </div>
         </div>

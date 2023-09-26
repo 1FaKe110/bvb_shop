@@ -14,7 +14,7 @@ bot = Telebot()
 def index():
     """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
-    categories = Database().execute('SELECT * FROM categories WHERE parent_id is Null',
+    categories = Database().exec('SELECT * FROM categories WHERE parent_id is Null',
                                     'fetchall')
     return render_template('user_index.html', categories=categories)
 
@@ -24,10 +24,10 @@ def index():
 def category(category_name):
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
-    cat_id = Database().execute(
+    cat_id = Database().exec(
         f"SELECT * FROM categories WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}')",
         'fetchone')
-    prev_category = Database().execute(
+    prev_category = Database().exec(
         f"SELECT name FROM categories c where id = (SELECT parent_id FROM categories WHERE name = '{category_name}')",
         'fetchone')
 
@@ -41,7 +41,7 @@ def category(category_name):
         subcategories = None
         cookies = request.cookies.get('formData', None)
         cart_data = json.loads(cookies)
-        products = Database().execute(f"SELECT * FROM products WHERE category_id in "
+        products = Database().exec(f"SELECT * FROM products WHERE category_id in "
                                       f"(SELECT id FROM categories WHERE name='{category_name}')",
                                       'fetchall')  # Получение товаров в выбранной категории
         if len(cart_data):
@@ -63,10 +63,10 @@ def category(category_name):
                                products=products)
 
     logger.debug(f'У {category_name} есть подкатегории')
-    subcategories = Database().execute(f"SELECT * FROM categories WHERE parent_id = '{cat_id['parent_id']}'",
+    subcategories = Database().exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id['parent_id']}'",
                                        'fetchall')  # Получение дочерних категорий
 
-    products = Database().execute(f"SELECT * FROM products WHERE category_id = '{cat_id['parent_id']}'",
+    products = Database().exec(f"SELECT * FROM products WHERE category_id = '{cat_id['parent_id']}'",
                                   'fetchall')  # Получение товаров в выбранной категории
 
     return render_template('user_category.html',
@@ -82,9 +82,9 @@ def category(category_name):
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
     # Получение информации о товаре
-    product_info = Database().execute(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
+    product_info = Database().exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                                       'fetchall')[0]
-    category_name = Database().execute(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
+    category_name = Database().exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
                                        'fetchone')['name']
     return render_template('user_product.html',
                            category_name=category_name,
@@ -104,7 +104,7 @@ def cart():
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
-    products = Database().execute(f"SELECT * FROM products WHERE id in ({','.join(list(cart_data.keys()))})",
+    products = Database().exec(f"SELECT * FROM products WHERE id in ({','.join(list(cart_data.keys()))})",
                                   'fetchall')
 
     logger.info(f'request type: [{request.method}] ')
@@ -127,26 +127,26 @@ def cart():
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
-            user_id = Database().execute(
+            user_id = Database().exec(
                 f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                 'fetchone'
             )
 
             if user_id is None:
                 logger.debug("Пользователя нет. Добавляю нового пользователя")
-                Database().execute(
+                Database().exec(
                     f"INSERT into users (username, phone) values ('{full_name}', '{phone}')"
                 )
                 sleep(0.3)
                 logger.debug('Пользователь добавлен')
-                user_id = Database().execute(
+                user_id = Database().exec(
                     f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                     'fetchone'
                 )
 
             logger.debug(f"Пользователь {phone} c {user_id}")
             user_id = user_id['id']
-            last_order_id = Database().execute(
+            last_order_id = Database().exec(
                 "Select max(order_id) as last_num from orders",
                 'fetchone')['last_num']
 
@@ -167,19 +167,19 @@ def cart():
                 logger.info(f'  id |   amount | name |')
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
 
-                _product = Database().execute(
+                _product = Database().exec(
                     f"select amount, price from products where id={row['id']}",
                     'fetchone'
                 )
 
-                Database().execute(
+                Database().exec(
                     'INSERT into orders '
                     '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime) values'
                     f"({next_order_id}, {user_id}, 001, {row['id']}, {_product['price']}, {row['in_card']}, '{order_place}', '{order_time}')"
                 )
 
                 new_amount = _product['amount'] - row['in_card']
-                Database().execute(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")
+                Database().exec(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")
                 logger.debug(f"Обновил остаток товара с id = {row['id']} в бд: ({_product['amount']} -> {new_amount})")
 
             bot.__send_order__(next_order_id)

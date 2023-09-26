@@ -1,8 +1,16 @@
 import dataclasses
 import sqlite3
+import platform
+
 from loguru import logger
 
-cwd = '/home/ifake/BVB_SHOP_SITE'
+match platform.system():
+    case 'Ubuntu':
+        cwd = '/home/ifake/BVB_SHOP_SITE'
+    case 'Windows':
+        cwd = r'C:\Users\iFaKe\Desktop\BVB_SHOP_SITE'
+    case _:
+        raise SystemExit(f"Unsupported os: {platform.system()}")
 
 
 class Database:
@@ -23,7 +31,7 @@ class Database:
         return
 
     @logger.catch
-    def execute(self, query: str, func: str | None = None):
+    def exec(self, query: str, func: str | None = None):
         """
         :param query: str repr of sql syntax 
         :param func: fetchall | fetchone | None

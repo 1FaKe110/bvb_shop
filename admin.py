@@ -2,13 +2,16 @@ import json
 
 import flask
 from flask import Flask, render_template, request, redirect, url_for, abort
+from flask_cors import CORS
 from database import Database
 from loguru import logger
 from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
 
 Tasks.update_dollar_course()
+
 app = Flask(__name__)
+CORS(app)
 
 
 @logger.catch
@@ -29,21 +32,21 @@ def categories():
             ct_id = form.get('ct-id').replace('.', '')
             ct_name = form.get('ct-name')
             ct_image_path = form.get('categoryImagePath', 'Null')
-            Database().execute(
+            Database().exec(
                 f"UPDATE categories SET name='{ct_name}', image_path='{ct_image_path}' WHERE id={ct_id};"
             )
 
-    categories_list = Database().execute("Select * from categories", 'fetchall')
+    categories_list = Database().exec("Select * from categories", 'fetchall')
     return render_template('admin_categories.html',
                            categories=categories_list)
 
 
-@app.route('/categories/delete/<category_id>')
-def product_delete(category_id):
+@app.route('/categories/<category_id>/delete', methods=['DELETE'])
+def categories_delete(category_id):
     """Delete product from database"""
     logger.debug(f"Removing categories with id: {category_id}")
     try:
-        Database().execute(f"DELETE FROM categories WHERE id={category_id};")
+        Database().exec(f"DELETE FROM categories WHERE id={category_id};")
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
@@ -61,7 +64,7 @@ def products():
             logger.debug('Меняем что-то в продуктах')
             pr_id = form.get('pr-id')
 
-            Database().execute(
+            Database().exec(
                 f"UPDATE products SET "
                 f"name='{form['pr-name']}', "
                 f"by_price={form['pr-by_price']}, "
@@ -76,21 +79,21 @@ def products():
                 f"WHERE id={pr_id}; "
             )
 
-    dollar = Database().execute("Select * from dollar where id = 1", 'fetchone')
-    products_list = Database().execute("Select * from products", 'fetchall')
-    categories_list = Database().execute("Select * from categories", 'fetchall')
+    dollar = Database().exec("Select * from dollar where id = 1", 'fetchone')
+    products_list = Database().exec("Select * from products", 'fetchall')
+    categories_list = Database().exec("Select * from categories", 'fetchall')
     return render_template('admin_products.html',
                            categories=categories_list,
                            products=products_list,
                            dollar=dollar)
 
 
-@app.route('/products/delete/<product_id>')
-def category_delete(product_id):
+@app.route('/products/<product_id>/delete', methods=['DELETE'])
+def products_delete(product_id):
     """Delete product from database"""
     logger.debug(f"Removing product with id: {product_id}")
     try:
-        Database().execute(f"DELETE FROM products WHERE id={product_id};")
+        Database().exec(f"DELETE FROM products WHERE id={product_id};")
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
@@ -106,14 +109,14 @@ def orders():
             logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    orders_list = Database().execute(
+    orders_list = Database().exec(
         "Select distinct(order_id), user_id, status_id, address, datetime, ose.id as status_id, ose.name "
         "from orders o "
         "inner join order_status_enum ose on ose.id = o.status_id ",
         'fetchall')
     for _order in orders_list:
         _order['sum'] = 0
-        _order['positions'] = Database().execute(
+        _order['positions'] = Database().exec(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
@@ -127,7 +130,7 @@ def orders():
         for position in _order['positions']:
             _order['sum'] += position['price'] * position['amount']
 
-    order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
+    order_statuses = Database().exec("Select * from order_status_enum", 'fetchall')
     return render_template('admin_orders.html',
                            orders=orders_list,
                            order_statuses=order_statuses)
@@ -142,7 +145,7 @@ def order(order_id):
             logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    orders_list = Database().execute(
+    orders_list = Database().exec(
         "Select distinct(order_id), status_id, address, datetime, ose.id as status_id, ose.name as status_name, u.username, u.phone, u.email "
         "from orders o "
         "inner join order_status_enum ose on ose.id = o.status_id "
@@ -155,7 +158,7 @@ def order(order_id):
 
     for _order in orders_list:
         _order['sum'] = 0
-        _order['positions'] = Database().execute(
+        _order['positions'] = Database().exec(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
@@ -170,7 +173,7 @@ def order(order_id):
             _order['sum'] += position['price'] * position['amount']
 
     logger.debug(json.dumps(orders_list, indent=2, ensure_ascii=False))
-    order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
+    order_statuses = Database().exec("Select * from order_status_enum", 'fetchall')
     return render_template('admin_order_detailed.html',
                            order=orders_list[0],
                            order_statuses=order_statuses)
@@ -182,14 +185,14 @@ def order_delete(order_id):
     logger.debug(f"Removing order with id: {order_id}")
 
     try:
-        Database().execute(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
-        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
+        Database().exec(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
+        item_list = Database().exec(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
                                        "from orders o "
                                        "inner join products p on p.id = o.position_id "
                                        f"where order_id={order_id};")
         for item in item_list:
             total_price = item['oam'] + item['pam']
-            Database().execute(f"UPDATE products SET amount={total_price} WHERE id={item['opid']};")
+            Database().exec(f"UPDATE products SET amount={total_price} WHERE id={item['opid']};")
 
         logger.debug("вернул товары из удаленного заказа на полки")
         return flask.Response(status=200)
@@ -206,13 +209,13 @@ def order_update(order_id):
     data = request.json
     logger.debug(json.dumps(data, indent=2, ensure_ascii=False))
 
-    Database().execute()
-
+    
     try:
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
         return flask.Response(status=500)
+
 
 
 @logger.catch
@@ -221,15 +224,15 @@ def order_delete_item(order_id, item_id):
     """Delete order from database"""
     logger.debug(f"Removing item #{item_id} from order_id #{order_id}")
     try:
-        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
+        item_list = Database().exec(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
                                        "from orders o "
                                        "inner join products p on p.id = o.position_id "
                                        f"where o.order_id={order_id} and o.position_id={item_id};",
                                        'fetchall')
-        Database().execute(f"DELETE FROM orders WHERE order_id={order_id} and position_id={item_id};")
+        Database().exec(f"DELETE FROM orders WHERE order_id={order_id} and position_id={item_id};")
         for item in item_list:
             total_amount = item['oam'] + item['pam']
-            Database().execute(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
+            Database().exec(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
         logger.debug(f"вернул товары, от которых отказались, на полку из заказа {order_id}")
         return flask.Response(status=200)
     except Exception as ex_:
@@ -249,7 +252,7 @@ def users_delete(users_id):
     """Delete order from database"""
     logger.debug(f"Removing user with id: {users_id}")
     try:
-        Database().execute(f"DELETE FROM users WHERE order_id={users_id};")
+        Database().exec(f"DELETE FROM users WHERE order_id={users_id};")
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
@@ -259,7 +262,7 @@ def users_delete(users_id):
 @logger.catch
 @app.route('/add_items', methods=['GET', 'POST'])
 def add_items():
-    dollar = Database().execute("Select * from dollar where id = 1", 'fetchone')
+    dollar = Database().exec("Select * from dollar where id = 1", 'fetchone')
     match request.method:
         case 'POST':
             form = request.form.to_dict()
@@ -281,7 +284,7 @@ def add_items():
                 amount = form.get('productAmount', 0)
                 image = form.get('productImagePath', '../../static/images/products/products-blank.png')
 
-                Database().execute(
+                Database().exec(
                     "INSERT INTO products "
                     "(name, by_price, price, amount, brand, price_dependency, category_id, "
                     "description, image_path) "
@@ -294,10 +297,10 @@ def add_items():
                 parent_id = form['categoryParentId']
                 name = form['categoryName']
                 image = form.get('productImagePath', '')
-                Database().execute("INSERT INTO categories (parent_id, name, image_path) "
+                Database().exec("INSERT INTO categories (parent_id, name, image_path) "
                                    f"VALUES({parent_id}, '{name}', '{image}');")
 
-    categories_list = Database().execute("Select * from categories", 'fetchall')
+    categories_list = Database().exec("Select * from categories", 'fetchall')
     return render_template('admin_add_items.html',
                            categories=categories_list,
                            dollar=dollar)
