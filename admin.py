@@ -204,6 +204,7 @@ def order_update(order_id):
     logger.debug(f"updating order with id: {order_id}")
 
     data = request.json
+    logger.debug(json.dumps(data, indent=2, ensure_ascii=False))
 
     Database().execute()
 
