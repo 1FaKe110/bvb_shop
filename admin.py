@@ -214,6 +214,7 @@ def order_update(order_id):
         return flask.Response(status=500)
 
 
+
 @logger.catch
 @app.route('/order/<order_id>/delete/<item_id>', methods=['DELETE'])
 def order_delete_item(order_id, item_id):
