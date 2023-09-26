@@ -116,9 +116,9 @@ def orders():
         "from orders o "
         "inner join order_status_enum ose on ose.id = o.status_id ",
         'fetchall')
-    for order in orders_list:
-        order['sum'] = 0
-        order['positions'] = Database().execute(
+    for _order in orders_list:
+        _order['sum'] = 0
+        _order['positions'] = Database().execute(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
@@ -126,11 +126,11 @@ def orders():
             "from orders o "
             "LEFT JOIN products p on p.id = o.position_id "
             "WHERE TRUE "
-            f"and order_id = {order['order_id']};",
+            f"and order_id = {_order['order_id']};",
             "fetchall"
         )
-        for position in order['positions']:
-            order['sum'] += position['price'] * position['amount']
+        for position in _order['positions']:
+            _order['sum'] += position['price'] * position['amount']
 
     order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
     return render_template('admin_orders.html',
@@ -138,12 +138,110 @@ def orders():
                            order_statuses=order_statuses)
 
 
-@app.route('/orders/delete/<order_id>')
+@logger.catch
+@app.route('/order/<int:order_id>', methods=['GET', 'POST'])
+def order(order_id):
+    match request.method:
+        case 'POST':
+            form = request.form.to_dict()
+            logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
+            logger.debug('Меняем что-то в заказах')
+
+    orders_list = Database().execute(
+        "Select distinct(order_id), status_id, address, datetime, ose.id as status_id, ose.name as status_name, u.username, u.phone, u.email "
+        "from orders o "
+        "inner join order_status_enum ose on ose.id = o.status_id "
+        "inner join users u on o.user_id = u.id "
+        f"where order_id = {order_id}",
+        'fetchall')
+
+    if not len(orders_list):
+        return redirect(url_for('orders'))
+
+    for _order in orders_list:
+        _order['sum'] = 0
+        _order['positions'] = Database().execute(
+            "select p.id as id, "
+            "p.name as name, "
+            "p.price as price, "
+            "o.amount as amount "
+            "from orders o "
+            "LEFT JOIN products p on p.id = o.position_id "
+            "WHERE TRUE "
+            f"and order_id = {order_id};",
+            "fetchall"
+        )
+        for position in _order['positions']:
+            _order['sum'] += position['price'] * position['amount']
+
+    logger.debug(json.dumps(orders_list, indent=2, ensure_ascii=False))
+    order_statuses = Database().execute("Select * from order_status_enum", 'fetchall')
+    return render_template('admin_order_detailed.html',
+                           order=orders_list[0],
+                           order_statuses=order_statuses)
+
+
+@app.route('/order/<order_id>/delete', methods=['DELETE'])
 def order_delete(order_id):
     """Delete order from database"""
-    logger.debug(f"Removing categories with id: {order_id}")
+    logger.debug(f"Removing order with id: {order_id}")
+
     try:
-        Database().execute(f"DELETE FROM orders WHERE order_id={order_id};")
+        Database().execute(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
+        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
+                                       "from orders o "
+                                       "inner join products p on p.id = o.position_id "
+                                       f"where order_id={order_id};")
+        for item in item_list:
+            total_price = item['oam'] + item['pam']
+            Database().execute(f"UPDATE products SET amount={total_price} WHERE id={item['opid']};")
+
+        logger.debug("вернул товары из удаленного заказа на полки")
+        return flask.Response(status=200)
+    except Exception as ex_:
+        logger.error(ex_)
+        return flask.Response(status=500)
+
+
+@app.route('/order/<order_id>/update', methods=['POST'])
+def order_update(order_id):
+    """update order in database"""
+    logger.debug(f"updating order with id: {order_id}")
+
+    try:
+        Database().execute(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
+        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
+                                       "from orders o "
+                                       "inner join products p on p.id = o.position_id "
+                                       f"where order_id={order_id};",
+                                       'fetchall')
+        for item in item_list:
+            total_amount = item['oam'] + item['pam']
+            Database().execute(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
+
+        logger.debug("вернул товары из удаленного заказа на полки")
+        return flask.Response(status=200)
+    except Exception as ex_:
+        logger.error(ex_)
+        return flask.Response(status=500)
+
+
+@logger.catch
+@app.route('/order/<order_id>/delete/<item_id>', methods=['DELETE'])
+def order_delete_item(order_id, item_id):
+    """Delete order from database"""
+    logger.debug(f"Removing item #{item_id} from order_id #{order_id}")
+    try:
+        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
+                                       "from orders o "
+                                       "inner join products p on p.id = o.position_id "
+                                       f"where o.order_id={order_id} and o.position_id={item_id};",
+                                       'fetchall')
+        Database().execute(f"DELETE FROM orders WHERE order_id={order_id} and position_id={item_id};")
+        for item in item_list:
+            total_amount = item['oam'] + item['pam']
+            Database().execute(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
+        logger.debug(f"вернул товары, от которых отказались, на полку из заказа {order_id}")
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
@@ -157,7 +255,7 @@ def users():
     # return render_template('admin_users.html')
 
 
-@app.route('/users/delete/<users_id>')
+@app.route('/users/delete/<users_id>', methods=['DELETE'])
 def users_delete(users_id):
     """Delete order from database"""
     logger.debug(f"Removing user with id: {users_id}")

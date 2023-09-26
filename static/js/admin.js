@@ -37,12 +37,31 @@ function searchTable(tableId, searchInputId) {
 }
 
 function remove_item(itemType, itemId) {
-    const path = '/' + itemType + '/delete/' + itemId;
-    console.log('Deleting item: ' + path);
-    console.log(fetch(path));
-    location.reload();
+    if (!confirm('Правда удаляем?')) {
+        location.reload();
+        return
+    } else {
+        const path = '/' + itemType + '/' + itemId + '/delete';
+        console.log('Deleting item: ' + path);
+        console.log(fetch(path, {method: "DELETE"}));
+        location.reload();
+    }
+
+}
+
+function remove_subItem(itemType, itemId, subItemId) {
+    if (!confirm('Правда удаляем?')) {
+        location.reload();
+        return
+    } else {
+        const path = '/' + itemType + '/' + itemId + '/delete/' + subItemId;
+        console.log('Deleting item: ' + path);
+        console.log(fetch(path, {method: "DELETE"}));
+        location.reload();
+    }
 }
 
 function submitForm(itemId) {
     document.getElementById('order_' + orderId).submit();
 }
+

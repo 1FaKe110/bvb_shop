@@ -33,7 +33,7 @@
 </div>
 
 <main>
-<h2>Заказы</h2>
+    <h2>Заказы</h2>
     <input type="text" id="orderSearchInput"
            placeholder="Поиск по заказам"
            onkeyup="searchTable('orderTable', 'orderSearchInput')">
@@ -41,67 +41,35 @@
         <thead>
         <tr>
             <th>Order ID</th>
-            <th>User ID</th>
-            <th>
-                Позиции
-                <table class="mini-table">
-                    <tr>
-                        <th class="mini-table-th">ID товара</th>
-                        <th class="mini-table-th">Наименование</th>
-                        <th class="mini-table-th">Количество</th>
-                    </tr>
-                </table>
-            </th>
             <th>Сумма заказа</th>
             <th>Адрес доставки</th>
             <th>Дата доставки</th>
             <th>Статус</th>
+            <th>Управление</th>
         </tr>
         </thead>
         {% for order in orders %}
         <form method="post" onblur="submitForm({{order.order_id}})" id="order_{{order.order_id}}">
             <tr>
-                <td class="with-border">
-                    <input class="id_column" type="text" id="Id" name="id"
+                <td>
+                    <a href="{{url_for('order', order_id=order.order_id)}}">
+                        <input class="id_column" type="text" id="Id" name="id"
                            value="{{order.order_id}}" style="width: 40px" readonly>
+                    </a>
                 </td>
-                <td class="with-border">
-                    <input type="text" id="{{order.user_id}}" name="orderId" value="{{order.user_id}}"
-                           readonly style="width: 40px">
-                </td>
-                <td class="with-border">
-                    <table>
-                        {% for position in order.positions%}
-                        <tr>
-                            <td>
-                                <input type="number" name="position_id" id="positionId"
-                                       value="{{position.id}}" style="width: 30px;">
-                            </td>
-                            <td>
-                                <input type="text" name="position_name" id="positionName"
-                                       value="{{position.name}}" readonly>
-                            </td>
-                            <td>
-                                <input type="number" name="position_amount" id="positionAmount"
-                                       value="{{position.amount}}" style="width: 30px;">
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </td>
-                <td class="with-border">
+                <td>
                     <input type="text" id="sum_{{order.order_id}}" name="orderSum" value="{{order.sum}}"
                            readonly style="width: fit-content;">
                 </td>
-                <td class="with-border">
+                <td>
                     <input type="text" id="{{order.address}}" name="orderAddress" value="{{order.address}}"
                            required>
                 </td>
-                <td class="with-border">
+                <td>
                     <input type="date" id="order_datetime" name="orderDatetime"
                            value="{{order.datetime}}" required>
                 </td>
-                <td class="with-border">
+                <td>
                     <select id="order_statuses" name="orderStatus">
                         {% for status in order_statuses %}
                         {% if order.status_id == status.id %}
@@ -112,9 +80,9 @@
                         {% endfor %}
                     </select>
                 </td>
-                <td class="with-border">
-                    <input type="submit" value="submit">
-                    <input type="button" value="delete" onclick="remove_item('orders', {{order.order_id}})">
+                <td>
+                    <input type="submit" value="Подтвердить">
+                    <input type="button" value="Удалить" onclick="remove_item('order', {{order.order_id}})">
                 </td>
             </tr>
         </form>

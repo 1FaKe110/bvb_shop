@@ -41,6 +41,7 @@ td {
     padding-left: 10px;
     padding-right: 10px;
     align-content: center;
+    text-align: center;
     width: fit-content;
 }
 
@@ -68,7 +69,7 @@ td.with-border {
 
 
 /* Стили для полей ввода */
-input[type='text'], input[type='number'], option, select {
+input[type='text'],input[type='button'], input[type='tel'], input[type='email'], input[type='number'], input[type='date'], input[type='submit'], option, select {
     text-align: center;
     border: 0;
     font-family: inherit;
@@ -82,20 +83,20 @@ input[type='text'], input[type='number'], option, select {
     transition: all 0.15s ease-in-out;
 }
 
-input[type='text']:focus, input[type='number']:focus, option:focus, select:focus {
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus {
     outline: none;
 }
 
-input[type='text']:active, input[type='number']:active, option:active, select:active {
+input[type='text']:active,input[type='button']:active, input[type='tel']:active, input[type='email']:active, input[type='number']:active, input[type='date']:active, input[type='submit']:active, option:active, select:active {
     outline: none;
 
 }
 
-input[type='text']:focus, input[type='number']:focus, option:focus, select:focus + .border path {
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus + .border path {
     stroke: #07f;
 }
 
-input[type='text']:valid, input[type='number']:valid, option:valid, select:valid + .border path {
+input[type='text']:valid, input[type='button']:valid, input[type='tel']:valid, input[type='email']:valid, input[type='number']:valid, input[type='date']:valid, input[type='submit']:valid, option:valid, select:valid + .border path {
     animation: elasticInput 0.8s ease forwards;
     transform: translate(0, 0) scale(1);
 }
@@ -103,4 +104,12 @@ input[type='text']:valid, input[type='number']:valid, option:valid, select:valid
 ::placeholder {
     color: #9098a9;
     text-align: center;
+}
+
+
+.id_column {
+    width: 40px;
+    color: indigo;
+    cursor: context-menu;
+    border-bottom: 1px solid #00000045;
 }

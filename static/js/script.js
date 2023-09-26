@@ -38,3 +38,5 @@ function admin_alert(text) {
 window.addEventListener('load', function () {
     document.body.classList.add('loaded');
 });
+
+

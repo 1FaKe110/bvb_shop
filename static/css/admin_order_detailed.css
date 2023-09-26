@@ -1,0 +1,115 @@
+.content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+h3, input {
+    text-align: center;
+}
+
+.left {
+    width: 35%;
+}
+
+.admin_router-block p {
+    margin-left: 30%;
+}
+
+.order_info {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #efe9e9eb;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px 2px rgb(229 229 229);
+    transition: 0.2s all ease-in-out;
+
+    padding: 20px;
+
+}
+.order_info div {
+    padding: 10px;
+}
+
+.order_info div label {
+    display: inline-block;
+    width: 110px;
+}
+
+.right {
+    width: 55%;
+}
+
+.right h3 {
+    text-align: center;
+}
+
+.positions, .order {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #efe9e9eb;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px 2px rgb(229 229 229);
+    transition: 0.2s all ease-in-out;
+}
+
+.position {
+    width: 97%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.position idColumn input {
+    width: 10%;
+}
+.position nameColumn input {
+    width: 40%;
+}
+.position priceColumn input {
+    width: 40%;
+}
+.position amountColumn input {
+    width: 5%;
+}
+.position removeColumn input {
+    width: 5%;
+    justify-content: center;
+}
+
+.order {
+    width: 97%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.formButtons {
+    margin-top: 10px;
+}
+.formButtons input {
+    color: green;
+}
+
+.position input[type='text'], .position input[type='button'], .position input[type='tel'], .position input[type='email'], .position input[type='number'], .position input[type='date'], .position input[type='submit'], .position option, .position select {
+    border-bottom: #fff;
+}
