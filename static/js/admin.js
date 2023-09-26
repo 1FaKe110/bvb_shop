@@ -65,3 +65,52 @@ function submitForm(itemId) {
     document.getElementById('order_' + orderId).submit();
 }
 
+async function postData(url = "", data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+postData("https://example.com/answer", { answer: 42 }).then((data) => {
+  console.log(data); // JSON data parsed by `data.json()` call
+});
+
+function submitOrderForm(orderId) {
+    let order_info = document.getElementsByClassName('order_info')[0].querySelectorAll('input');
+    let user_data = {
+        "fio": order_info[0].value,
+        'phone': order_info[1].value,
+        'email': order_info[2].value,
+        'address': order_info[3].value,
+        'datetime': order_info[4].value
+    };
+
+    let status = {'id': document.querySelector('#orderStatus').value}
+
+    let positions = document.getElementsByClassName('position');
+    let positions_data = [];
+    for (let i = 1; i < positions.length; i++) {
+        tags = positions[i].querySelectorAll('input');
+        row_map = {}
+        for (let t = 0; t < tags.length - 1; t++) {
+            console.log(tags[t].name + ': ' + tags[t].value);
+            row_map[tags[t].name] = tags[t].value;
+        }
+        positions_data.push(row_map);
+    }
+    console.log(positions_data);
+
+    postData('/order/' + orderId + '/update')
+}

@@ -6,11 +6,6 @@ from database import Database
 from loguru import logger
 from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
-from database.filler import reset_database
-
-RESET_DB = False
-if RESET_DB:
-    reset_database()
 
 Tasks.update_dollar_course()
 app = Flask(__name__)
@@ -208,18 +203,11 @@ def order_update(order_id):
     """update order in database"""
     logger.debug(f"updating order with id: {order_id}")
 
-    try:
-        Database().execute(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
-        item_list = Database().execute(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
-                                       "from orders o "
-                                       "inner join products p on p.id = o.position_id "
-                                       f"where order_id={order_id};",
-                                       'fetchall')
-        for item in item_list:
-            total_amount = item['oam'] + item['pam']
-            Database().execute(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
+    data = request.json
 
-        logger.debug("вернул товары из удаленного заказа на полки")
+    Database().execute()
+
+    try:
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)

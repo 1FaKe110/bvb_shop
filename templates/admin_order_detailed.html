@@ -6,7 +6,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-<!--    <script src="{{ url_for('static', filename='js/admin_order_detailed.js') }}"></script>-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin_order_detailed.css') }}">
 </head>
@@ -92,19 +91,19 @@
                     {% for position in order.positions %}
                     <div class="position">
                         <div class="idColumn">
-                            <input type="text" name="PositionId{{position.id}}" id="{{position.id}}"
+                            <input type="text" name="PositionId" id="{{position.id}}"
                                    value="{{position.id}}" readonly>
                         </div>
                         <div class="nameColumn">
-                            <input type="text" name="PositionName{{position.id}}" id="name{{position.id}}"
+                            <input type="text" name="PositionName" id="name{{position.id}}"
                                    value="{{position.name}}" readonly>
                         </div>
                         <div class="priceColumn">
-                            <input type="number" name="PositionPrice{{position.id}}" id="price{{position.id}}"
+                            <input type="number" name="PositionPrice" id="price{{position.id}}"
                                    value="{{position.price}}" readonly>
                         </div>
                         <div class="amountColumn">
-                            <input type="number" name="PositionAmount{{position.id}}" id="amount{{position.id}}"
+                            <input type="number" name="PositionAmount" id="amount{{position.id}}"
                                    value="{{position.amount}}">
                         </div>
                         <div class="removeColumn">
