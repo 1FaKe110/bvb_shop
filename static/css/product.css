@@ -184,19 +184,19 @@ input[type='button'].add-to-card, input[type='button'].go-to-card-button {
   white-space: nowrap;
 }
 
-input[type='button'].add-to-card, input[type='button'].go-to-card-button:hover {
-  background-color: #1e8449;
+input[type='button'].add-to-card:hover, input[type='button'].go-to-card-button:hover {
+  background-color: #21eeaf2e;
   opacity: 1;
   transform: translateY(0);
   transition-duration: .35s;
 }
 
-input[type='button'].add-to-card, input[type='button'].go-to-card-button:active {
+input[type='button'].add-to-card:active, input[type='button'].go-to-card-button:active {
   transform: translateY(2px);
   transition-duration: .35s;
 }
 
-input[type='button'].add-to-card, input[type='button'].go-to-card-button:hover {
+input[type='button'].add-to-card:hover, input[type='button'].go-to-card-button:hover {
   box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
 }
 

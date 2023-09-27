@@ -178,7 +178,7 @@ input[type='button'].add-to-card, input[type='submit'].submit-input-confirm {
 }
 
 input[type='button'].add-to-card:hover, input[type='submit'].submit-input-confirm:hover {
-    background-color: #1e8449;
+    background-color: #21eeaf2e;
     opacity: 1;
     transform: translateY(0);
     transition-duration: .35s;

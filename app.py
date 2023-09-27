@@ -1,11 +1,14 @@
 import json
 from time import sleep
 from flask import Flask, render_template, request, make_response, redirect, url_for, abort
-from database import Database
+from flask_cors import CORS
+from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
 app = Flask(__name__)
+
+CORS(app)
 bot = Telebot()
 
 
@@ -14,8 +17,8 @@ bot = Telebot()
 def index():
     """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
-    categories = Database().exec('SELECT * FROM categories WHERE parent_id is Null',
-                                    'fetchall')
+    categories = db.exec('SELECT * FROM categories WHERE parent_id is Null',
+                         'fetchall')
     return render_template('user_index.html', categories=categories)
 
 
@@ -24,10 +27,10 @@ def index():
 def category(category_name):
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
-    cat_id = Database().exec(
+    cat_id = db.exec(
         f"SELECT * FROM categories WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}')",
         'fetchone')
-    prev_category = Database().exec(
+    prev_category = db.exec(
         f"SELECT name FROM categories c where id = (SELECT parent_id FROM categories WHERE name = '{category_name}')",
         'fetchone')
 
@@ -41,9 +44,9 @@ def category(category_name):
         subcategories = None
         cookies = request.cookies.get('formData', None)
         cart_data = json.loads(cookies)
-        products = Database().exec(f"SELECT * FROM products WHERE category_id in "
-                                      f"(SELECT id FROM categories WHERE name='{category_name}')",
-                                      'fetchall')  # Получение товаров в выбранной категории
+        products = db.exec(f"SELECT * FROM products WHERE category_id in "
+                           f"(SELECT id FROM categories WHERE name='{category_name}')",
+                           'fetchall')  # Получение товаров в выбранной категории
         if len(cart_data):
             logger.debug("Продукты:")
             logger.debug(cart_data)
@@ -63,11 +66,11 @@ def category(category_name):
                                products=products)
 
     logger.debug(f'У {category_name} есть подкатегории')
-    subcategories = Database().exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id['parent_id']}'",
-                                       'fetchall')  # Получение дочерних категорий
+    subcategories = db.exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id['parent_id']}'",
+                            'fetchall')  # Получение дочерних категорий
 
-    products = Database().exec(f"SELECT * FROM products WHERE category_id = '{cat_id['parent_id']}'",
-                                  'fetchall')  # Получение товаров в выбранной категории
+    products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id['parent_id']}'",
+                       'fetchall')  # Получение товаров в выбранной категории
 
     return render_template('user_category.html',
                            prev_category=prev_category,
@@ -82,42 +85,55 @@ def category(category_name):
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
     # Получение информации о товаре
-    product_info = Database().exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
-                                      'fetchall')[0]
-    category_name = Database().exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
-                                       'fetchone')['name']
+    product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
+                           'fetchall')[0]
+    category_name = db.exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
+                            'fetchone')['name']
     return render_template('user_product.html',
                            category_name=category_name,
                            product=product_info)
 
 
 @logger.catch
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
+@app.route('/cart/', methods=['GET', 'POST'])
+def cart(error_description=None):
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
     cookies = request.cookies.get('formData', None)
-
     logger.debug(f"{cookies = }")
 
-    if cookies is None or not len(cookies):
-        return render_template('user_cart.html', products=None, order=None, clear_cookie=None)
+    if error_description:
+        return render_template('user_cart.html',
+                               products=None,
+                               order=None,
+                               clear_cookie=True,
+                               error_description=error_description)
+
+    if cookies is None or len(json.loads(cookies)) < 1:
+        return render_template('user_cart.html',
+                               products=None,
+                               order=None,
+                               clear_cookie=None)
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
-    products = Database().exec(f"SELECT * FROM products WHERE id in ({','.join(list(cart_data.keys()))})",
-                                  'fetchall')
+    products = db.exec(f"SELECT * FROM products WHERE id in ({','.join(list(cart_data.keys()))})",
+                       'fetchall')
 
     logger.info(f'request type: [{request.method}] ')
+    logger.info(f'products: [{json.dumps(products, indent=2, ensure_ascii=False)}] ')
     order = dict(sum=0)
     for p_row, c_row in zip(products, cart_data):
-        # logger.info(c_row[str(p_row['id'])])
         p_row['in_card'] = cart_data[c_row]
         order['sum'] += p_row['price'] * p_row['in_card']
     order['sum'] = f"{order['sum']:.2f}"
 
     match request.method:
         case 'GET':
-            return render_template('user_cart.html', products=products, order=order, clear_cookie=None)
+            return render_template('user_cart.html',
+                                   products=products,
+                                   order=order,
+                                   error_description=None,
+                                   clear_cookie=None)
 
         case 'POST':
             # получение данных с формы
@@ -127,26 +143,26 @@ def cart():
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
-            user_id = Database().exec(
+            user_id = db.exec(
                 f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                 'fetchone'
             )
 
             if user_id is None:
                 logger.debug("Пользователя нет. Добавляю нового пользователя")
-                Database().exec(
+                db.exec(
                     f"INSERT into users (username, phone) values ('{full_name}', '{phone}')"
                 )
                 sleep(0.3)
                 logger.debug('Пользователь добавлен')
-                user_id = Database().exec(
+                user_id = db.exec(
                     f"Select id from users where phone = '{phone}' and username = '{full_name}'",
                     'fetchone'
                 )
 
             logger.debug(f"Пользователь {phone} c {user_id}")
             user_id = user_id['id']
-            last_order_id = Database().exec(
+            last_order_id = db.exec(
                 "Select max(order_id) as last_num from orders",
                 'fetchone')['last_num']
 
@@ -167,30 +183,37 @@ def cart():
                 logger.info(f'  id |   amount | name |')
                 logger.info(f"{row['id']:4} | {row['in_card']:8} | {row['name']} ")
 
-                _product = Database().exec(
+                _product = db.exec(
                     f"select amount, price from products where id={row['id']}",
                     'fetchone'
                 )
 
-                Database().exec(
+                new_amount = _product['amount'] - row['in_card']
+                if new_amount < 0:
+                    return redirect(url_for('cart', error_description='Товар закончился. Приносим извинения'))
+
+                db.exec(
                     'INSERT into orders '
                     '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime) values'
-                    f"({next_order_id}, {user_id}, 001, {row['id']}, {_product['price']}, {row['in_card']}, '{order_place}', '{order_time}')"
+                    f"({next_order_id}, {user_id}, 001, {row['id']}, {_product['price']}, {row['in_card']}, "
+                    f"'{order_place}', '{order_time}')"
                 )
 
-                new_amount = _product['amount'] - row['in_card']
-                Database().exec(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")
+                db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")
                 logger.debug(f"Обновил остаток товара с id = {row['id']} в бд: ({_product['amount']} -> {new_amount})")
 
             bot.__send_order__(next_order_id)
-            return redirect(url_for('cart_clear'))
+            return redirect(url_for('cart_clear', error_description=None))
 
 
 @logger.catch
-@app.route('/cart/c', methods=['GET', 'POST'])
+@app.route('/cart/c/', methods=['GET', 'POST'])
 def cart_clear():
     """Метод для очистки cookie фалов"""
-    return render_template('user_cart.html', products=None, order=None, clear_cookie=True)
+    return render_template('user_cart.html',
+                           products=None,
+                           order=None,
+                           clear_cookie=True)
 
 
 @logger.catch

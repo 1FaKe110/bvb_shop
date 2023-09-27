@@ -1,7 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from loguru import logger
-from database import Database
+from database import db
 
 
 class Tasks:
@@ -18,10 +18,10 @@ class Tasks:
             .text.replace(",", "."))
         logger.debug(f"Курс Доллара: {usd_rate} рублей. Обновляю данные в бд")
 
-        Database().exec(
+        db.exec(
             f'UPDATE dollar SET price={usd_rate} WHERE id=1;'
         )
-        products_in_dollars = Database().exec(
+        products_in_dollars = db.exec(
             "Select id, by_price, price_dependency "
             "from products ",
             "fetchall"
@@ -33,7 +33,7 @@ class Tasks:
             else:
                 price = round(product['by_price'] * 1.5, 0)
 
-            Database().exec(
+            db.exec(
                 f'UPDATE products SET price={price} WHERE id={product["id"]};'
             )
 

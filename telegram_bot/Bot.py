@@ -3,7 +3,7 @@ import json
 import telebot
 from telebot import types
 from loguru import logger
-from database import Database
+from database import db
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 BOT_TOKEN = '6542986021:AAGhL8Yf4bTLdI5cf48Pf6ryksmaFJW6-7c'
@@ -16,7 +16,7 @@ class Telebot:
     def send_unread_order_messages(self):
         """Декоратор для задания периодического задания"""
         logger.debug('Получаю все заказы со статусом "не прочитано"')
-        unread_orders = Database().exec(
+        unread_orders = db.exec(
             "SELECT DISTINCT (order_id) as id "
             "FROM orders "
             "WHERE status_id = 1",
@@ -29,11 +29,11 @@ class Telebot:
         """Функция для отправки сообщения с данными заказа в указанный канал"""
 
         logger.debug(order_id)
-        order = Database().exec(
+        order = db.exec(
             "SELECT distinct(order_id) as id, "
             "u.phone as phone, "
             "u.username as fio, "
-            "o.datetime as delivery_date, "
+            "TO_CHAR(o.datetime, 'YYYY-MM-DD') as delivery_date, "
             "o.address as delivery_address "
             "FROM orders o "
             "INNER JOIN users u on u.id = o.user_id "
@@ -47,7 +47,7 @@ class Telebot:
                    f"ФИО:``` {order['fio']} ```\n"
                    f"Позиции:\n")
 
-        order_positions = Database().exec(
+        order_positions = db.exec(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "

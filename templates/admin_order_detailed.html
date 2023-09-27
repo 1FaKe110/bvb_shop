@@ -100,11 +100,11 @@
                         </div>
                         <div class="priceColumn">
                             <input type="number" name="Price" id="price{{position.id}}"
-                                   value="{{position.price}}" readonly>
+                                   value="{{position.price}}" min="0" readonly>
                         </div>
                         <div class="amountColumn">
                             <input type="number" name="Amount" id="amount{{position.id}}"
-                                   value="{{position.amount}}">
+                                   value="{{position.amount}}" min="0">
                         </div>
                         <div class="removeColumn">
                             <input type="button" value="Удалить из заказа" onclick="remove_subItem('order', {{order.order_id}}, {{position.id}})" style="color: red;">

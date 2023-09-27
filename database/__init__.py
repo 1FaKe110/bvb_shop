@@ -1,78 +1,115 @@
-import dataclasses
-import sqlite3
-import platform
-
+from __future__ import annotations
 from loguru import logger
-
-match platform.system():
-    case 'Ubuntu':
-        cwd = '/home/ifake/BVB_SHOP_SITE'
-    case 'Windows':
-        cwd = r'C:\Users\iFaKe\Desktop\BVB_SHOP_SITE'
-    case _:
-        raise SystemExit(f"Unsupported os: {platform.system()}")
+from typing import List, Dict
+import psycopg2
+from psycopg2 import extras
 
 
-class Database:
-    def __init__(self):
-        self.__conn = sqlite3.connect(f'{cwd}/database.db', check_same_thread=False)
-        self.__conn.row_factory = dict_factory
-        self.cur = self.__conn.cursor()
-
-    @logger.catch
-    def __commit__(self):
-        logger.trace('committed!')
-        self.__conn.commit()
-
-    @logger.catch
-    def close(self) -> None:
-        self.cur.close()
-        self.__conn.close()
-        return
-
-    @logger.catch
-    def exec(self, query: str, func: str | None = None):
+class ReplyFormatter:
+    @staticmethod
+    def fetchOne(cursor, add_keys=False) -> Dict | None:
         """
-        :param query: str repr of sql syntax 
-        :param func: fetchall | fetchone | None
-        :return: None | Dict | List
+        форматирование выдачи от бд -> Dictionary | для выдачи 1 строки
+        :param cursor: объект с данными от бд
+        :param add_keys: boolean - формирование словаря
+        :return: Dictionary
         """
-        logger.debug(f"Query: [{query}] | asserted to {func}")
-        self.cur.execute(query)
-        if not query.lower().startswith('select'):
-            logger.trace("Query must be committed!")
-            self.__commit__()
-            return self.close()
+        data = cursor.fetchone()
 
-        match func:
-            case 'fetchall':
-                reply = self.cur.fetchall()
-                if reply is not None:
-                    [logger.trace(row) for row in reply]
-                else:
-                    logger.debug(reply)
-            case 'fetchone':
-                reply = self.cur.fetchone()
-                if reply is not None:
-                    [logger.trace(row) for row in reply]
-                else:
-                    logger.debug(reply)
-            case _:
-                self.close()
-                raise TypeError()
+        if data is None: return data
+        if not add_keys: return data
 
-        self.close()
-        return reply
+        keys = [row[0] for row in cursor.description]
+        return dict(zip(keys, data))
+
+    @staticmethod
+    def fetchAll(cursor) -> List[dict] | None:
+        """
+        форматирование выдачи от бд -> List[ Dictionaries ] | для выдачи нескольких строк
+        :param cursor: объект с данными от бд
+        :return: Dictionary
+        """
+        keys = [row[0] for row in cursor.description]
+        data = cursor.fetchall()
+
+        if not len(data):
+            return None
+        else:
+            return [dict(zip(keys, row)) for row in data]
 
 
-@logger.catch
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+class PostgresqlDb:
+    """
+    Обработчик для бд Postgresql
+    """
+
+    def __init__(self, host: str, port: int, name: str, username: str, password: str):
+        """
+        :param host: str ip addr database
+        :param port: int part database
+        :param name: str database name
+        :param username: str login
+        :param password: str password
+        """
+        self.host = host
+        self.port = port
+        self.db_name = name
+        self.username = username
+        self.password = password
+
+    @logger.catch
+    def exec(self, query: str, func: str = '') -> None | Dict | List[dict]:
+        """
+        Делает запросы в базу:
+
+        - если тип запроса - SELECT:
+        - - нужно подать тип функции собираемых данных (fetchone, fetchall)
+
+        - если тип запроса - UPDATE, DELETE, INSERT
+        - - подавать функцию не нужно
+
+        :param query: str - query string for database
+        :param func: obj - if query means select
+        :return: None | dict | List[dict]
+        """
+        with psycopg2.connect(host=self.host,
+                              port=self.port,
+                              dbname=self.db_name,
+                              user=self.username,
+                              password=self.password,
+                              sslmode='verify-full',
+                              target_session_attrs='read-write') as connection:
+            logger.debug("Connecting: [ok]")
+            with connection.cursor(cursor_factory=extras.DictCursor) as cursor:
+                logger.debug(f"Query: [{query}] | asserted to {func}")
+                cursor.execute(query)
+                connection.commit()
+
+                match func:
+                    case 'fetchall':
+                        reply = ReplyFormatter.fetchAll(cursor)
+                        if reply is not None:
+                            [logger.trace(row) for row in reply]
+                        else:
+                            logger.debug(f' Reply: {reply}')
+                        return reply
+                    case 'fetchone':
+                        reply = ReplyFormatter.fetchOne(cursor, add_keys=True)
+                        if reply is not None:
+                            [logger.trace(row) for row in reply]
+                        else:
+                            logger.debug(reply)
+                        return reply
+                    case '':
+                        return None
+                    case _:
+                        raise TypeError()
 
 
-@dataclasses.dataclass
-class Queries:
-    ...
+db = PostgresqlDb(
+    host='rc1b-n347sd0msta4wqdq.mdb.yandexcloud.net',
+    port=6432,
+    name='bvb_shop',
+    username='admin_bvb',
+    password='admin_bvb',
+)

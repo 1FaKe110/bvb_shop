@@ -10,6 +10,9 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
     <script>
+        {% if error_description %}
+            alert('{{error_description}}');
+        {% endif %}
         {% if clear_cookie %}
             document.cookie = 'formData={}; path=/';
             window.location.href = "/cart"
@@ -30,7 +33,7 @@
                 <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
             </li>
             <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
+                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
             </li>
         </ul>
     </nav>
@@ -133,7 +136,7 @@
                         <div class="phone">
                             <p>Номер телефона: </p>
                             <input class="submit-input" type="tel" id="phone" name="phone" placeholder="+79992223131"
-                                   pattern="(+7|8)[0-9]{10}" autocomplete="on" enterkeyhint="next"
+                                   pattern="(+7)[0-9]{10}" autocomplete="on" enterkeyhint="next"
                                    maxlength="12" minlength="12" required value="+7">
                         </div>
                         <div class="full_name">
