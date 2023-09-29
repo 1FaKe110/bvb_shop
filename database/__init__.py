@@ -3,7 +3,10 @@ from loguru import logger
 from typing import List, Dict
 import psycopg2
 from psycopg2 import extras
+import os
+from dotenv import load_dotenv
 
+load_dotenv('../config/settings.env')
 
 class ReplyFormatter:
     @staticmethod
@@ -79,7 +82,7 @@ class PostgresqlDb:
                               password=self.password,
                               sslmode='verify-full',
                               target_session_attrs='read-write') as connection:
-            logger.debug("Connecting: [ok]")
+            logger.trace("Connecting: [ok]")
             with connection.cursor(cursor_factory=extras.DictCursor) as cursor:
                 logger.debug(f"Query: [{query}] | asserted to {func}")
                 cursor.execute(query)
@@ -107,9 +110,18 @@ class PostgresqlDb:
 
 
 db = PostgresqlDb(
-    host='rc1b-n347sd0msta4wqdq.mdb.yandexcloud.net',
-    port=6432,
-    name='bvb_shop',
-    username='admin_bvb',
-    password='admin_bvb',
+    host=os.getenv('db_host'),
+    port=int(os.getenv('db_port')),
+    name=os.getenv('db_name'),
+    username=os.getenv('db_username'),
+    password=os.getenv('db_password'),
 )
+
+
+# db = PostgresqlDb(
+#     host='rc1b-n347sd0msta4wqdq.mdb.yandexcloud.net',
+#     port=6432,
+#     name='bvb_shop',
+#     username='admin_bvb',
+#     password='admin_bvb',
+# )
