@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv('../config/settings.env')
 
+
 class ReplyFormatter:
     @staticmethod
     def fetchOne(cursor, add_keys=False) -> Dict | None:
@@ -79,9 +80,7 @@ class PostgresqlDb:
                               port=self.port,
                               dbname=self.db_name,
                               user=self.username,
-                              password=self.password,
-                              sslmode='verify-full',
-                              target_session_attrs='read-write') as connection:
+                              password=self.password) as connection:
             logger.trace("Connecting: [ok]")
             with connection.cursor(cursor_factory=extras.DictCursor) as cursor:
                 logger.debug(f"Query: [{query}] | asserted to {func}")
@@ -116,8 +115,6 @@ db = PostgresqlDb(
     username=os.getenv('db_username'),
     password=os.getenv('db_password'),
 )
-
-
 
 # db = PostgresqlDb(
 #     host='rc1b-n347sd0msta4wqdq.mdb.yandexcloud.net',

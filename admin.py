@@ -130,7 +130,7 @@ def orders():
         for position in _order['positions']:
             _order['sum'] += position['price'] * position['amount']
 
-    order_statuses = db.exec("Select * from order_status_enum", 'fetchall')
+    order_statuses = db.exec("Select * from order", 'fetchall')
     return render_template('admin_orders.html',
                            orders=orders_list,
                            order_statuses=order_statuses)
@@ -173,7 +173,7 @@ def order(order_id):
             _order['sum'] += position['price'] * position['amount']
 
     logger.debug(json.dumps(orders_list, indent=2, ensure_ascii=False))
-    order_statuses = db.exec("Select * from order_status_enum", 'fetchall')
+    order_statuses = db.exec("Select * from order_status", 'fetchall')
     return render_template('admin_order_detailed.html',
                            order=orders_list[0],
                            order_statuses=order_statuses)
