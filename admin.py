@@ -7,9 +7,11 @@ from database import db
 from loguru import logger
 from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
+from munch import DefaultMunch
+
+as_class = DefaultMunch.fromDict
 
 Tasks.update_dollar_course()
-
 app = Flask(__name__)
 CORS(app)
 
@@ -25,18 +27,18 @@ def index():
 def categories():
     match request.method:
         case 'POST':
-            form = request.form.to_dict()
+            form = as_class(request.form.to_dict())
             logger.debug(form)
 
             logger.debug('Меняем что-то в категориях')
-            ct_id = form.get('ct-id').replace('.', '')
-            ct_name = form.get('ct-name')
-            ct_image_path = form.get('categoryImagePath', 'Null')
+            ct_id = form.ct_id.replace('.', '')
+            ct_name = form.ct_name
+            ct_image_path = form.categoryImagePath
             db.exec(
                 f"UPDATE categories SET name='{ct_name}', image_path='{ct_image_path}' WHERE id={ct_id};"
             )
 
-    categories_list = db.exec("Select * from categories", 'fetchall')
+    categories_list = db.exec("Select * from categories order by id asc", 'fetchall')
     return render_template('admin_categories.html',
                            categories=categories_list)
 
@@ -58,30 +60,29 @@ def categories_delete(category_id):
 def products():
     match request.method:
         case 'POST':
-            form = request.form.to_dict()
+            form = as_class(request.form.to_dict())
             logger.debug(form)
 
             logger.debug('Меняем что-то в продуктах')
-            pr_id = form.get('pr-id')
 
             db.exec(
                 f"UPDATE products SET "
-                f"name='{form['pr-name']}', "
-                f"by_price={form['pr-by_price']}, "
-                f"price={form['pr-price']}, "
-                f"amount={form['pr-amount']}, "
-                f"brand='{form['pr-brand']}', "
-                f"price_dependency={form['pr-price_dependency']}, "
-                f"category_id={form['categoryParentName']}, "
+                f"name='{form.pr_name}', "
+                f"by_price={form.pr_by_price}, "
+                f"price={form.pr_price}, "
+                f"amount={form.pr_amount}, "
+                f"brand='{form.pr_brand}', "
+                f"price_dependency={form.pr_price_dependency}, "
+                f"category_id={form.categoryParentName}, "
                 f"image_id=Null, "
-                f"description='{form['pr-description']}', "
-                f"image_path='{form.get('categoryImagePath', '../../static/images/products/products-blank.png')}' "
-                f"WHERE id={pr_id}; "
+                f"description='{form.pr_description}', "
+                f"image_path='{form.categoryImagePath}' "
+                f"WHERE id={form.pr_id}; "
             )
 
     dollar = db.exec("Select * from dollar where id = 1", 'fetchone')
-    products_list = db.exec("Select * from products", 'fetchall')
-    categories_list = db.exec("Select * from categories", 'fetchall')
+    products_list = db.exec("Select * from products order by name asc", 'fetchall')
+    categories_list = db.exec("Select * from categories order by id asc", 'fetchall')
     return render_template('admin_products.html',
                            categories=categories_list,
                            products=products_list,
@@ -105,18 +106,21 @@ def products_delete(product_id):
 def orders():
     match request.method:
         case 'POST':
-            form = request.form.to_dict()
+            form = as_class(request.form.to_dict())
             logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    orders_list = db.exec(
-        "Select distinct(order_id), user_id, status_id, address, datetime, ose.id as status_id, ose.name "
+    orders_list = as_class(db.exec(
+        "Select distinct(order_id), user_id, status_id, address, cast(datetime as text), "
+        "ose.id as status_id, ose.name "
         "from orders o "
-        "inner join order_status_enum ose on ose.id = o.status_id ",
-        'fetchall')
-    for _order in orders_list:
-        _order['sum'] = 0
-        _order['positions'] = db.exec(
+        "inner join order_status ose on ose.id = o.status_id "
+        "order by order_id asc",
+        'fetchall'))
+    for order_obj in orders_list:
+        order_obj.datetime = order_obj.datetime[:10]
+        order_obj.sum = 0
+        order_obj.positions = as_class(db.exec(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
@@ -124,13 +128,14 @@ def orders():
             "from orders o "
             "LEFT JOIN products p on p.id = o.position_id "
             "WHERE TRUE "
-            f"and order_id = {_order['order_id']};",
+            f"and order_id = {order_obj.order_id} "
+            f"order by order_id asc",
             "fetchall"
-        )
-        for position in _order['positions']:
-            _order['sum'] += position['price'] * position['amount']
+        ))
+        for position in order_obj.positions:
+            order_obj.sum += position.price * position.amount
 
-    order_statuses = db.exec("Select * from order", 'fetchall')
+    order_statuses = db.exec("Select * from order_status", 'fetchall')
     return render_template('admin_orders.html',
                            orders=orders_list,
                            order_statuses=order_statuses)
@@ -141,41 +146,46 @@ def orders():
 def order(order_id):
     match request.method:
         case 'POST':
-            form = request.form.to_dict()
-            logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
+            form = as_class(request.form.to_dict())
+            logger.debug(json.dumps(form.__dict__, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    orders_list = db.exec(
-        "Select distinct(order_id), status_id, address, datetime, ose.id as status_id, ose.name as status_name, u.username, u.phone, u.email "
+    order_obj = as_class(db.exec(
+        "Select distinct(order_id), "
+        "status_id, address, "
+        "cast(datetime as text), "
+        "ose.id as status_id, "
+        "ose.name as status_name, u.username, "
+        "u.phone, u.email "
         "from orders o "
-        "inner join order_status_enum ose on ose.id = o.status_id "
+        "inner join order_status ose on ose.id = o.status_id "
         "inner join users u on o.user_id = u.id "
         f"where order_id = {order_id}",
-        'fetchall')
+        'fetchone'))
 
-    if not len(orders_list):
+    if not len(order_obj):
         return redirect(url_for('orders'))
 
-    for _order in orders_list:
-        _order['sum'] = 0
-        _order['positions'] = db.exec(
-            "select p.id as id, "
-            "p.name as name, "
-            "p.price as price, "
-            "o.amount as amount "
-            "from orders o "
-            "LEFT JOIN products p on p.id = o.position_id "
-            "WHERE TRUE "
-            f"and order_id = {order_id};",
-            "fetchall"
-        )
-        for position in _order['positions']:
-            _order['sum'] += position['price'] * position['amount']
+    order_obj.datetime = order_obj.datetime[:10]
+    order_obj.sum = 0
+    order_obj.positions = as_class(db.exec(
+        "select p.id as id, "
+        "p.name as name, "
+        "p.price as price, "
+        "o.amount as amount "
+        "from orders o "
+        "LEFT JOIN products p on p.id = o.position_id "
+        "WHERE TRUE "
+        f"and order_id = {order_id};",
+        "fetchall"
+    ))
+    for position in order_obj.positions:
+        order_obj.sum += position.price * position.amount
 
-    logger.debug(json.dumps(orders_list, indent=2, ensure_ascii=False))
-    order_statuses = db.exec("Select * from order_status", 'fetchall')
+    logger.debug(json.dumps(order_obj, indent=2, ensure_ascii=False))
+    order_statuses = db.exec("Select * from order_status order by id asc", 'fetchall')
     return render_template('admin_order_detailed.html',
-                           order=orders_list[0],
+                           order=order_obj,
                            order_statuses=order_statuses)
 
 
@@ -187,9 +197,9 @@ def order_delete(order_id):
     try:
         db.exec(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
         item_list = db.exec(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
-                                       "from orders o "
-                                       "inner join products p on p.id = o.position_id "
-                                       f"where order_id={order_id};")
+                            "from orders o "
+                            "inner join products p on p.id = o.position_id "
+                            f"where order_id={order_id};")
         for item in item_list:
             total_price = item['oam'] + item['pam']
             db.exec(f"UPDATE products SET amount={total_price} WHERE id={item['opid']};")
@@ -206,15 +216,32 @@ def order_update(order_id):
     """update order in database"""
     logger.debug(f"updating order with id: {order_id}")
 
-    data = request.json
-    logger.debug(json.dumps(data, indent=2, ensure_ascii=False))
+    logger.debug(json.dumps(request.json, indent=2, ensure_ascii=False))
+    data = as_class(request.json)
 
-    
-    try:
-        return flask.Response(status=200)
-    except Exception as ex_:
-        logger.error(ex_)
-        return flask.Response(status=500)
+    db.exec(f"UPDATE public.users "
+            f"SET username='{data.user.fio}', "
+            f"phone='{data.user.phone}', "
+            f"email='{data.user.email}'"
+            f"WHERE id={order_id};")
+
+    for pos in data.positions:
+        pr_reply = as_class(
+            db.exec(f"SELECT o.position_id as opid, "
+                    f"o.amount as oam, "
+                    f"p.amount as pam "
+                    "from orders o "
+                    "inner join products p on p.id = o.position_id "
+                    f"where o.order_id={order_id} and o.position_id={pos.Id};",
+                    'fetchall'))
+
+        o_delta = pr_reply.oam - pos.Amount
+        if pr_reply.pam - o_delta == 0:
+            pass
+        elif pr_reply.pam - o_delta < 0:
+            logger.error(f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}")
+            return flask.Response(status=500)
+
 
 
 
@@ -224,15 +251,17 @@ def order_delete_item(order_id, item_id):
     """Delete order from database"""
     logger.debug(f"Removing item #{item_id} from order_id #{order_id}")
     try:
-        item_list = db.exec(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
-                                       "from orders o "
-                                       "inner join products p on p.id = o.position_id "
-                                       f"where o.order_id={order_id} and o.position_id={item_id};",
-                                       'fetchall')
+        item_list = as_class(db.exec(f"SELECT o.position_id as opid, "
+                                     f"o.amount as oam, p.amount as pam "
+                                     "from orders o "
+                                     "inner join products p on p.id = o.position_id "
+                                     f"where o.order_id={order_id} and o.position_id={item_id};",
+                                     'fetchall'))
         db.exec(f"DELETE FROM orders WHERE order_id={order_id} and position_id={item_id};")
         for item in item_list:
-            total_amount = item['oam'] + item['pam']
-            db.exec(f"UPDATE products SET amount={total_amount} WHERE id={item['opid']};")
+            total_amount = item.oam + item.pam
+            db.exec(f"UPDATE products SET amount={total_amount} WHERE id={item.opid};")
+
         logger.debug(f"вернул товары, от которых отказались, на полку из заказа {order_id}")
         return flask.Response(status=200)
     except Exception as ex_:
@@ -262,28 +291,29 @@ def users_delete(users_id):
 @logger.catch
 @app.route('/add_items', methods=['GET', 'POST'])
 def add_items():
-    dollar = db.exec("SELECT id, price FROM dollar WHERE id=1;", 'fetchone')
+    dollar = as_class(db.exec("SELECT id, price FROM dollar WHERE id=1;", 'fetchone'))
     logger.debug(f'dollar: {dollar}')
     match request.method:
         case 'POST':
-            form = request.form.to_dict()
+            form = as_class(request.form.to_dict())
             logger.debug(form)
 
             logger.debug('Добавляем новый продукт')
             if 'productName' in form:
-                name = form['productName']
-                category_id = int(form['productCategory'])
-                brand = form['productBrand']
-                description = form.get('productDescription', '')
-                by_price = float(form['productByPrice'])
-                if form.get('productDollar', None) == 'on':
+                name = form.productName
+                category_id = int(form.productCategory)
+                brand = form.productBrand
+                description = form.productDescription
+                by_price = float(form.productByPrice)
+                if form.productDollar:
                     in_dollar = True
-                    sell_price = round(by_price * dollar['price'] * 1.5, 0)
+                    sell_price = round(by_price * dollar.price * 1.5, 0)
                 else:
                     in_dollar = False
                     sell_price = round(by_price * 1.5, 0)
-                amount = form.get('productAmount', 0)
-                image = form.get('productImagePath', '../../static/images/products/products-blank.png')
+
+                amount = form.productAmount
+                image = form.productImagePath
 
                 db.exec(
                     "INSERT INTO products "
@@ -295,11 +325,12 @@ def add_items():
 
             if 'categoryName' in form:
                 logger.debug('Добавляем новую категорию')
-                parent_id = form['categoryParentId']
-                name = form['categoryName']
-                image = form.get('productImagePath', '')
+
+                parent_id = form.categoryParentId
+                name = form.categoryName
+                image = form.productImagePath
                 db.exec("INSERT INTO categories (parent_id, name, image_path) "
-                                   f"VALUES({parent_id}, '{name}', '{image}');")
+                        f"VALUES({parent_id}, '{name}', '{image}');")
 
     categories_list = db.exec("Select * from categories", 'fetchall')
     return render_template('admin_add_items.html',
@@ -311,7 +342,6 @@ def main():
     scheduler = BackgroundScheduler()
     scheduler.add_job(Tasks.update_dollar_course, 'interval', hours=24)
     scheduler.start()
-    logger.debug(scheduler.print_jobs())
     try:
         app.run(host='0.0.0.0', port=1112, debug=True)
     except KeyboardInterrupt:

@@ -42,30 +42,35 @@
                     </div>
                 </div>
                 <div class="order_info">
-
-                    <div>
-                        <label for="Fio">Имя</label>
-                        <input type="text" name="Fio" id="fio" value="{{order.username}}" onfocusout="submit">
+                    <div class="order-info-left">
+                        <div>
+                            <label for="Fio">Имя</label>
+                            <input type="text" name="Fio" id="fio" value="{{order.username}}">
+                        </div>
+                        <div>
+                            <label for="Phone">Телефон</label>
+                            <input type="tel" name="Phone" id="phone" value="{{order.phone}}" pattern="(+7)[0-9]{10}" autocomplete="on" enterkeyhint="next"
+                                   maxlength="12" minlength="12">
+                        </div>
+                        <div>
+                            <label for="Email">Email</label>
+                            <input type="email" name="Email" id="email" value="{{order.email}}">
+                        </div>
                     </div>
-                    <div>
-                        <label for="Phone">Телефон</label>
-                        <input type="tel" name="Phone" id="phone" value="{{order.phone}}">
+                    <div class="order-info-right">
+                        <div>
+                            <label for="Address">Адрес</label>
+                            <input type="text" name="Address" id="address" value="{{order.address}}">
+                        </div>
+                        <div>
+                            <label for="Datetime">Дата доставки</label>
+                            <input type="date" name="Datetime" id="datetime" value="{{order.datetime}}">
+                        </div>
                     </div>
-                    <div>
-                        <label for="Email">Email</label>
-                        <input type="text" name="Email" id="email" value="{{order.email}}">
-                    </div>
-                    <div>
-                        <label for="Address">Адрес</label>
-                        <input type="text" name="Address" id="address" value="{{order.address}}">
-                    </div>
-                    <div>
-                        <label for="Datetime">Дата доставки</label>
-                        <input type="date" name="Datetime" id="datetime" value="{{order.datetime}}">
-                    </div>
-                    <div>
-                        <input type="text" hidden name="order_id" id="order_id" value="{{order.order_id}}">
-                    </div>
+                </div>
+                <div class="formButtons">
+                    <input type='button' value="Подтвердить изменения"
+                           onclick="submitOrderForm({{order.order_id}})">
                 </div>
             </div>
             <div class="right">
@@ -107,7 +112,9 @@
                                    value="{{position.amount}}" min="0">
                         </div>
                         <div class="removeColumn">
-                            <input type="button" value="Удалить из заказа" onclick="remove_subItem('order', {{order.order_id}}, {{position.id}})" style="color: red;">
+                            <input type="button" value="Удалить из заказа"
+                                   onclick="remove_subItem('order', {{order.order_id}}, {{position.id}})"
+                                   style="color: red;">
                         </div>
                     </div>
                     {% endfor %}
@@ -132,13 +139,8 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="formButtons">
-                    <input type='button' value="Подтвердить изменения" onclick="submitOrderForm({{order.order_id}})">
-                </div>
             </div>
         </div>
-
     </form>
 </main>
 

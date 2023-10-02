@@ -1,3 +1,4 @@
+import datetime
 import json
 from time import sleep
 from flask import Flask, render_template, request, make_response, redirect, url_for, abort
@@ -47,16 +48,29 @@ def category(category_name):
         products = db.exec(f"SELECT * FROM products WHERE category_id in "
                            f"(SELECT id FROM categories WHERE name='{category_name}')",
                            'fetchall')  # Получение товаров в выбранной категории
-        if len(cart_data):
-            logger.debug("Продукты:")
-            logger.debug(cart_data)
+        if products is None:
+            return render_template('user_category.html',
+                                   prev_category=prev_category,
+                                   category_name=category_name,
+                                   category=category,
+                                   subcategories=subcategories,
+                                   products=products)
 
-            for _product in products:
-                if str(_product['id']) in cart_data:
-                    _product['in_card'] = cart_data[str(_product['id'])]
-                    logger.debug(f"id: {_product['id']} | {_product['name']}: {_product['in_card']} in card")
-        else:
-            pass
+        if not len(cart_data):
+            return render_template('user_category.html',
+                                   prev_category=prev_category,
+                                   category_name=category_name,
+                                   category=category,
+                                   subcategories=subcategories,
+                                   products=products)
+
+        logger.debug("Продукты:")
+        logger.debug(cart_data)
+
+        for _product in products:
+            if str(_product['id']) in cart_data:
+                _product['in_card'] = cart_data[str(_product['id'])]
+                logger.debug(f"id: {_product['id']} | {_product['name']}: {_product['in_card']} in card")
 
         return render_template('user_category.html',
                                prev_category=prev_category,
@@ -194,9 +208,10 @@ def cart(error_description=None):
 
                 db.exec(
                     'INSERT into orders '
-                    '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime) values'
+                    '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime, creation_time) '
+                    'values '
                     f"({next_order_id}, {user_id}, 001, {row['id']}, {_product['price']}, {row['in_card']}, "
-                    f"'{order_place}', '{order_time}')"
+                    f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
                 )
 
                 db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row['id']};")

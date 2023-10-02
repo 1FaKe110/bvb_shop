@@ -62,26 +62,26 @@
         <form id="{{product.id}}" method="post">
             <tr>
                 <td>
-                    <input class="id_column" type="text" name="pr-id" id="pr-id" value="{{product.id}}" readonly
+                    <input class="id_column" type="text" name="pr_id" id="pr_id" value="{{product.id}}" readonly
                            style="width: 30px;">
                 </td>
                 <td>
-                    <input type="text" name="pr-brand" id="pr-brand" value="{{product.brand}}">
+                    <input type="text" name="pr_brand" id="pr_brand" value="{{product.brand}}">
                 </td>
                 <td>
-                    <input class="name_column" type="text" name="pr-name" id="pr-name" value="{{product.name}}">
+                    <input class="name_column" type="text" name="pr_name" id="pr_name" value="{{product.name}}">
                 </td>
                 <td>
-                    <input type="text" name="pr-description" id="pr-description" value="{{product.description}}">
+                    <input type="text" name="pr_description" id="pr_description" value="{{product.description}}">
                 </td>
                 <td>
-                    <input type="number" min="1" name="pr-by_price" id="pr-by_price" value="{{product.by_price}}">
+                    <input type="number" min="1" name="pr_by_price" id="pr_by_price" value="{{product.by_price}}">
                 </td>
                 <td>
-                    <input type="number" name="pr-price" id="pr-price" value="{{product.price}}">
+                    <input type="number" name="pr_price" id="pr_price" value="{{product.price}}">
                 </td>
                 <td>
-                    <select id="pr-price_dependency" name="pr-price_dependency">
+                    <select id="pr_price_dependency" name="pr_price_dependency">
                         {% if product.price_dependency == 1 %}
                         <option selected="selected" value="1">Да</option>
                         <option value="0">Нет</option>
@@ -92,11 +92,11 @@
                     </select>
                 </td>
                 <td>
-                    <input type="number" min="0" name="pr-amount" id="pr-amount" value="{{product.amount}}">
+                    <input type="number" min="0" name="pr_amount" id="pr_amount" value="{{product.amount}}">
                 </td>
                 <td>
                     <select id="categoryParentNameChoose" name="categoryParentName">
-                        <option selected="selected" value="{{product.category_id}}">{{product.name}}</option>
+                        <option selected="selected" value="{{product.category_id}}">{{categories[product.category_id].id}} | {{categories[product.category_id].name}}</option>
                         {% for category in categories %}
                         {% if category.parent_id %}
                         <option value="categories[{{category.id}}]">{{category.parent_id}} | {{category.name}}</option>
@@ -110,13 +110,13 @@
                     {% if product.image_path == '' %}
                     <span class="material-icons">qr_code_2</span>
                     {% else %}
-                    <img class="product-image" src="{{product.image_path}}" alt="{{product.name}}"
+                    <img class="product_image" src="{{product.image_path}}" alt="{{product.name}}"
                          style="width: 50px; height: 50px;">
                     {% endif %}
                 </td>
                 <td>
                 <div class="category_image">
-                    <input class="input-fields" type="text" id="new-ct-productImagePath" name="categoryImagePath"
+                    <input class="input-fields" type="text" id="new-ct_productImagePath" name="categoryImagePath"
                     placeholder="Ссылка на изображение" value="{{product.image_path}}">
                 </div>
                 </td>
