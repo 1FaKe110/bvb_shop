@@ -41,7 +41,7 @@ function removeFromCard(product_id) {
     var formDataCookie = getCookie('formData');
     if (formDataCookie) {
         var formData = JSON.parse(formDataCookie);
-        console.log("ID product_id продукта в cookie? " + (product_id in formData));
+        console.log("ID product_id " + product_id + " продукта в cookie? " + (product_id in formData));
         console.log(formData);
         if (product_id in formData) {
             addButton = form.querySelector('.add-to-card');
@@ -104,3 +104,6 @@ function saveFormData() {
     document.cookie = 'full_name=' + document.getElementById('full_name').value + '; path=/'
     document.cookie = 'order_place=' + document.getElementById('order_place').value + '; path=/'
 }
+
+
+// AIzaSyBYoCWzhnWyyP9gl6mltC0bbggc_Bo7y_U

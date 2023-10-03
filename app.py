@@ -131,7 +131,9 @@ def cart(error_description=None):
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
-    products = db.exec(f"SELECT * FROM products WHERE id in ({','.join(list(cart_data.keys()))})",
+    products = db.exec(f"SELECT * FROM products "
+                       f"WHERE id in ({','.join(list(cart_data.keys()))}) "
+                       f"order by id asc",
                        'fetchall')
 
     logger.info(f'request type: [{request.method}] ')

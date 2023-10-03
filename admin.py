@@ -111,7 +111,7 @@ def orders():
             logger.debug('Меняем что-то в заказах')
 
     orders_list = db.exec(
-        "Select distinct(order_id), user_id, status_id, address, cast(datetime as text), cast(creation_time as text), "
+        "Select distinct(order_id), user_id, status_id, address, cast(datetime as text), "
         "ose.id as status_id, ose.name "
         "from orders o "
         "inner join order_status ose on ose.id = o.status_id "
@@ -120,8 +120,17 @@ def orders():
 
     for order_obj in orders_list:
         order_obj.datetime = order_obj.datetime[:10]
-        order_obj.creation_time = order_obj.creation_time[:10]
         order_obj.sum = 0
+
+        order_adds = db.exec("Select cast(cast(o.creation_time as date) as text), "
+                             "o.status_id, "
+                             "os.name as status_name "
+                             "from orders o "
+                             "inner join order_status os on os.id = o.status_id "
+                             f"where order_id = {order_obj.order_id} "
+                             f"order by order_id desc "
+                             f"limit 1", 'fetchone')
+        order_obj |= order_adds
         order_obj.positions = db.exec(
             "select p.id as id, "
             "p.name as name, "
@@ -129,18 +138,16 @@ def orders():
             "o.amount as amount "
             "from orders o "
             "LEFT JOIN products p on p.id = o.position_id "
-            "WHERE TRUE "
-            f"and order_id = {order_obj.order_id} "
+            f"WHERE order_id = {order_obj.order_id} "
             f"order by order_id asc",
             "fetchall"
         )
         for position in order_obj.positions:
             order_obj.sum += position.price * position.amount
 
-    order_statuses = db.exec("Select * from order_status", 'fetchall')
+    logger.debug(json.dumps(orders_list, ensure_ascii=False, indent=2))
     return render_template('admin_orders.html',
-                           orders=orders_list,
-                           order_statuses=order_statuses)
+                           orders=orders_list)
 
 
 @logger.catch
@@ -177,8 +184,8 @@ def order(order_id):
         "o.amount as amount "
         "from orders o "
         "LEFT JOIN products p on p.id = o.position_id "
-        "WHERE TRUE "
-        f"and order_id = {order_id};",
+        f"WHERE order_id = {order_id} "
+        "order by p.id asc",
         "fetchall"
     )
     for position in order_obj.positions:
@@ -228,27 +235,27 @@ def order_update(order_id):
     logger.debug(json.dumps(request.json, indent=2, ensure_ascii=False))
     data = as_class(request.json)
 
-    cur_order_status = db.exec(f"select distinct(order_id), status_id "
+    order_mini_info = db.exec(f"select distinct(order_id), status_id, user_id "
                                f"from orders "
-                               f"where order_id = {order_id} ", 'fetchone').status_id
-    if str(cur_order_status) != data.status.id:
+                               f"where order_id = {order_id} ", 'fetchone')
+    if str(order_mini_info.status_id) != data.status.id:
         switch = db.exec("SELECT in_state, out_state "
                          "FROM public.order_status_matrix "
-                         f"WHERE in_state = {cur_order_status} and "
+                         f"WHERE in_state = {order_mini_info.status_id} and "
                          f"out_state = {data.status.id};", 'fetchone')
         if switch is None:
             logger.error("Попытка смены статуса не разрешенного в матрице!")
         else:
-            logger.debug(f"Обновляю статус заказа [{cur_order_status} -> {data.status.id}]")
+            logger.debug(f"Обновляю статус заказа [{order_mini_info.status_id} -> {data.status.id}]")
             db.exec(f"UPDATE orders SET status_id={data.status.id} WHERE order_id={order_id};")
     else:
-        logger.debug(f'Статус заказа не изменен: {cur_order_status}')
+        logger.debug(f'Статус заказа не изменен: {order_mini_info.status_id} -> {data.status.id}')
 
     db.exec(f"UPDATE public.users "
             f"SET username='{data.user.fio}', "
             f"phone='{data.user.phone}', "
-            f"email='{data.user.email}'"
-            f"WHERE id={order_id};")
+            f"email='{data.user.email}' "
+            f"WHERE id={order_mini_info.user_id};")
     logger.debug(f"данные о клиенте [{data.user.phone}] обновлены!")
 
     for pos in data.positions:
@@ -262,16 +269,17 @@ def order_update(order_id):
 
         o_delta = pr_reply.oam - int(pos.Amount)
         if not o_delta:
-            logger.debug("Кол-во товаров в заказе не изменилось")
+            logger.debug(f"Кол-во товара №{pr_reply.opid} в заказе №{order_id} не изменилось")
         elif o_delta < 0:
-            logger.debug("В заказе есть доп списания")
+            logger.debug(f"В заказе {order_id} есть доп списания по товару №{pr_reply.opid}")
             new_pr_amount = pr_reply.pam - abs(o_delta)
             new_or_amount = pr_reply.oam + abs(o_delta)
             if new_pr_amount < 0:
                 logger.warning(f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}")
-                logger.debug("Остатки изменены не будут")
+                logger.debug(f"Остатки товара #{pr_reply.opid} изменены не будут")
             else:
-                logger.debug(f"Дополнительно списываю товар #{pr_reply.opid} в кол-ве {o_delta} шт по заказу №{order_id}")
+                logger.debug(
+                    f"Дополнительно списываю товар #{pr_reply.opid} в кол-ве {o_delta} шт по заказу №{order_id}")
                 update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply)
         else:
             new_pr_amount = pr_reply.pam + abs(o_delta)
@@ -279,10 +287,12 @@ def order_update(order_id):
 
             if new_or_amount < 0:
                 logger.warning(f"Попытка возврата товара #{pr_reply.opid}, которого не хватит на {pr_reply.oam}")
-                logger.debug("Остатки изменены не будут")
+                logger.debug(f"Остатки товара #{pr_reply.opid} изменены не будут")
             else:
-                logger.debug(f"Возвращаю на полки товар #{pr_reply.opid} в кол-ве {o_delta} шт.")
+                logger.debug(f"Возвращаю на полки товар #{pr_reply.opid} в кол-ве №{o_delta} шт.")
                 update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply)
+
+    return flask.Response(status=200)
 
 
 def update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply):
