@@ -20,7 +20,7 @@ bot = Telebot()
 def index():
     """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
-    categories = db.exec('SELECT * FROM categories WHERE parent_id is Null',
+    categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
                          'fetchall')
     return render_template('user_index.html',
                            categories=categories)
@@ -179,9 +179,9 @@ def cart(error_description=None):
 
             else:
                 orders_info = db.exec("select distinct(order_id), address, creation_time, status_id "
-                                     "from orders "
-                                     f"where user_id = {user_id}",
-                                     'fetchall')
+                                      "from orders "
+                                      f"where user_id = {user_id}",
+                                      'fetchall')
                 for _order in orders_info:
                     is_date_valid = _order.creation_time.date() == datetime.date.today()
                     is_status_valid = _order.status_id == 1
@@ -196,7 +196,7 @@ def cart(error_description=None):
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
                         f" Телефон - {phone}\n"
-                        f" Сумма заказа - {order['sum']}\n"
+                        f" Сумма заказа - {order.sum}\n"
                         f" Место доставки - {order_place}\n"
                         f" Время доставки - {order_time}\n"
                         f" Корзина:")

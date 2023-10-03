@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 from munch import DefaultMunch
 
-load_dotenv('../config/settings.env')
+load_dotenv('./config/settings.env')
 as_class = DefaultMunch.fromDict
 
 
