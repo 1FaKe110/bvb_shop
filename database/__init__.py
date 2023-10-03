@@ -5,8 +5,11 @@ import psycopg2
 from psycopg2 import extras
 import os
 from dotenv import load_dotenv
+from munch import DefaultMunch
 
 load_dotenv('../config/settings.env')
+as_class = DefaultMunch.fromDict
+
 
 
 class ReplyFormatter:
@@ -24,7 +27,7 @@ class ReplyFormatter:
         if not add_keys: return data
 
         keys = [row[0] for row in cursor.description]
-        return dict(zip(keys, data))
+        return DefaultMunch.fromDict(dict(zip(keys, data)))
 
     @staticmethod
     def fetchAll(cursor) -> List[dict] | None:
@@ -39,7 +42,7 @@ class ReplyFormatter:
         if not len(data):
             return None
         else:
-            return [dict(zip(keys, row)) for row in data]
+            return DefaultMunch.fromDict([dict(zip(keys, row)) for row in data])
 
 
 class PostgresqlDb:
@@ -93,14 +96,14 @@ class PostgresqlDb:
                         if reply is not None:
                             [logger.trace(row) for row in reply]
                         else:
-                            logger.debug(f' Reply: {reply}')
+                            logger.debug(f"DB reply: {reply}")
                         return reply
                     case 'fetchone':
                         reply = ReplyFormatter.fetchOne(cursor, add_keys=True)
                         if reply is not None:
                             [logger.trace(row) for row in reply]
                         else:
-                            logger.debug(reply)
+                            logger.debug(f"DB reply: {reply}")
                         return reply
                     case '':
                         return None
@@ -115,11 +118,3 @@ db = PostgresqlDb(
     username=os.getenv('db_username'),
     password=os.getenv('db_password'),
 )
-
-# db = PostgresqlDb(
-#     host='rc1b-n347sd0msta4wqdq.mdb.yandexcloud.net',
-#     port=6432,
-#     name='bvb_shop',
-#     username='admin_bvb',
-#     password='admin_bvb',
-# )

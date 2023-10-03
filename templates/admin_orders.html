@@ -44,8 +44,9 @@
             <th>Сумма заказа</th>
             <th>Адрес доставки</th>
             <th>Дата доставки</th>
+            <th>Дата создания заказа</th>
             <th>Статус</th>
-            <th>Управление</th>
+<!--            <th>Управление</th>-->
         </tr>
         </thead>
         {% for order in orders %}
@@ -63,27 +64,24 @@
                 </td>
                 <td>
                     <input type="text" id="{{order.address}}" name="orderAddress" value="{{order.address}}"
-                           required>
+                           required readonly>
                 </td>
                 <td>
                     <input type="date" id="order_datetime" name="orderDatetime"
-                           value="{{order.datetime}}" required>
+                           value="{{order.datetime}}" required readonly>
                 </td>
                 <td>
-                    <select id="order_statuses" name="orderStatus">
-                        {% for status in order_statuses %}
-                        {% if order.status_id == status.id %}
-                        <option selected="selected" value="{{status.id}}">{{status.name}}</option>
-                        {% else %}
-                        <option value="{{status.id}}">{{status.name}}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
+                    <input type="date" id="order_creation_datetime" name="orderCreationDatetime"
+                           value="{{order.creation_time}}" required readonly>
                 </td>
                 <td>
-                    <input type="submit" value="Подтвердить">
-                    <input type="button" value="Удалить" onclick="remove_item('order', {{order.order_id}})">
+                    <input type="text" id="orderStatus" name="orderStatus" value="{{order.status_name}}"
+                           required readonly>
                 </td>
+<!--                <td>-->
+<!--                    <input type="submit" value="Подтвердить">-->
+<!--                    <input type="button" value="Удалить" onclick="remove_item('order', {{order.order_id}})">-->
+<!--                </td>-->
             </tr>
         </form>
 

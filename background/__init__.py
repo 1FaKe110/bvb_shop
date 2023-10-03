@@ -14,7 +14,7 @@ class Tasks:
     @staticmethod
     def update_dollar_course():
         # Выполните запрос к API для получения курса доллара к рублю
-        dollar = as_class(db.exec('select * from dollar', 'fetchone'))
+        dollar = db.exec('select * from dollar', 'fetchone')
 
         update_delta = datetime.datetime.now() - dollar.last_update
         if update_delta.total_seconds() <= 3600:
@@ -34,11 +34,11 @@ class Tasks:
                 f"last_update='{datetime.datetime.now().isoformat()}' "
                 f"WHERE id=1;")
 
-        products = as_class(db.exec(
+        products = db.exec(
             "Select id, by_price, price_dependency "
             "from products ",
             "fetchall"
-        ))
+        )
         logger.debug('Обновляю цены товаров')
         for product in products:
             if product.price_dependency:
@@ -47,7 +47,7 @@ class Tasks:
                 price = round(product.by_price * 1.5, 0)
 
             db.exec(
-                f'UPDATE products SET price={price} WHERE id={product["id"]};'
+                f'UPDATE products SET price={price} WHERE id={product.id};'
             )
 
 

@@ -96,10 +96,10 @@
                 </td>
                 <td>
                     <select id="categoryParentNameChoose" name="categoryParentName">
-                        <option selected="selected" value="{{product.category_id}}">{{categories[product.category_id].id}} | {{categories[product.category_id].name}}</option>
+                        <option selected="selected" value="{{product.category_id}}">{{categories[product.category_id - 1].parent_id}} | {{categories[product.category_id - 1].name}}</option>
                         {% for category in categories %}
                         {% if category.parent_id %}
-                        <option value="categories[{{category.id}}]">{{category.parent_id}} | {{category.name}}</option>
+                        <option value="{{category.id}}">{{category.parent_id}} | {{category.name}}</option>
                         {% else %}
                         <option value="{{category.id}}">{{category.name}}</option>
                         {% endif %}

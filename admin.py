@@ -34,9 +34,9 @@ def categories():
             ct_id = form.ct_id.replace('.', '')
             ct_name = form.ct_name
             ct_image_path = form.categoryImagePath
-            db.exec(
-                f"UPDATE categories SET name='{ct_name}', image_path='{ct_image_path}' WHERE id={ct_id};"
-            )
+            db.exec(f"UPDATE categories SET "
+                    f"name='{ct_name}', image_path='{ct_image_path}' "
+                    f"WHERE id={ct_id};")
 
     categories_list = db.exec("Select * from categories order by id asc", 'fetchall')
     return render_template('admin_categories.html',
@@ -61,7 +61,7 @@ def products():
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
-            logger.debug(form)
+            logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
 
             logger.debug('Меняем что-то в продуктах')
 
@@ -72,8 +72,8 @@ def products():
                 f"price={form.pr_price}, "
                 f"amount={form.pr_amount}, "
                 f"brand='{form.pr_brand}', "
-                f"price_dependency={form.pr_price_dependency}, "
-                f"category_id={form.categoryParentName}, "
+                f"price_dependency={bool(form.pr_price_dependency)}, "
+                f"category_id={int(form.categoryParentName)}, "
                 f"image_id=Null, "
                 f"description='{form.pr_description}', "
                 f"image_path='{form.categoryImagePath}' "
@@ -110,17 +110,19 @@ def orders():
             logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    orders_list = as_class(db.exec(
-        "Select distinct(order_id), user_id, status_id, address, cast(datetime as text), "
+    orders_list = db.exec(
+        "Select distinct(order_id), user_id, status_id, address, cast(datetime as text), cast(creation_time as text), "
         "ose.id as status_id, ose.name "
         "from orders o "
         "inner join order_status ose on ose.id = o.status_id "
         "order by order_id asc",
-        'fetchall'))
+        'fetchall')
+
     for order_obj in orders_list:
         order_obj.datetime = order_obj.datetime[:10]
+        order_obj.creation_time = order_obj.creation_time[:10]
         order_obj.sum = 0
-        order_obj.positions = as_class(db.exec(
+        order_obj.positions = db.exec(
             "select p.id as id, "
             "p.name as name, "
             "p.price as price, "
@@ -131,7 +133,7 @@ def orders():
             f"and order_id = {order_obj.order_id} "
             f"order by order_id asc",
             "fetchall"
-        ))
+        )
         for position in order_obj.positions:
             order_obj.sum += position.price * position.amount
 
@@ -150,7 +152,7 @@ def order(order_id):
             logger.debug(json.dumps(form.__dict__, indent=2, ensure_ascii=False))
             logger.debug('Меняем что-то в заказах')
 
-    order_obj = as_class(db.exec(
+    order_obj = db.exec(
         "Select distinct(order_id), "
         "status_id, address, "
         "cast(datetime as text), "
@@ -161,14 +163,14 @@ def order(order_id):
         "inner join order_status ose on ose.id = o.status_id "
         "inner join users u on o.user_id = u.id "
         f"where order_id = {order_id}",
-        'fetchone'))
+        'fetchone')
 
     if not len(order_obj):
         return redirect(url_for('orders'))
 
     order_obj.datetime = order_obj.datetime[:10]
     order_obj.sum = 0
-    order_obj.positions = as_class(db.exec(
+    order_obj.positions = db.exec(
         "select p.id as id, "
         "p.name as name, "
         "p.price as price, "
@@ -178,12 +180,20 @@ def order(order_id):
         "WHERE TRUE "
         f"and order_id = {order_id};",
         "fetchall"
-    ))
+    )
     for position in order_obj.positions:
         order_obj.sum += position.price * position.amount
 
     logger.debug(json.dumps(order_obj, indent=2, ensure_ascii=False))
-    order_statuses = db.exec("Select * from order_status order by id asc", 'fetchall')
+    cur_order_status = db.exec(f"select distinct(order_id), status_id "
+                               f"from orders "
+                               f"where order_id = {order_id} ", 'fetchone').status_id
+    order_statuses = db.exec(f"Select * from order_status "
+                             f"where id in "
+                             f"(SELECT out_state "
+                             f"FROM public.order_status_matrix "
+                             f"where in_state = {cur_order_status}) "
+                             f"order by id asc;", 'fetchall')
     return render_template('admin_order_detailed.html',
                            order=order_obj,
                            order_statuses=order_statuses)
@@ -195,14 +205,14 @@ def order_delete(order_id):
     logger.debug(f"Removing order with id: {order_id}")
 
     try:
-        db.exec(f"UPDATE orders SET status_id=4 WHERE order_id={order_id};")
+        db.exec(f"UPDATE orders SET status_id=5 WHERE order_id={order_id};")
         item_list = db.exec(f"SELECT o.position_id as opid, o.amount as oam, p.amount as pam "
                             "from orders o "
                             "inner join products p on p.id = o.position_id "
                             f"where order_id={order_id};")
         for item in item_list:
-            total_price = item['oam'] + item['pam']
-            db.exec(f"UPDATE products SET amount={total_price} WHERE id={item['opid']};")
+            total_amount = item.oam + item.pam
+            db.exec(f"UPDATE products SET amount={total_amount} WHERE id={item.opid};")
 
         logger.debug("вернул товары из удаленного заказа на полки")
         return flask.Response(status=200)
@@ -215,34 +225,69 @@ def order_delete(order_id):
 def order_update(order_id):
     """update order in database"""
     logger.debug(f"updating order with id: {order_id}")
-
     logger.debug(json.dumps(request.json, indent=2, ensure_ascii=False))
     data = as_class(request.json)
+
+    cur_order_status = db.exec(f"select distinct(order_id), status_id "
+                               f"from orders "
+                               f"where order_id = {order_id} ", 'fetchone').status_id
+    if str(cur_order_status) != data.status.id:
+        switch = db.exec("SELECT in_state, out_state "
+                         "FROM public.order_status_matrix "
+                         f"WHERE in_state = {cur_order_status} and "
+                         f"out_state = {data.status.id};", 'fetchone')
+        if switch is None:
+            logger.error("Попытка смены статуса не разрешенного в матрице!")
+        else:
+            logger.debug(f"Обновляю статус заказа [{cur_order_status} -> {data.status.id}]")
+            db.exec(f"UPDATE orders SET status_id={data.status.id} WHERE order_id={order_id};")
+    else:
+        logger.debug(f'Статус заказа не изменен: {cur_order_status}')
 
     db.exec(f"UPDATE public.users "
             f"SET username='{data.user.fio}', "
             f"phone='{data.user.phone}', "
             f"email='{data.user.email}'"
             f"WHERE id={order_id};")
+    logger.debug(f"данные о клиенте [{data.user.phone}] обновлены!")
 
     for pos in data.positions:
-        pr_reply = as_class(
-            db.exec(f"SELECT o.position_id as opid, "
-                    f"o.amount as oam, "
-                    f"p.amount as pam "
-                    "from orders o "
-                    "inner join products p on p.id = o.position_id "
-                    f"where o.order_id={order_id} and o.position_id={pos.Id};",
-                    'fetchall'))
+        pr_reply = db.exec(f"SELECT o.position_id as opid, "
+                           f"o.amount as oam, "
+                           f"p.amount as pam "
+                           "from orders o "
+                           "inner join products p on p.id = o.position_id "
+                           f"where o.order_id={order_id} and o.position_id={pos.Id};",
+                           'fetchone')
 
-        o_delta = pr_reply.oam - pos.Amount
-        if pr_reply.pam - o_delta == 0:
-            pass
-        elif pr_reply.pam - o_delta < 0:
-            logger.error(f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}")
-            return flask.Response(status=500)
+        o_delta = pr_reply.oam - int(pos.Amount)
+        if not o_delta:
+            logger.debug("Кол-во товаров в заказе не изменилось")
+        elif o_delta < 0:
+            logger.debug("В заказе есть доп списания")
+            new_pr_amount = pr_reply.pam - abs(o_delta)
+            new_or_amount = pr_reply.oam + abs(o_delta)
+            if new_pr_amount < 0:
+                logger.warning(f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}")
+                logger.debug("Остатки изменены не будут")
+            else:
+                logger.debug(f"Дополнительно списываю товар #{pr_reply.opid} в кол-ве {o_delta} шт по заказу №{order_id}")
+                update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply)
+        else:
+            new_pr_amount = pr_reply.pam + abs(o_delta)
+            new_or_amount = pr_reply.oam - abs(o_delta)
+
+            if new_or_amount < 0:
+                logger.warning(f"Попытка возврата товара #{pr_reply.opid}, которого не хватит на {pr_reply.oam}")
+                logger.debug("Остатки изменены не будут")
+            else:
+                logger.debug(f"Возвращаю на полки товар #{pr_reply.opid} в кол-ве {o_delta} шт.")
+                update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply)
 
 
+def update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply):
+    db.exec(f"UPDATE public.products SET amount={new_pr_amount} WHERE id={pr_reply.opid};")
+    db.exec(f"UPDATE public.orders SET amount={new_or_amount} WHERE position_id={pr_reply.opid};")
 
 
 @logger.catch
@@ -251,12 +296,13 @@ def order_delete_item(order_id, item_id):
     """Delete order from database"""
     logger.debug(f"Removing item #{item_id} from order_id #{order_id}")
     try:
-        item_list = as_class(db.exec(f"SELECT o.position_id as opid, "
-                                     f"o.amount as oam, p.amount as pam "
-                                     "from orders o "
-                                     "inner join products p on p.id = o.position_id "
-                                     f"where o.order_id={order_id} and o.position_id={item_id};",
-                                     'fetchall'))
+        item_list = db.exec(f"SELECT o.position_id as opid, "
+                            f"o.amount as oam, "
+                            f"p.amount as pam "
+                            "from orders o "
+                            "inner join products p on p.id = o.position_id "
+                            f"where o.order_id={order_id} and o.position_id={item_id};",
+                            'fetchall')
         db.exec(f"DELETE FROM orders WHERE order_id={order_id} and position_id={item_id};")
         for item in item_list:
             total_amount = item.oam + item.pam
@@ -291,8 +337,8 @@ def users_delete(users_id):
 @logger.catch
 @app.route('/add_items', methods=['GET', 'POST'])
 def add_items():
-    dollar = as_class(db.exec("SELECT id, price FROM dollar WHERE id=1;", 'fetchone'))
-    logger.debug(f'dollar: {dollar}')
+    dollar = db.exec("SELECT id, price FROM dollar WHERE id=1;", 'fetchone')
+    logger.debug(f'dollar: {dollar.price}')
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
@@ -338,19 +384,6 @@ def add_items():
                            dollar=dollar)
 
 
-def main():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(Tasks.update_dollar_course, 'interval', hours=24)
-    scheduler.start()
-    try:
-        app.run(host='0.0.0.0', port=1112, debug=True)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        logger.debug("scheduler: shutdown")
-        scheduler.shutdown()
-
-
 @app.errorhandler(404)
 def page_not_found(error):
     """Страница 'страница не найдена'"""
@@ -368,6 +401,19 @@ def nonexistent_page():
     """Пример эндпоинта, которого нет"""
     # Генерируем ошибку 404 "Страница не найдена"
     abort(500)
+
+
+def main():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(Tasks.update_dollar_course, 'interval', hours=24)
+    scheduler.start()
+    try:
+        app.run(host='0.0.0.0', port=1112, debug=True)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        logger.debug("scheduler: shutdown")
+        scheduler.shutdown()
 
 
 if __name__ == '__main__':

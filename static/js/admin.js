@@ -124,7 +124,7 @@ function submitOrderForm(orderId) {
     let data = {}
     data['user'] = user_data
     data['positions'] = positions_data
-    data['order'] = status_data
+    data['status'] = status_data
 
     postData('/order/' + orderId + '/update', data=data, method='POST')
 }
