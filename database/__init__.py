@@ -11,7 +11,6 @@ load_dotenv('../config/settings.env')
 as_class = DefaultMunch.fromDict
 
 
-
 class ReplyFormatter:
     @staticmethod
     def fetchOne(cursor, add_keys=False) -> Dict | None:
