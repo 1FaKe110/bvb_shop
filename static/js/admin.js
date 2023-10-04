@@ -127,4 +127,9 @@ function submitOrderForm(orderId) {
     data['status'] = status_data
 
     postData('/order/' + orderId + '/update', data=data, method='POST')
+    //window.location.replace('/order/' + orderId + '/')
+    //    delay(1000).then(() => console.log('waited 1 sec'))
+    //    location.reload();
+    alert("Данные заказа №" + orderId + " обновлены")
+    location.reload(true);
 }
