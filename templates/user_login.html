@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Страница логина</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin_login.css') }}">
+</head>
+<body>
+<div class="login-container">
+    <h2>Вход в личный кабинет</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="error-messages">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <form class="login-form" action="/login" method="post">
+        <div class="inputs">
+            <input type="text" name="username" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+        </div>
+        <p>Нет аккаунта? <a href="{{url_for('register')}}">Регистрация</a></p>
+        <button type="submit">Войти</button>
+    </form>
+</div>
+</body>
+</html>

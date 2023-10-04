@@ -1,7 +1,9 @@
 import json
+import os
 
 import flask
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 from database import db
 from loguru import logger
@@ -9,22 +11,74 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
 from munch import DefaultMunch
 
-as_class = DefaultMunch.fromDict
+from dotenv import load_dotenv
+
+load_dotenv('./config/settings.env')
 
 Tasks.update_dollar_course()
+as_class = DefaultMunch.fromDict
 app = Flask(__name__)
+app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
 CORS(app)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if 'username' in session:
+        return redirect(url_for('index'))
+
+    """Обработчик для входа"""
+    if request.method == 'POST':
+        _login = request.form['username']
+        password = request.form["password"]
+
+        user_info = db.exec(f"Select login, password, is_admin "
+                            f"from users "
+                            f"where login = '{_login}'", "fetchone")
+
+        if user_info is None:
+            logger.info('Пользователь не найден')
+            flash('Пользователь не найден', 'error')
+            return render_template('admin_login.html')
+
+        if not check_password_hash(user_info.password, password):
+            logger.info('Не верный пароль')
+            flash('Не верный логин или пароль', 'error')
+            return render_template('admin_login.html')
+
+        if not user_info.is_admin:
+            logger.info("Пользователь не является администратором")
+            flash('Пользователь не является администратором', 'error')
+
+        session['username'] = _login  # устанавливаем сессию
+        return redirect(url_for('orders'))
+
+    return render_template('admin_login.html')
+
+
+@app.route('/logout')
+def logout():
+    """Выход из личного кабинета"""
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 
 @logger.catch
 @app.route('/')
 def index():
+    logger.debug(session)
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return redirect(url_for('categories'))
 
 
 @logger.catch
 @app.route('/categories', methods=['GET', 'POST'])
 def categories():
+    logger.debug(session)
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
@@ -46,6 +100,11 @@ def categories():
 @app.route('/categories/<category_id>/delete', methods=['DELETE'])
 def categories_delete(category_id):
     """Delete product from database"""
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+
     logger.debug(f"Removing categories with id: {category_id}")
     try:
         db.exec(f"DELETE FROM categories WHERE id={category_id};")
@@ -58,6 +117,9 @@ def categories_delete(category_id):
 @logger.catch
 @app.route('/products', methods=['GET', 'POST'])
 def products():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
@@ -91,6 +153,9 @@ def products():
 
 @app.route('/products/<product_id>/delete', methods=['DELETE'])
 def products_delete(product_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     """Delete product from database"""
     logger.debug(f"Removing product with id: {product_id}")
     try:
@@ -104,6 +169,9 @@ def products_delete(product_id):
 @logger.catch
 @app.route('/orders', methods=['GET', 'POST'])
 def orders():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
@@ -153,6 +221,10 @@ def orders():
 @logger.catch
 @app.route('/order/<int:order_id>', methods=['GET', 'POST'])
 def order(order_id):
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     match request.method:
         case 'POST':
             form = as_class(request.form.to_dict())
@@ -209,6 +281,10 @@ def order(order_id):
 @app.route('/order/<order_id>/delete', methods=['DELETE'])
 def order_delete(order_id):
     """Delete order from database"""
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     logger.debug(f"Removing order with id: {order_id}")
 
     try:
@@ -231,13 +307,17 @@ def order_delete(order_id):
 @app.route('/order/<order_id>/update', methods=['POST'])
 def order_update(order_id):
     """update order in database"""
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     logger.debug(f"updating order with id: {order_id}")
     logger.debug(json.dumps(request.json, indent=2, ensure_ascii=False))
     data = as_class(request.json)
 
     order_mini_info = db.exec(f"select distinct(order_id), status_id, user_id "
-                               f"from orders "
-                               f"where order_id = {order_id} ", 'fetchone')
+                              f"from orders "
+                              f"where order_id = {order_id} ", 'fetchone')
     if str(order_mini_info.status_id) != data.status.id:
         switch = db.exec("SELECT in_state, out_state "
                          "FROM public.order_status_matrix "
@@ -304,6 +384,10 @@ def update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply):
 @app.route('/order/<order_id>/delete/<item_id>', methods=['DELETE'])
 def order_delete_item(order_id, item_id):
     """Delete order from database"""
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     logger.debug(f"Removing item #{item_id} from order_id #{order_id}")
     try:
         item_list = db.exec(f"SELECT o.position_id as opid, "
@@ -328,6 +412,9 @@ def order_delete_item(order_id, item_id):
 @logger.catch
 @app.route('/users', methods=['GET', 'POST'])
 def users():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     return render_template('admin_not-ready.html')
     # return render_template('admin_users.html')
 
@@ -335,6 +422,10 @@ def users():
 @app.route('/users/delete/<users_id>', methods=['DELETE'])
 def users_delete(users_id):
     """Delete order from database"""
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     logger.debug(f"Removing user with id: {users_id}")
     try:
         db.exec(f"DELETE FROM users WHERE order_id={users_id};")
@@ -347,6 +438,9 @@ def users_delete(users_id):
 @logger.catch
 @app.route('/add_items', methods=['GET', 'POST'])
 def add_items():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     dollar = db.exec("SELECT id, price FROM dollar WHERE id=1;", 'fetchone')
     logger.debug(f'dollar: {dollar.price}')
     match request.method:

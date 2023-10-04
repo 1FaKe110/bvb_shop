@@ -1,18 +1,98 @@
 import datetime
+import hashlib
 import json
+import os
 from time import sleep
-from flask import Flask, render_template, request, make_response, redirect, url_for, abort
 from flask_cors import CORS
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from munch import DefaultMunch
 
 from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
+from dotenv import load_dotenv
+
+load_dotenv('./config/settings.env')
+
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
+app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
 CORS(app)
 bot = Telebot()
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Обработчик для входа"""
+    if request.method == 'POST':
+        login = request.form['username']
+        hashed_password = generate_password_hash(request.form["password"])
+
+        logger.info(f'Хэш пароля: {hashed_password}')
+
+        user_info = db.exec(f"Select login, password "
+                            f"from users "
+                            f"where login = '{login}'", "fetchone")
+
+        if user_info is None:
+            logger.info('Пользователь не найден')
+            flash('Пользователь не найден', 'error')
+            return render_template('user_login.html')
+
+        if not check_password_hash(user_info.password, request.form['password']):
+            logger.info('Не верный пароль')
+            flash('Не верный логин или пароль', 'error')
+            return render_template('user_login.html')
+
+        session['username'] = login  # устанавливаем сессию
+        return redirect(url_for('index'))
+
+    return render_template('user_login.html')
+
+
+
+@app.route('/logout')
+def logout():
+    """Выход из личного кабинета"""
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Обработчик для регистрации"""
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Проверка на наличие пользователя в бд по номеру телефона
+        user_info = db.exec(f"SELECT phone FROM users WHERE login = '{username}'", 'fetchall')
+        if user_info:
+            flash('Пользователь с таким номером телефона уже существует', 'error')
+            return redirect(url_for('login'))
+
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+        db.exec("INSERT INTO public.users "
+                "(username, phone, password, is_registered, login, user_display_name) "
+                "VALUES"
+                f"('{username}', '+79774986485', '{hashed_password}', true, '{username}', '{username}');")
+
+        session['username'] = login  # устанавливаем сессию
+        return redirect(url_for('index'))
+
+    return render_template('user_register.html')
+
+
+@app.route('/profile')
+def profile():
+    """Страница профиля пользователя"""
+    if 'username' in session:
+        return render_template('profile.html')
+
+    return redirect(url_for('login'))
 
 
 @logger.catch

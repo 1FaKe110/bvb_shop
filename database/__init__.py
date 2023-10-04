@@ -4,9 +4,9 @@ from typing import List, Dict
 import psycopg2
 from psycopg2 import extras
 import os
-from dotenv import load_dotenv
 from munch import DefaultMunch
 
+from dotenv import load_dotenv
 load_dotenv('./config/settings.env')
 as_class = DefaultMunch.fromDict
 
@@ -26,7 +26,7 @@ class ReplyFormatter:
         if not add_keys: return data
 
         keys = [row[0] for row in cursor.description]
-        return DefaultMunch.fromDict(dict(zip(keys, data)))
+        return as_class(dict(zip(keys, data)))
 
     @staticmethod
     def fetchAll(cursor) -> List[dict] | None:
@@ -41,7 +41,7 @@ class ReplyFormatter:
         if not len(data):
             return None
         else:
-            return DefaultMunch.fromDict([dict(zip(keys, row)) for row in data])
+            return as_class([dict(zip(keys, row)) for row in data])
 
 
 class PostgresqlDb:
