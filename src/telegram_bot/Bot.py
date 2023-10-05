@@ -1,13 +1,14 @@
 import json
 
 import telebot
-from telebot import types
 from loguru import logger
 from database import db
+import os
+
 
 # Включаем логирование, чтобы не пропустить важные сообщения
-BOT_TOKEN = '6542986021:AAGhL8Yf4bTLdI5cf48Pf6ryksmaFJW6-7c'
-CHANNEL_ID = '-1001845833328'
+BOT_TOKEN = os.getenv("bot_token")
+CHANNEL_ID = os.getenv("channel_id")
 
 
 class Telebot:

@@ -12,9 +12,6 @@ from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
-from dotenv import load_dotenv
-
-load_dotenv('./config/settings.env')
 
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
@@ -39,17 +36,17 @@ def login():
         if user_info is None:
             logger.info('Пользователь не найден')
             flash('Пользователь не найден', 'error')
-            return render_template('user_login.html')
+            return render_template('login.html')
 
         if not check_password_hash(user_info.password, request.form['password']):
             logger.info('Не верный пароль')
             flash('Не верный логин или пароль', 'error')
-            return render_template('user_login.html')
+            return render_template('login.html')
 
         session['username'] = login  # устанавливаем сессию
         return redirect(url_for('index'))
 
-    return render_template('user_login.html')
+    return render_template('login.html')
 
 
 
@@ -83,7 +80,7 @@ def register():
         session['username'] = login  # устанавливаем сессию
         return redirect(url_for('index'))
 
-    return render_template('user_register.html')
+    return render_template('register.html')
 
 
 @app.route('/profile')
@@ -102,7 +99,7 @@ def index():
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
                          'fetchall')
-    return render_template('user_index.html',
+    return render_template('index.html',
                            categories=categories)
 
 
@@ -133,7 +130,7 @@ def category(category_name):
         products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id}'",
                            'fetchall')  # Получение товаров в выбранной категории
 
-        return render_template('user_category.html',
+        return render_template('category.html',
                                prev_category=prev_category,
                                category_name=category_name,
                                category=category,
@@ -147,7 +144,7 @@ def category(category_name):
                        f"(SELECT id FROM categories WHERE name='{category_name}')",
                        'fetchall')  # Получение товаров в выбранной категории
     if products is None:
-        return render_template('user_category.html',
+        return render_template('category.html',
                                prev_category=prev_category,
                                category_name=category_name,
                                category=category,
@@ -155,7 +152,7 @@ def category(category_name):
                                products=products)
 
     if not len(cart_data):
-        return render_template('user_category.html',
+        return render_template('category.html',
                                prev_category=prev_category,
                                category_name=category_name,
                                category=category,
@@ -167,7 +164,7 @@ def category(category_name):
             _product.in_card = cart_data[str(_product.id)]
             logger.debug(f"id: {_product.id} | {_product.name} | {_product.in_card} in card")
 
-    return render_template('user_category.html',
+    return render_template('category.html',
                            prev_category=prev_category,
                            category_name=category_name,
                            category=category,
@@ -184,7 +181,7 @@ def product(product_name, product_id):
                            'fetchall')[0]
     category_name = db.exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
                             'fetchone').name
-    return render_template('user_product.html',
+    return render_template('product.html',
                            category_name=category_name,
                            product=product_info)
 
@@ -197,14 +194,14 @@ def cart(error_description=None):
     logger.debug(f"{cookies = }")
 
     if error_description:
-        return render_template('user_cart.html',
+        return render_template('cart.html',
                                products=None,
                                order=None,
                                clear_cookie=True,
                                error_description=error_description)
 
     if cookies is None or len(json.loads(cookies)) < 1:
-        return render_template('user_cart.html',
+        return render_template('cart.html',
                                products=None,
                                order=None,
                                clear_cookie=None)
@@ -226,7 +223,7 @@ def cart(error_description=None):
 
     match request.method:
         case 'GET':
-            return render_template('user_cart.html',
+            return render_template('cart.html',
                                    products=products,
                                    order=order,
                                    error_description=None,
@@ -260,7 +257,8 @@ def cart(error_description=None):
                 next_order_id = get_next_order_id()
 
             else:
-                orders_info = db.exec("select distinct(order_id), address, creation_time, status_id "
+                orders_info = db.exec("select distinct(order_id), "
+                                      "address, creation_time, status_id "
                                       "from orders "
                                       f"where user_id = {user_id}",
                                       'fetchall')
@@ -324,7 +322,7 @@ def get_next_order_id():
 @app.route('/cart/c/', methods=['GET', 'POST'])
 def cart_clear():
     """Метод для очистки cookie фалов"""
-    return render_template('user_cart.html',
+    return render_template('cart.html',
                            products=None,
                            order=None,
                            clear_cookie=True)
@@ -334,26 +332,26 @@ def cart_clear():
 @app.route('/about')
 def about():
     """Старинца с информацией об организации"""
-    return render_template('user_about_us.html')
+    return render_template('about_us.html')
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    return render_template('user_delivery.html')
+    return render_template('delivery.html')
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     """Страница 'страница не найдена'"""
-    return render_template('user_404.html'), 404
+    return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def error_page(error):
     """Страница 'страница не найдена'"""
-    return render_template('user_500.html'), 500
+    return render_template('500.html'), 500
 
 
 @app.route('/error_500')

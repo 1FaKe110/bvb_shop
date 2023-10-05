@@ -1,7 +1,7 @@
 import telebot
 import schedule
 import time
-from database import Database
+from src.database import Database
 from loguru import logger
 
 # Создание экземпляра бота с указанным токеном
