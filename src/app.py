@@ -362,7 +362,7 @@ def nonexistent_page():
 
 
 def main():
-    app.run(host='0.0.0.0', port=1111, debug=True)
+    app.run(host='172.17.0.2', port=1111, debug=True)
 
 
 if __name__ == '__main__':
