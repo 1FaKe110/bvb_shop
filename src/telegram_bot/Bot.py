@@ -7,8 +7,8 @@ import os
 
 
 # Включаем логирование, чтобы не пропустить важные сообщения
-BOT_TOKEN = os.getenv("bot_token")
-CHANNEL_ID = os.getenv("channel_id")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 
 class Telebot:
