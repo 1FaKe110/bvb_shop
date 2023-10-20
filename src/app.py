@@ -5,6 +5,7 @@ import os
 from time import sleep
 from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from telebot.apihelper import ApiTelegramException
 from werkzeug.security import generate_password_hash, check_password_hash
 from munch import DefaultMunch
 
@@ -30,7 +31,7 @@ def login():
         logger.info(f'Хэш пароля: {hashed_password}')
 
         user_info = db.exec(f"Select login, password "
-                            f"from users "
+                            f"from users_new "
                             f"where login = '{login}'", "fetchone")
 
         if user_info is None:
@@ -72,10 +73,10 @@ def register():
 
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-        db.exec("INSERT INTO public.users "
-                "(username, phone, password, is_registered, login, user_display_name) "
+        db.exec("INSERT INTO public.users_new "
+                "(login, phone, password, is_registered, login, user_display_name) "
                 "VALUES"
-                f"('{username}', '+79774986485', '{hashed_password}', true, '{username}', '{username}');")
+                f"('{username}', '+79774986485', '{hashed_password}', true, '{username}');")
 
         session['username'] = login  # устанавливаем сессию
         return redirect(url_for('index'))
@@ -237,30 +238,29 @@ def cart(error_description=None):
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
-            user_id = db.exec(f"Select id from users "
+            user_id = db.exec(f"Select id from users_new "
                               f"where phone = '{phone}' and "
-                              f"username = '{full_name}'",
-                              'fetchone').id
+                              f"fio = '{full_name}'",
+                              'fetchone')
 
             if user_id is None:
                 logger.debug("Пользователя нет. Добавляю нового пользователя")
-                db.exec(f"INSERT into users (username, phone) values ('{full_name}', '{phone}')")
+                db.exec(f"INSERT into users_new (fio, phone) values ('{full_name}', '{phone}')")
 
                 sleep(0.3)
                 logger.debug('Пользователь добавлен')
-                user_id = db.exec(f"Select id from users "
+                user_id = db.exec(f"Select id from users_new "
                                   f"where phone = '{phone}' and "
-                                  f"username = '{full_name}'",
+                                  f"fio = '{full_name}'",
                                   'fetchone').id
 
                 logger.debug(f"Пользователь {phone} c {user_id}")
                 next_order_id = get_next_order_id()
-
             else:
                 orders_info = db.exec("select distinct(order_id), "
                                       "address, creation_time, status_id "
                                       "from orders "
-                                      f"where user_id = {user_id}",
+                                      f"where user_id = {user_id.id}",
                                       'fetchall')
                 for _order in orders_info:
                     is_date_valid = _order.creation_time.date() == datetime.date.today()
@@ -296,14 +296,18 @@ def cart(error_description=None):
                 db.exec('INSERT into orders '
                         '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime, creation_time) '
                         'values '
-                        f"({next_order_id}, {user_id}, 001, {row.id}, {_product.price}, {row.in_card}, "
+                        f"({next_order_id}, {user_id.id}, 001, {row.id}, {_product.price}, {row.in_card}, "
                         f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
                         )
 
                 db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
                 logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
 
-            bot.__send_order__(next_order_id)
+            try:
+                bot.__send_order__(next_order_id)
+            except ApiTelegramException:
+                logger.error(f"Ошибка отправки сообщения в тг.\n {ApiTelegramException.with_traceback()}")
+
             return redirect(url_for('cart_clear', error_description=None))
 
 
@@ -362,7 +366,7 @@ def nonexistent_page():
 
 
 def main():
-    app.run(host='172.17.0.2', port=1111, debug=True)
+    app.run(host='0.0.0.0', port=1111, debug=True)
 
 
 if __name__ == '__main__':

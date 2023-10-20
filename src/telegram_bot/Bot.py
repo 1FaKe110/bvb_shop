@@ -6,13 +6,8 @@ from database import db
 import os
 
 
-# Включаем логирование, чтобы не пропустить важные сообщения
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHANNEL_ID = os.getenv("CHANNEL_ID")
-
-
 class Telebot:
-    bot = telebot.TeleBot(BOT_TOKEN)
+    bot = telebot.TeleBot(os.getenv("BOT_TOKEN"))
 
     def send_unread_order_messages(self):
         """Декоратор для задания периодического задания"""
@@ -33,11 +28,11 @@ class Telebot:
         order = db.exec(
             "SELECT distinct(order_id) as id, "
             "u.phone as phone, "
-            "u.username as fio, "
+            "u.fio as fio, "
             "TO_CHAR(o.datetime, 'YYYY-MM-DD') as delivery_date, "
             "o.address as delivery_address "
             "FROM orders o "
-            "INNER JOIN users u on u.id = o.user_id "
+            "INNER JOIN users_new u on u.id = o.user_id "
             f"WHERE order_id = {order_id}",
             'fetchone'
         )
@@ -75,11 +70,11 @@ class Telebot:
                     f"Дата доставки: ``` {order['delivery_date']}```\n"
                     f"Адрес доставки: ``` {order['delivery_address']}```\n")
         logger.debug(message)
-        self.bot.send_message(chat_id=CHANNEL_ID,
+        self.bot.send_message(chat_id=os.getenv("CHANNEL_ID"),
                               parse_mode="Markdown",
                               text=message)
 
 
 if __name__ == '__main__':
     bot = Telebot()
-    bot.__send_order__(18)
+    bot.__send_order__(1)
