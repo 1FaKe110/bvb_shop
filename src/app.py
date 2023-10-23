@@ -4,8 +4,10 @@ import json
 import os
 import uuid
 from time import sleep
+
+import flask
 from flask_cors import CORS
-from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash, make_response
 from telebot.apihelper import ApiTelegramException
 from werkzeug.security import generate_password_hash, check_password_hash
 from munch import DefaultMunch
@@ -20,19 +22,7 @@ app.secret_key = os.getenv('secret_key')  # секретный ключ для �
 CORS(app)
 bot = Telebot()
 
-online_users = set()
-
-
-@app.before_request
-def track_user():
-    # Если текущий путь запроса не является маршрутом выхода (logout), то добавляем пользователя в список онлайн
-    if 'user_id' not in session:
-        return
-    if request.path == '/logout':
-        return
-
-    # Проверяем, если идентификатор пользователя уже установлен в сессии
-    online_users.add(session['user_id'])
+online_users = dict()
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -59,7 +49,8 @@ def login():
             return render_template('login.html')
 
         session['username'] = _login  # устанавливаем сессию
-        session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+        check_session_cookies(request.cookies, 'index')
+
         return redirect(url_for('index'))
 
     return render_template('login.html')
@@ -69,9 +60,13 @@ def login():
 def logout():
     """Выход из личного кабинета"""
     session.pop('username', None)
-    online_users.discard(session.get('user_id'))
+    if request.cookies.get('user_id') in online_users:
+        online_users.remove(request.cookies.get('user_id'))
+
     session.clear()
-    return redirect(url_for('login'))
+    resp = make_response(redirect(url_for('login')))
+    resp.set_cookie('user_id', '', expires=0)
+    return resp
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -104,7 +99,8 @@ def register():
 @app.route('/profile')
 def profile():
     """Страница профиля пользователя"""
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'logib')
+
     if 'username' in session:
         return render_template('profile.html')
 
@@ -115,7 +111,7 @@ def profile():
 @app.route('/')
 def index():
     """# Определение маршрута Flask для главной страницы"""
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'index')
 
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
@@ -127,15 +123,16 @@ def index():
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'category')
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
     cat_id = db.exec(
         f"SELECT * FROM categories "
-        f"WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}')",
+        f"WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}') ORDER BY id",
         'fetchone')
     prev_category = db.exec(
-        f"SELECT name FROM categories c where id = (SELECT parent_id FROM categories WHERE name = '{category_name}')",
+        f"SELECT name FROM categories c "
+        f"where id = (SELECT parent_id FROM categories WHERE name = '{category_name}')  ORDER BY id",
         'fetchone')
 
     logger.debug(f'Проверяю наличие подкатегорий у {category_name}: [{cat_id}]')
@@ -146,10 +143,10 @@ def category(category_name):
 
     if cat_id is not None:
         logger.debug(f'У {category_name} есть подкатегории')
-        subcategories = db.exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id.parent_id}'",
+        subcategories = db.exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id.parent_id}'  ORDER BY id",
                                 'fetchall')  # Получение дочерних категорий
 
-        products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id}'",
+        products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id} ORDER BY id'",
                            'fetchall')  # Получение товаров в выбранной категории
 
         return render_template('category.html',
@@ -163,7 +160,8 @@ def category(category_name):
     cookies = request.cookies.get('formData', None)
     cart_data = json.loads(cookies)
     products = db.exec(f"SELECT * FROM products WHERE category_id in "
-                       f"(SELECT id FROM categories WHERE name='{category_name}')",
+                       f"(SELECT id FROM categories WHERE name='{category_name}') "
+                       f"ORDER BY id",
                        'fetchall')  # Получение товаров в выбранной категории
     if products is None:
         return render_template('category.html',
@@ -197,8 +195,9 @@ def category(category_name):
 @logger.catch
 @app.route('/product/<product_name>/<product_id>')
 def product(product_name, product_id):
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """# Определение маршрута Flask для просмотра товара"""
+
+    check_session_cookies(request.cookies, 'product')
     # Получение информации о товаре
     product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                            'fetchall')[0]
@@ -212,8 +211,9 @@ def product(product_name, product_id):
 @logger.catch
 @app.route('/cart/', methods=['GET', 'POST'])
 def cart(error_description=None):
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
+    check_session_cookies(request.cookies, 'cart')
+
     cookies = request.cookies.get('formData', None)
     logger.debug(f"{cookies = }")
 
@@ -365,7 +365,7 @@ def cart_clear():
 @logger.catch
 @app.route('/about')
 def about():
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'about')
     """Старинца с информацией об организации"""
     return render_template('about_us.html')
 
@@ -373,21 +373,21 @@ def about():
 @logger.catch
 @app.route('/delivery')
 def delivery():
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'delivery')
     """Старинца с информацией о доставке"""
     return render_template('delivery.html')
 
 
 @app.errorhandler(404)
 def page_not_found(error):
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'index')
     """Страница 'страница не найдена'"""
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def error_page(error):
-    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+    check_session_cookies(request.cookies, 'error_page')
     """Страница 'страница не найдена'"""
     return render_template('500.html'), 500
 
@@ -401,7 +401,44 @@ def nonexistent_page():
 
 @app.route('/users/online')
 def get_online_users():
-    return len(online_users)
+    active_users = {}
+    for user_id, datetime_expire in online_users.items():
+        delta = datetime.datetime.now() - datetime_expire
+        if delta.total_seconds() < 60:
+            active_users[user_id] = datetime.datetime.now()
+    online_users.clear()
+
+    return flask.jsonify(dict(counter=len(active_users)))
+
+
+@app.route('/heartbeat', methods=['POST'])
+def heartbeat():
+    # Обновляем время последнего активного запроса пользователя
+    online_users[session['user_id']] = datetime.datetime.now()
+    return '', 200
+
+
+def check_session_cookies(cookies, redirect_page: str):
+    # Создаем новый идентификатор пользователя
+    if 'user_id' in cookies:
+        return
+
+    # Добавляем идентификатор в куки ответа на клиент
+    user_id = str(uuid.uuid4())
+    resp = make_response(redirect(url_for(redirect_page)))
+    resp.set_cookie('user_id', user_id)
+    return resp
+
+
+@app.before_request
+def track_user():
+    # Проверяем, если идентификатор пользователя уже установлен в сессии
+    if 'user_id' not in session:
+        # Создаем новый идентификатор пользователя
+        session['user_id'] = str(uuid.uuid4())
+
+    # Обновляем время последнего активного запроса пользователя
+    online_users[session['user_id']] = datetime.datetime.now()
 
 
 def main():
