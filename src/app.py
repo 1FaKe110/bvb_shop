@@ -262,16 +262,19 @@ def cart(error_description=None):
                                       "from orders "
                                       f"where user_id = {user_id.id}",
                                       'fetchall')
-                for _order in orders_info:
-                    is_date_valid = _order.creation_time.date() == datetime.date.today()
-                    is_status_valid = _order.status_id == 1
-                    is_address_valid = _order.address == order_place
-
-                    if all([is_date_valid, is_status_valid, is_address_valid]):
-                        next_order_id = _order.order_id
-                        break
-                else:
+                if orders_info is None:
                     next_order_id = get_next_order_id()
+                else:
+                    for _order in orders_info:
+                        is_date_valid = _order.creation_time.date() == datetime.date.today()
+                        is_status_valid = _order.status_id == 1
+                        is_address_valid = _order.address == order_place
+
+                        if all([is_date_valid, is_status_valid, is_address_valid]):
+                            next_order_id = _order.order_id
+                            break
+                    else:
+                        next_order_id = get_next_order_id()
 
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
@@ -306,7 +309,7 @@ def cart(error_description=None):
             try:
                 bot.__send_order__(next_order_id)
             except ApiTelegramException:
-                logger.error(f"Ошибка отправки сообщения в тг.\n {ApiTelegramException.with_traceback()}")
+                logger.error(f"Ошибка отправки сообщения в тг. Сервис не доступен\n {ApiTelegramException}")
 
             return redirect(url_for('cart_clear', error_description=None))
 
