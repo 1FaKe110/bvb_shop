@@ -49,7 +49,7 @@ def login():
             return render_template('login.html')
 
         session['username'] = _login  # устанавливаем сессию
-        check_session_cookies(request.cookies, 'index')
+        # check_session_cookies(request.cookies, 'index')
 
         return redirect(url_for('index'))
 
@@ -99,7 +99,7 @@ def register():
 @app.route('/profile')
 def profile():
     """Страница профиля пользователя"""
-    check_session_cookies(request.cookies, 'logib')
+    # check_session_cookies(request.cookies, 'logib')
 
     if 'username' in session:
         return render_template('profile.html')
@@ -111,7 +111,7 @@ def profile():
 @app.route('/')
 def index():
     """# Определение маршрута Flask для главной страницы"""
-    check_session_cookies(request.cookies, 'index')
+    # check_session_cookies(request.cookies, 'index')
 
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
@@ -123,7 +123,7 @@ def index():
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
-    check_session_cookies(request.cookies, 'category')
+    # # check_session_cookies(request.cookies, 'category')
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
     cat_id = db.exec(
@@ -197,7 +197,7 @@ def category(category_name):
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
 
-    check_session_cookies(request.cookies, 'product')
+    # check_session_cookies(request.cookies, 'product')
     # Получение информации о товаре
     product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                            'fetchall')[0]
@@ -212,7 +212,7 @@ def product(product_name, product_id):
 @app.route('/cart/', methods=['GET', 'POST'])
 def cart(error_description=None):
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
-    check_session_cookies(request.cookies, 'cart')
+    # check_session_cookies(request.cookies, 'cart')
 
     cookies = request.cookies.get('formData', None)
     logger.debug(f"{cookies = }")
@@ -365,7 +365,7 @@ def cart_clear():
 @logger.catch
 @app.route('/about')
 def about():
-    check_session_cookies(request.cookies, 'about')
+    # check_session_cookies(request.cookies, 'about')
     """Старинца с информацией об организации"""
     return render_template('about_us.html')
 
@@ -373,21 +373,21 @@ def about():
 @logger.catch
 @app.route('/delivery')
 def delivery():
-    check_session_cookies(request.cookies, 'delivery')
+    # check_session_cookies(request.cookies, 'delivery')
     """Старинца с информацией о доставке"""
     return render_template('delivery.html')
 
 
 @app.errorhandler(404)
 def page_not_found(error):
-    check_session_cookies(request.cookies, 'index')
+    # check_session_cookies(request.cookies, 'index')
     """Страница 'страница не найдена'"""
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def error_page(error):
-    check_session_cookies(request.cookies, 'error_page')
+    # check_session_cookies(request.cookies, 'error_page')
     """Страница 'страница не найдена'"""
     return render_template('500.html'), 500
 
