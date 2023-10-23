@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import json
 import os
+import uuid
 from time import sleep
 from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
@@ -13,26 +14,39 @@ from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
-
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
 CORS(app)
 bot = Telebot()
 
+online_users = set()
+
+
+@app.before_request
+def track_user():
+    # Если текущий путь запроса не является маршрутом выхода (logout), то добавляем пользователя в список онлайн
+    if 'user_id' not in session:
+        return
+    if request.path == '/logout':
+        return
+
+    # Проверяем, если идентификатор пользователя уже установлен в сессии
+    online_users.add(session['user_id'])
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Обработчик для входа"""
     if request.method == 'POST':
-        login = request.form['username']
+        _login = request.form['username']
         hashed_password = generate_password_hash(request.form["password"])
 
         logger.info(f'Хэш пароля: {hashed_password}')
 
         user_info = db.exec(f"Select login, password "
                             f"from users_new "
-                            f"where login = '{login}'", "fetchone")
+                            f"where login = '{_login}'", "fetchone")
 
         if user_info is None:
             logger.info('Пользователь не найден')
@@ -44,17 +58,19 @@ def login():
             flash('Не верный логин или пароль', 'error')
             return render_template('login.html')
 
-        session['username'] = login  # устанавливаем сессию
+        session['username'] = _login  # устанавливаем сессию
+        session['user_id'] = session.get('user_id', str(uuid.uuid4()))
         return redirect(url_for('index'))
 
     return render_template('login.html')
-
 
 
 @app.route('/logout')
 def logout():
     """Выход из личного кабинета"""
     session.pop('username', None)
+    online_users.discard(session.get('user_id'))
+    session.clear()
     return redirect(url_for('login'))
 
 
@@ -79,6 +95,7 @@ def register():
                 f"('{username}', '+79774986485', '{hashed_password}', true, '{username}');")
 
         session['username'] = login  # устанавливаем сессию
+        session['user_id'] = session.get('user_id', str(uuid.uuid4()))
         return redirect(url_for('index'))
 
     return render_template('register.html')
@@ -87,6 +104,7 @@ def register():
 @app.route('/profile')
 def profile():
     """Страница профиля пользователя"""
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     if 'username' in session:
         return render_template('profile.html')
 
@@ -97,6 +115,8 @@ def profile():
 @app.route('/')
 def index():
     """# Определение маршрута Flask для главной страницы"""
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
+
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
                          'fetchall')
@@ -107,6 +127,7 @@ def index():
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
     # Получение выбранной категории
     cat_id = db.exec(
@@ -176,6 +197,7 @@ def category(category_name):
 @logger.catch
 @app.route('/product/<product_name>/<product_id>')
 def product(product_name, product_id):
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """# Определение маршрута Flask для просмотра товара"""
     # Получение информации о товаре
     product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
@@ -190,6 +212,7 @@ def product(product_name, product_id):
 @logger.catch
 @app.route('/cart/', methods=['GET', 'POST'])
 def cart(error_description=None):
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
     cookies = request.cookies.get('formData', None)
     logger.debug(f"{cookies = }")
@@ -342,6 +365,7 @@ def cart_clear():
 @logger.catch
 @app.route('/about')
 def about():
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Старинца с информацией об организации"""
     return render_template('about_us.html')
 
@@ -349,18 +373,21 @@ def about():
 @logger.catch
 @app.route('/delivery')
 def delivery():
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Старинца с информацией о доставке"""
     return render_template('delivery.html')
 
 
 @app.errorhandler(404)
 def page_not_found(error):
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Страница 'страница не найдена'"""
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def error_page(error):
+    session['user_id'] = session.get('user_id', str(uuid.uuid4()))
     """Страница 'страница не найдена'"""
     return render_template('500.html'), 500
 
@@ -370,6 +397,11 @@ def nonexistent_page():
     """Пример эндпоинта, которого нет"""
     # Генерируем ошибку 404 "Страница не найдена"
     abort(500)
+
+
+@app.route('/users/online')
+def get_online_users():
+    return len(online_users)
 
 
 def main():
