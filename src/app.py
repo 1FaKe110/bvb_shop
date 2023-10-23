@@ -276,6 +276,10 @@ def cart(error_description=None):
                     else:
                         next_order_id = get_next_order_id()
 
+            db.exec("INSERT INTO public.addresses "
+                    "(user_id, address) "
+                    f"VALUES({user_id.id}, {order_place});")
+
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
                         f" Телефон - {phone}\n"
