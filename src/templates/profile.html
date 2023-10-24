@@ -67,7 +67,20 @@
             <div class="address-info">
                 {% if addresses %}
                 <div class="info">
-                    <p>Представь что тут не пусто и допиши уже эту штуку, а?</p>
+                    <table>
+                        <thead>
+                        <th style="width: 40px;">id</th>
+                        <th style="width: 450px;">Адрес</th>
+                        </thead>
+                        <tbody>
+                        {% for address in addresses %}
+                        <tr>
+                            <td style="width: 40px;">{{address.id}}</td>
+                            <td style="width: 400px;">{{address.address}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 {% else %}
                 <div class="no-info">
@@ -84,7 +97,25 @@
         <div class="order-info">
             {% if orders %}
             <div class="info">
-                <p>Представь что тут не пусто и допиши уже эту штуку, а?</p>
+                <table>
+                    <thead>
+                    <th style="width: 40px;">id</th>
+                    <th style="">Адрес</th>
+                    <th style="">Дата</th>
+                    <th style="">Статус</th>
+                    </thead>
+                    <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td style="width: 40px;">
+                            <a href="{{url_for('profile_order_details', order_id=order.id)}}">{{order.id}}</a></td>
+                        <td style=""><p>{{order.address}}</p></td>
+                        <td style=""><p>{{order.datetime[:10]}}</p></td>
+                        <td style=""><p>{{order.name}}</p></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
             {% else %}
             <div class="no-info">

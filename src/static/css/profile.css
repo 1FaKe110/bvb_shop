@@ -120,10 +120,14 @@ main h2 span{
     box-shadow: 0px 3px 10px 2px rgb(229 229 229);
 }
 
+.order-info .info table {
+    width: 1000px;
+}
 
 
-
-
+td {
+    text-align: center;
+}
 
 /* Стили для полей ввода */
 input[type='text'],input[type='button'], input[type='tel'], input[type='email'], input[type='number'], input[type='date'], input[type='submit'], option, select {

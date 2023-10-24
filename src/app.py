@@ -87,14 +87,19 @@ def profile():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'", 'fetchone')
-    user_orders = db.exec(f"select * from orders where user_id = {user_info.id}", 'fetchall')
+    user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'",
+                        'fetchone')
+    user_orders = db.exec(f"select o.id, o.address, cast(datetime as text), os.name from orders o "
+                          f"inner join order_status os on os.id = o.status_id "
+                          f"where user_id = {user_info.id}",
+                          'fetchall')
     user_addresses = db.exec(f"select * from addresses where user_id = {user_info.id}", 'fetchall')
     return render_template('profile.html',
                            user_info=user_info,
                            orders=user_orders,
                            addresses=user_addresses,
                            login=True)
+
 
 @app.route('/profile/order/<order_id>')
 def profile_order_details(order_id):
@@ -104,11 +109,9 @@ def profile_order_details(order_id):
 
     user_id = db.exec(f"select id from users_new where login = '{session['username']}'", 'fetchone').id
     user_order = db.exec(f"select * from orders where order_id = {order_id}", 'fetchall')
-    return render_template('profile.html',
+    return render_template('not-ready.html',
                            order=user_order,
                            login=True)
-
-
 
 
 @logger.catch
@@ -122,14 +125,14 @@ def index():
                          'fetchall')
     return render_template('index.html',
                            categories=categories,
-                           login=__login)
+                           login=check_session())
 
 
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
-    __login = True if 'username' in session else False
+
     # Получение выбранной категории
     cat_id = db.exec(
         f"SELECT * FROM categories "
@@ -160,7 +163,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=__login)
+                               login=check_session())
 
     subcategories = None
     cookies = request.cookies.get('formData', None)
@@ -176,7 +179,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=__login)
+                               login=check_session())
 
     if not len(cart_data):
         return render_template('category.html',
@@ -185,7 +188,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=__login)
+                               login=check_session())
 
     for _product in products:
         if str(_product.id) in cart_data:
@@ -198,14 +201,13 @@ def category(category_name):
                            category=category,
                            subcategories=subcategories,
                            products=products,
-                           login=__login)
+                           login=check_session())
 
 
 @logger.catch
 @app.route('/product/<product_name>/<product_id>')
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
-    __login = True if 'username' in session else False
 
     product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                            'fetchall')[0]
@@ -214,7 +216,7 @@ def product(product_name, product_id):
     return render_template('product.html',
                            category_name=category_name,
                            product=product_info,
-                           login=__login)
+                           login=check_session())
 
 
 @logger.catch
@@ -222,7 +224,6 @@ def product(product_name, product_id):
 def cart(error_description=None):
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
 
-    __login = True if 'username' in session else False
     cookies = request.cookies.get('formData', None)
     logger.debug(f"{cookies = }")
 
@@ -232,14 +233,14 @@ def cart(error_description=None):
                                order=None,
                                clear_cookie=True,
                                error_description=error_description,
-                               login=__login)
+                               login=check_session())
 
     if cookies is None or len(json.loads(cookies)) < 1:
         return render_template('cart.html',
                                products=None,
                                order=None,
                                clear_cookie=None,
-                               login=__login)
+                               login=check_session())
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
@@ -263,7 +264,7 @@ def cart(error_description=None):
                                    order=order,
                                    error_description=None,
                                    clear_cookie=None,
-                                   login=__login)
+                                   login=check_session())
 
         case 'POST':
             # получение данных с формы
@@ -342,6 +343,10 @@ def cart(error_description=None):
                         f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
                         )
 
+                db.exec(f"INSERT INTO public.addresses "
+                        f"(user_id, address) "
+                        f"VALUES ({user_id.id}, '{order_place}');")
+
                 db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
                 logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
 
@@ -368,28 +373,26 @@ def get_next_order_id():
 @app.route('/cart/c/', methods=['GET', 'POST'])
 def cart_clear():
     """Метод для очистки cookie фалов"""
-    __login = True if 'username' in session else False
+
     return render_template('cart.html',
                            products=None,
                            order=None,
                            clear_cookie=True,
-                           login=__login)
+                           login=check_session())
 
 
 @logger.catch
 @app.route('/about')
 def about():
     """Старинца с информацией об организации"""
-    __login = True if 'username' in session else False
-    return render_template('about_us.html', login=__login)
+    return render_template('about_us.html', login=check_session())
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    __login = True if 'username' in session else False
-    return render_template('delivery.html', login=__login)
+    return render_template('delivery.html', login=check_session())
 
 
 @app.errorhandler(404)
