@@ -166,3 +166,9 @@ input[type='text']:valid, input[type='button']:valid, input[type='tel']:valid, i
     color: #9098a9;
     text-align: center;
 }
+
+label {
+  display: inline-block;
+  width: 100px; /* Задайте нужную ширину для метки */
+  vertical-align: middle;
+}
