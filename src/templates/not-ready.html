@@ -24,6 +24,13 @@
             <li class="nav-li">
                 <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
             </li>
+            <li class="nav-li">
+                {% if login %}
+                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+                {% else %}
+                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+                {% endif %}
+            </li>
         </ul>
     </nav>
 </div>

@@ -1,0 +1,164 @@
+/* задний фон */
+body {
+    display: block;
+    background: linear-gradient(-30deg, #f8f8f8, #fdfdfd);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Плавное появление элементов */
+    /*background: linear-gradient(-30deg, #2f2c2c, #2d312f);*/
+}
+
+/* Стили для показа элементов после загрузки страницы */
+body.loaded {
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
+}
+
+
+/* Стили для скрытия анимации загрузки после загрузки страницы */
+.loading-overlay {
+    opacity: 0;
+    transition: opacity 0.5s ease-out; /* Плавное исчезновение элементов */
+}
+
+html, body {
+    min-height: 100%;
+    height: fit-content(20em);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+main {
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+main h2 {
+    text-align: center;
+}
+main h2 span{
+    color: #4e748e;
+    text-decoration: underline;
+}
+
+.two-boxes {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.content-left, .content-right {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-info {
+    padding: 20px;
+    width: 500px;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+.user-info * {
+   padding: 10px;
+}
+
+
+.user-info a {
+    font-size: 14px;
+}
+
+.address-info {
+    padding: 20px;
+    width: 500px;
+    max-height: 420px;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+.address-info .no-info, .order-info .no-info {
+    text-align: center;
+    font-size: 14px;
+}
+
+.content-bottom {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-info {
+    padding: 20px;
+    width: 1100px;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+
+
+
+
+
+/* Стили для полей ввода */
+input[type='text'],input[type='button'], input[type='tel'], input[type='email'], input[type='number'], input[type='date'], input[type='submit'], option, select {
+    text-align: center;
+    border: 0;
+    font-family: inherit;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    background: none;
+    border-bottom: 1px solid #e1d4d4;
+    border-radius: 1px;
+    color: #223254;
+    transition: all 0.15s ease-in-out;
+}
+
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus {
+    outline: none;
+}
+
+input[type='text']:active,input[type='button']:active, input[type='tel']:active, input[type='email']:active, input[type='number']:active, input[type='date']:active, input[type='submit']:active, option:active, select:active {
+    outline: none;
+
+}
+
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus + .border path {
+    stroke: #07f;
+}
+
+input[type='text']:valid, input[type='button']:valid, input[type='tel']:valid, input[type='email']:valid, input[type='number']:valid, input[type='date']:valid, input[type='submit']:valid, option:valid, select:valid + .border path {
+    animation: elasticInput 0.8s ease forwards;
+    transform: translate(0, 0) scale(1);
+}
+
+::placeholder {
+    color: #9098a9;
+    text-align: center;
+}

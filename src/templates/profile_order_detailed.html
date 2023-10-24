@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Вход</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <title>Просмотр заказа</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -30,25 +34,16 @@
         </ul>
     </nav>
 </div>
-<div class="login-container">
-    <h2>Вход в личный кабинет</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <ul class="error-messages">
-        {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-    <form class="login-form" action="/login" method="post">
-        <div class="inputs">
-            <input type="text" name="username" placeholder="Логин" required>
-            <input type="password" name="password" placeholder="Пароль" required>
-        </div>
-        <p class="account">Нет аккаунта? <a href="{{url_for('register')}}">Регистрация</a></p>
-        <button type="submit">Войти</button>
-    </form>
-</div>
+
+
+<main>
+    <h5>Личный кабинет</h5>
+    <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
+
+</main>
+
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
 </body>
 </html>

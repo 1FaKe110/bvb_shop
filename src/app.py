@@ -13,7 +13,6 @@ from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
 
-
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
@@ -26,8 +25,7 @@ def login():
     """Обработчик для входа"""
     if request.method == 'POST':
         _login = request.form['username']
-        hashed_password = generate_password_hash(request.form["password"])
-
+        hashed_password = hashlib.sha256(request.form["password"].encode()).hexdigest()
         logger.info(f'Хэш пароля: {hashed_password}')
 
         user_info = db.exec(f"Select login, password "
@@ -39,7 +37,7 @@ def login():
             flash('Пользователь не найден', 'error')
             return render_template('login.html')
 
-        if not check_password_hash(user_info.password, request.form['password']):
+        if user_info.password != hashed_password:
             logger.info('Не верный пароль')
             flash('Не верный логин или пароль', 'error')
             return render_template('login.html')
@@ -54,7 +52,7 @@ def login():
 def logout():
     """Выход из личного кабинета"""
     session.pop('username', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -63,22 +61,22 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        fio = request.form['fio']
+        phone = request.form['phone']
+        email = request.form['email']
 
         # Проверка на наличие пользователя в бд по номеру телефона
         user_info = db.exec(f"SELECT phone FROM users WHERE login = '{username}'", 'fetchall')
         if user_info:
             flash('Пользователь с таким номером телефона уже существует', 'error')
-            return redirect(url_for('login'))
 
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        db.exec("INSERT INTO users_new "
+                "(login, phone, email, password, is_registered, fio) "
+                "VALUES "
+                f"('{username}', '{phone}', '{email}', '{hashed_password}', true, '{fio}');")
 
-        db.exec("INSERT INTO public.users_new "
-                "(login, phone, password, is_registered, login, user_display_name) "
-                "VALUES"
-                f"('{username}', '+79774986485', '{hashed_password}', true, '{username}');")
-
-        session['username'] = login  # устанавливаем сессию
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 
@@ -86,27 +84,52 @@ def register():
 @app.route('/profile')
 def profile():
     """Страница профиля пользователя"""
-    if 'username' in session:
-        return render_template('profile.html')
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
-    return redirect(url_for('login'))
+    user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'", 'fetchone')
+    user_orders = db.exec(f"select * from orders where user_id = {user_info.id}", 'fetchall')
+    user_addresses = db.exec(f"select * from addresses where user_id = {user_info.id}", 'fetchall')
+    return render_template('profile.html',
+                           user_info=user_info,
+                           orders=user_orders,
+                           addresses=user_addresses,
+                           login=True)
+
+@app.route('/profile/order/<order_id>')
+def profile_order_details(order_id):
+    """Страница профиля пользователя"""
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    user_id = db.exec(f"select id from users_new where login = '{session['username']}'", 'fetchone').id
+    user_order = db.exec(f"select * from orders where order_id = {order_id}", 'fetchall')
+    return render_template('profile.html',
+                           order=user_order,
+                           login=True)
+
+
 
 
 @logger.catch
 @app.route('/')
 def index():
     """# Определение маршрута Flask для главной страницы"""
+    __login = check_session()
+
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
                          'fetchall')
     return render_template('index.html',
-                           categories=categories)
+                           categories=categories,
+                           login=__login)
 
 
 @logger.catch
 @app.route('/category/<string:category_name>')
 def category(category_name):
     """# Определение маршрута Flask для путешествия по иерархии категорий"""
+    __login = True if 'username' in session else False
     # Получение выбранной категории
     cat_id = db.exec(
         f"SELECT * FROM categories "
@@ -136,7 +159,8 @@ def category(category_name):
                                category_name=category_name,
                                category=category,
                                subcategories=subcategories,
-                               products=products)
+                               products=products,
+                               login=__login)
 
     subcategories = None
     cookies = request.cookies.get('formData', None)
@@ -151,7 +175,8 @@ def category(category_name):
                                category_name=category_name,
                                category=category,
                                subcategories=subcategories,
-                               products=products)
+                               products=products,
+                               login=__login)
 
     if not len(cart_data):
         return render_template('category.html',
@@ -159,7 +184,8 @@ def category(category_name):
                                category_name=category_name,
                                category=category,
                                subcategories=subcategories,
-                               products=products)
+                               products=products,
+                               login=__login)
 
     for _product in products:
         if str(_product.id) in cart_data:
@@ -171,26 +197,32 @@ def category(category_name):
                            category_name=category_name,
                            category=category,
                            subcategories=subcategories,
-                           products=products)
+                           products=products,
+                           login=__login)
 
 
 @logger.catch
 @app.route('/product/<product_name>/<product_id>')
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
+    __login = True if 'username' in session else False
+
     product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
                            'fetchall')[0]
     category_name = db.exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
                             'fetchone').name
     return render_template('product.html',
                            category_name=category_name,
-                           product=product_info)
+                           product=product_info,
+                           login=__login)
 
 
 @logger.catch
 @app.route('/cart/', methods=['GET', 'POST'])
 def cart(error_description=None):
     """Получение данных корзины из cookies где ключом будет id товара, а значением кол-во"""
+
+    __login = True if 'username' in session else False
     cookies = request.cookies.get('formData', None)
     logger.debug(f"{cookies = }")
 
@@ -199,13 +231,15 @@ def cart(error_description=None):
                                products=None,
                                order=None,
                                clear_cookie=True,
-                               error_description=error_description)
+                               error_description=error_description,
+                               login=__login)
 
     if cookies is None or len(json.loads(cookies)) < 1:
         return render_template('cart.html',
                                products=None,
                                order=None,
-                               clear_cookie=None)
+                               clear_cookie=None,
+                               login=__login)
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
@@ -228,7 +262,8 @@ def cart(error_description=None):
                                    products=products,
                                    order=order,
                                    error_description=None,
-                                   clear_cookie=None)
+                                   clear_cookie=None,
+                                   login=__login)
 
         case 'POST':
             # получение данных с формы
@@ -298,7 +333,7 @@ def cart(error_description=None):
 
                 new_amount = _product.amount - row.in_card
                 if new_amount < 0:
-                    return redirect(url_for('cart', error_description='Товар закончился. Приносим извинения'))
+                    flash("Товар закончился. Приносим извинения", 'error')
 
                 db.exec('INSERT into orders '
                         '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime, creation_time) '
@@ -333,25 +368,28 @@ def get_next_order_id():
 @app.route('/cart/c/', methods=['GET', 'POST'])
 def cart_clear():
     """Метод для очистки cookie фалов"""
+    __login = True if 'username' in session else False
     return render_template('cart.html',
                            products=None,
                            order=None,
-                           clear_cookie=True)
+                           clear_cookie=True,
+                           login=__login)
 
 
 @logger.catch
 @app.route('/about')
 def about():
-    # check_session_cookies(request.cookies, 'about')
     """Старинца с информацией об организации"""
-    return render_template('about_us.html')
+    __login = True if 'username' in session else False
+    return render_template('about_us.html', login=__login)
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    return render_template('delivery.html')
+    __login = True if 'username' in session else False
+    return render_template('delivery.html', login=__login)
 
 
 @app.errorhandler(404)
@@ -371,6 +409,11 @@ def nonexistent_page():
     """Пример эндпоинта, которого нет"""
     # Генерируем ошибку 404 "Страница не найдена"
     abort(500)
+
+
+def check_session():
+    return True if 'username' in session else False
+
 
 def main():
     app.run(host='0.0.0.0', port=1111, debug=True)

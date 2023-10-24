@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Профиль</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profile.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+            </li>
+            <li class="nav-li-active">
+                {% if login %}
+                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+                {% else %}
+                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+<main>
+    <h2>Личный кабинет | <span>{{ user_info.fio }}</span></h2>
+
+    <div class="two-boxes">
+        <div class="content-left">
+            <div class="title">
+                <h4>О пользователе</h4>
+            </div>
+            <div class="user-info">
+                <label for="login">Логин</label>
+                <input type="text" name="login" id="login" value="{{user_info.login}}" readonly>
+
+                <label for="fio">ФИО</label>
+                <input type="text" name="fio" id="fio" value="{{user_info.fio}}" readonly>
+
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" value="{{user_info.email}}" readonly>
+
+                <label for="tel">Телефон</label>
+                <input type="tel" name="tel" id="tel" value="{{user_info.phone}}" readonly>
+
+                <a href="#">Сбросить пароль</a>
+                <a href="#">Сменить номер телефона</a>
+            </div>
+        </div>
+        <div class="content-right">
+            <div class="title">
+                <h4>Адреса доставки</h4>
+            </div>
+            <div class="address-info">
+                {% if addresses %}
+                <div class="info">
+                    <p>Представь что тут не пусто и допиши уже эту штуку, а?</p>
+                </div>
+                {% else %}
+                <div class="no-info">
+                    <p>Адреса заказов будут добавлены после первого заказа</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="content-bottom">
+        <div class="title">
+            <h4>О заказах</h4>
+        </div>
+        <div class="order-info">
+            {% if orders %}
+            <div class="info">
+                <p>Представь что тут не пусто и допиши уже эту штуку, а?</p>
+            </div>
+            {% else %}
+            <div class="no-info">
+                <p>На текущий момент заказов нет</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
+
+</main>
+
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
+</body>
+</html>

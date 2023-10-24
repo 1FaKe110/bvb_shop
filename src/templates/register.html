@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Страница регистрации</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin_login.css') }}">
+    <title>Регистрация</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/register.css') }}">
 </head>
 <body>
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+            </li>
+            <li class="nav-li-active">
+                {% if login %}
+                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+                {% else %}
+                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</div>
 <div class="login-container">
     <h2>Регистрация</h2>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -18,12 +44,14 @@
     {% endwith %}
     <form class="login-form" action="/register" method="post">
         <div class="inputs">
+            <input type="text" name="fio" placeholder="ФИО" required>
             <input type="tel" name="phone" placeholder="Номер телефона" required>
             <input type="email" name="email" placeholder="Email" required>
             <input type="text" name="username" placeholder="Имя пользователя" required>
             <input type="password" name="password" placeholder="Пароль" required>
         </div>
-        <button type="submit">Войти</button>
+        <p class="account">Есть аккаунт? <a href="{{url_for('login')}}">Войти</a></p>
+        <button type="submit">Зарегистрироваться</button>
     </form>
 </div>
 </body>

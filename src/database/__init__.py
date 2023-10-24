@@ -64,7 +64,7 @@ class PostgresqlDb:
         self.password = password
 
     @logger.catch
-    def exec(self, query: str, func: str = '') -> None | Dict | List[dict]:
+    def exec(self, query: str, func: str = 'None') -> None | Dict | List[dict]:
         """
         Делает запросы в базу:
 
@@ -104,7 +104,7 @@ class PostgresqlDb:
                         else:
                             logger.debug(f"DB reply: {reply}")
                         return reply
-                    case '':
+                    case 'None':
                         return None
                     case _:
                         raise TypeError()
