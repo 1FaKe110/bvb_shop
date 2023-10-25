@@ -1,0 +1,142 @@
+.material-icons-outlined {
+    font-size: 48px;
+}
+
+.item-container h5 {
+    text-align: center;
+}
+
+.title h4 {
+    test-align: center;
+}
+
+.content {
+    margin: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    flex-direction: row;
+    align-items: flex-start
+}
+
+.content-left, .content-right {
+    padding: 10px;
+    margin: 20px;
+    border: 1px solid #efe9e9eb;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px 2px rgb(229 229 229);
+    transition: 0.2s all ease-in-out;
+}
+
+.content-left {
+    width: 600px;
+}
+.content-right {
+    width: 800px;
+}
+
+.positions {
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+}
+
+.position {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-info {
+    padding: 20px;
+}
+
+.content-left-top {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+td {
+    display: inline-flex;
+    text-align: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.status-name {
+    color: green;
+}
+.status-name-cancel {
+    color: red;
+}
+
+td {
+    text-align: center;
+}
+
+.content-left-bottom {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Стили для полей ввода */
+input[type='text'],input[type='button'], input[type='tel'], input[type='email'], input[type='number'], input[type='date'], input[type='submit'], option, select {
+    text-align: center;
+    border: 0;
+    font-family: inherit;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    background: none;
+    border-bottom: 1px solid #e1d4d4;
+    border-radius: 1px;
+    color: #223254;
+    transition: all 0.15s ease-in-out;
+}
+
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus {
+    outline: none;
+}
+
+input[type='text']:active,input[type='button']:active, input[type='tel']:active, input[type='email']:active, input[type='number']:active, input[type='date']:active, input[type='submit']:active, option:active, select:active {
+    outline: none;
+
+}
+
+input[type='text']:focus,input[type='button']:focus, input[type='tel']:focus, input[type='email']:focus, input[type='number']:focus, input[type='date']:focus, input[type='submit']:focus, option:focus, select:focus + .border path {
+    stroke: #07f;
+}
+
+input[type='text']:valid, input[type='button']:valid, input[type='tel']:valid, input[type='email']:valid, input[type='number']:valid, input[type='date']:valid, input[type='submit']:valid, option:valid, select:valid + .border path {
+    animation: elasticInput 0.8s ease forwards;
+    transform: translate(0, 0) scale(1);
+}
+
+::placeholder {
+    color: #9098a9;
+    text-align: center;
+}
+
+label {
+    display: inline-block;
+    width: 160px;
+    vertical-align: middle;
+    text-wrap: nowrap;
+}

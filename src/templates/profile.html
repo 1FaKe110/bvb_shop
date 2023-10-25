@@ -108,7 +108,7 @@
                     {% for order in orders %}
                     <tr>
                         <td style="width: 40px;">
-                            <a href="{{url_for('profile_order_details', order_id=order.id)}}">{{order.id}}</a></td>
+                            <a href="{{url_for('profile_order_details', order_id=order.order_id)}}">{{order.order_id}}</a></td>
                         <td style=""><p>{{order.address}}</p></td>
                         <td style=""><p>{{order.datetime[:10]}}</p></td>
                         <td style=""><p>{{order.name}}</p></td>

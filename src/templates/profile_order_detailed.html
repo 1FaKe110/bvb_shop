@@ -2,10 +2,9 @@
 <html>
 <head>
     <title>Просмотр заказа</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profile_order_detailed.css') }}">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
@@ -25,11 +24,7 @@
                 <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
             </li>
             <li class="nav-li-active">
-                {% if login %}
                 <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
-                {% else %}
-                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
-                {% endif %}
             </li>
         </ul>
     </nav>
@@ -37,9 +32,145 @@
 
 
 <main>
-    <h5>Личный кабинет</h5>
-    <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
-
+    <!-- блок информации по заявлению -->
+    <div class="content">
+        <div class="content-left">
+            <!-- блок навигации -->
+            <!--            <div class="router">-->
+            <!--                <div class="router-block">-->
+            <!--                    <h5><a href="{{ url_for('profile') }}">Профиль</a> / Заказ №{{order.order_id}}</h5>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <!-- основной блок информации по заявлению -->
+            <div class="content-left-top">
+                <div class="order-info">
+                    <div class="item-container">
+                        <label for="address">Адрес доставки</label>
+                        <input type="text" name="address" id="address" value="{{order.address}}">
+                    </div>
+                    <div class="item-container">
+                        <label for="date">Дата доставки</label>
+                        <input type="date" name="date" id="date" value="{{order.datetime}}">
+                    </div>
+                    <div class="item-container">
+                        <label for="creation_time">Дата создания заказа</label>
+                        <input type="text" name="creation_time" id="creation_time" value="{{order.creation_time}}"
+                               readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="content-left-bottom">
+                <div class="item-container">
+                    {% if order.status_id not in [5] %}
+                    <h5>Статус заказа: <span class="status-name">{{order.status_name}}</span></h5>
+                    {% else %}
+                    <h5>Статус заказа: <span class="status-name-cancel">{{order.status_name}}</span></h5>
+                    {% endif %}
+                    <table>
+                        <tbody>
+                        <tr>
+                            <!-- Подтверждение -->
+                            <td>
+                                {% if order.status_id in [1] %}
+                                <span class="material-icons-outlined" style="color: #cdca79;">thumb_up_alt</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% elif order.status_id in [2, 3, 4] %}
+                                <span class="material-icons-outlined" style="color: green;">thumb_up_alt</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% else %}
+                                <span class="material-icons-outlined" style="color: grey;">thumb_up_alt</span>
+                                <span class="material-icons-outlined" style="color: grey; font-size: 32px;">trending_flat</span>
+                                {% endif %}
+                            </td>
+                            <!-- Сборка -->
+                            <td>
+                                {% if order.status_id in [2] %}
+                                <span class="material-icons-outlined" style="color: #cdca79;">move_to_inbox</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% elif order.status_id in [3, 4] %}
+                                <span class="material-icons-outlined" style="color: green;">move_to_inbox</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% else %}
+                                <span class="material-icons-outlined" style="color: grey;">move_to_inbox</span>
+                                <span class="material-icons-outlined"
+                                      style="color: grey; font-size: 32px;">keyboard_tab</span>
+                                {% endif %}
+                            </td>
+                            <!-- Доставка -->
+                            <td>
+                                {% if order.status_id in [3] %}
+                                <span class="material-icons-outlined" style="color: #cdca79;">local_shipping</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% elif order.status_id in [4] %}
+                                <span class="material-icons-outlined" style="color: green;">local_shipping</span>
+                                <span class="material-icons-outlined" style="color: #80b288ad; font-size: 32px;">trending_flat</span>
+                                {% else %}
+                                <span class="material-icons-outlined" style="color: grey;">local_shipping</span>
+                                <span class="material-icons-outlined"
+                                      style="color: grey; font-size: 32px;">keyboard_tab</span>
+                                {% endif %}
+                            </td>
+                            <!-- Получение -->
+                            <td>
+                                {% if order.status_id in [4] %}
+                                <span class="material-icons-outlined" style="color: green;">person_add</span>
+                                {% else %}
+                                <span class="material-icons-outlined" style="color: grey;">person_add</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {% if order.status_id in [5] %}
+                    <h5 class="cancel-order">Заказ отменен</h5>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="content-right">
+            <div class="position-block">
+                <div class="title">
+                    <h4>Позиции</h4>
+                </div>
+                <div class="positions">
+                    <div class="position">
+                        <div class="idColumn">
+                            <input type="text" value="ID" readonly>
+                        </div>
+                        <div class="nameColumn">
+                            <input type="text" value="Название продукта" readonly>
+                        </div>
+                        <div class="priceColumn">
+                            <input type="text" value="Цена" readonly>
+                        </div>
+                        <div class="amountColumn">
+                            <input type="text" value="Кол-во в заказе" readonly>
+                        </div>
+                    </div>
+                    {% for position in order.positions %}
+                    <div class="position">
+                        <div class="idColumn">
+                            <input type="text" name="Id" id="{{position.id}}"
+                                   value="{{position.id}}" readonly>
+                        </div>
+                        <div class="nameColumn">
+                            <input type="text" name="Name" id="name{{position.id}}"
+                                   value="{{position.name}}" readonly>
+                        </div>
+                        <div class="priceColumn">
+                            <input type="number" name="Price" id="price{{position.id}}"
+                                   value="{{position.price}}" readonly>
+                        </div>
+                        <div class="amountColumn">
+                            <input type="number" name="Amount" id="amount{{position.id}}"
+                                   value="{{position.amount}}" readonly>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 
 <footer>

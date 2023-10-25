@@ -89,7 +89,7 @@ def profile():
 
     user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'",
                         'fetchone')
-    user_orders = db.exec(f"select o.id, o.address, cast(datetime as text), os.name from orders o "
+    user_orders = db.exec(f"select distinct(o.order_id), o.address, cast(datetime as text), os.name from orders o "
                           f"inner join order_status os on os.id = o.status_id "
                           f"where user_id = {user_info.id}",
                           'fetchall')
@@ -107,11 +107,35 @@ def profile_order_details(order_id):
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    user_id = db.exec(f"select id from users_new where login = '{session['username']}'", 'fetchone').id
-    user_order = db.exec(f"select * from orders where order_id = {order_id}", 'fetchall')
-    return render_template('not-ready.html',
+    user = db.exec(f"select id from users_new where login = '{session['username']}'", 'fetchone')
+    user_order = db.exec(f"select distinct(o.order_id), "
+                         f"o.status_id, "
+                         f"os.name as status_name, "
+                         f"o.address, "
+                         f"cast(cast(o.datetime as date) as text), "
+                         f"cast(o.creation_time as text) "
+                         f"from orders o "
+                         f"inner join order_status os on os.id = o.status_id "
+                         f"where true "
+                         f"and order_id = {order_id} "
+                         f"and user_id = {user.id}", 'fetchone')
+
+    user_order.positions = db.exec(f"select o.position_id as id, "
+                                   f"o.position_price as price, "
+                                   f"o.amount, "
+                                   f"p.amount as total_amount, "
+                                   f"p.name "
+                                   f"from orders o "
+                                   f"inner join products p on p.id = o.position_id "
+                                   f"where true "
+                                   f"and order_id = {order_id} "
+                                   f"and user_id = {user.id}", 'fetchall')
+
+    logger.debug(json.dumps(user_order.__dict__, indent=2, ensure_ascii=False))
+
+    return render_template('profile_order_detailed.html',
                            order=user_order,
-                           login=True)
+                           login=check_session())
 
 
 @logger.catch
