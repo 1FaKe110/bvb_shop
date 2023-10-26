@@ -53,17 +53,20 @@
     align-content: center;
     justify-content: center;
 }
+
 .position-list {
     max-height: 210px;
     overflow: auto;
     overflow-x: hidden;
 }
+
 .position-list-total {
     border-top: 1px solid #938d8d;
     max-height: 210px;
     overflow: auto;
     overflow-x: hidden;
 }
+
 .position-title {
     border-bottom: 1px solid #938d8d;
     display: flex;
