@@ -7,7 +7,16 @@
 }
 
 .title h4 {
+    padding-bottom: 10px;
+    margin: 10px;
+    border-bottom: 1px solid #e1d4d4;
+    display: flex;
     test-align: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .content {
@@ -20,9 +29,7 @@
     align-items: flex-start
 }
 
-.content-left, .content-right {
-    padding: 10px;
-    margin: 20px;
+.content-right {
     border: 1px solid #efe9e9eb;
     border-radius: 10px;
     box-shadow: 0px 6px 10px 2px rgb(229 229 229);
@@ -30,6 +37,8 @@
 }
 
 .content-left {
+    padding: 10px;
+    margin: 20px;
     width: 600px;
 }
 .content-right {
@@ -37,12 +46,32 @@
 }
 
 .positions {
-    min-height: 90px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     align-content: center;
     justify-content: center;
+}
+.position-list {
+    max-height: 210px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+.position-list-total {
+    border-top: 1px solid #938d8d;
+    max-height: 210px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+.position-title {
+    border-bottom: 1px solid #938d8d;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .position {
@@ -52,6 +81,10 @@
     align-content: center;
     justify-content: center;
     align-items: center;
+}
+
+.position * {
+    text-align: center;
 }
 
 .order-info {
@@ -64,6 +97,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border: 1px solid #efe9e9eb;
+    border-radius: 10px;
+    box-shadow: 0px 6px 10px 2px rgb(229 229 229);
+    transition: 0.2s all ease-in-out;
 }
 
 td {

@@ -130,6 +130,13 @@ def profile_order_details(order_id):
                                    f"where true "
                                    f"and order_id = {order_id} "
                                    f"and user_id = {user.id}", 'fetchall')
+    user_order.sum = 0
+    for pos in user_order.positions:
+        user_order.sum += pos.price * pos.amount
+
+    user_order.positions.append(
+        as_class(dict(id='Итого', price=user_order.sum, amount='рублей', name='', total_amount=None))
+    )
 
     logger.debug(json.dumps(user_order.__dict__, indent=2, ensure_ascii=False))
 
