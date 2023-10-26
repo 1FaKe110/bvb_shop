@@ -309,8 +309,7 @@ def cart(error_description=None):
 
             logger.debug("Проверяю наличие пользователя в бд")
             user_id = db.exec(f"Select id from users_new "
-                              f"where phone = '{phone}' and "
-                              f"fio = '{full_name}'",
+                              f"where phone = '{phone}'",
                               'fetchone')
 
             if user_id is None:
@@ -348,7 +347,7 @@ def cart(error_description=None):
 
             db.exec("INSERT INTO public.addresses "
                     "(user_id, address) "
-                    f"VALUES({user_id.id}, {order_place});")
+                    f"VALUES({user_id.id}, '{order_place}');")
 
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
