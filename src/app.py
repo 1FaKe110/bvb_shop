@@ -133,7 +133,7 @@ def profile_order_details(order_id):
     order_sum = 0
     order_pos_count = 0
     for pos in user_order.positions:
-        user_order.sum += pos.price * pos.amount
+        order_sum += pos.price * pos.amount
         order_pos_count += pos.amount
 
     user_order.positions.append(
