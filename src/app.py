@@ -130,6 +130,7 @@ def profile_order_details(order_id):
                                    f"where true "
                                    f"and order_id = {order_id} "
                                    f"and user_id = {user.id}", 'fetchall')
+
     order_sum = 0
     order_pos_count = 0
     for pos in user_order.positions:
