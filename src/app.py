@@ -91,7 +91,8 @@ def profile():
                         'fetchone')
     user_orders = db.exec(f"select distinct(o.order_id), o.address, cast(datetime as text), os.name from orders o "
                           f"inner join order_status os on os.id = o.status_id "
-                          f"where user_id = {user_info.id}",
+                          f"where user_id = {user_info.id} "
+                          f"order by o.order_id desc",
                           'fetchall')
     user_addresses = db.exec(f"select * from addresses where user_id = {user_info.id}", 'fetchall')
     return render_template('profile.html',
