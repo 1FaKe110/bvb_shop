@@ -329,9 +329,14 @@ def cart(error_description=None):
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
-            user_id = db.exec(f"Select id from users_new "
-                              f"where phone = '{phone}'",
-                              'fetchone')
+            if check_session(db):
+                user_id = db.exec(f"Select id from users_new "
+                                  f"where phone = '{phone}'",
+                                  'fetchone')
+            else:
+                user_id = db.exec(f"Select id from users_new "
+                                  f"where login = '{session['username']}'",
+                                  'fetchone')
 
             if user_id is None:
                 user_id = add_new_user(full_name, phone, db)
