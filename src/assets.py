@@ -31,7 +31,7 @@ def check_user_address(order_place, user_id, db):
     if db.exec("select * from public.addresses "
                "where true "
                f"and user_id = {user_id} "
-               f"and address = {order_place}", 'fetchone') is None:
+               f"and address = '{order_place}'", 'fetchone') is None:
         db.exec(f"INSERT INTO public.addresses "
                 f"(user_id, address) "
                 f"VALUES ({user_id}, '{order_place}');")
