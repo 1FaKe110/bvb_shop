@@ -30,11 +30,11 @@ def check_user_address(order_place, user_id, db):
     # Проверка наличия этого адреса у пользователя
     if db.exec("select * from public.addresses "
                "where true "
-               f"and user_id = {user_id.id} "
+               f"and user_id = {user_id} "
                f"and address = {order_place}", 'fetchone') is None:
         db.exec(f"INSERT INTO public.addresses "
                 f"(user_id, address) "
-                f"VALUES ({user_id.id}, '{order_place}');")
+                f"VALUES ({user_id}, '{order_place}');")
 
 
 def check_session(session):
