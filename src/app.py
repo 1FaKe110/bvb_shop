@@ -89,6 +89,10 @@ def profile():
 
     user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'",
                         'fetchone')
+    if user_info is None:
+        # TODO: re do
+        return redirect(url_for('logout'))
+
     user_orders = db.exec(f"select distinct(o.order_id), o.address, cast(datetime as text), os.name from orders o "
                           f"inner join order_status os on os.id = o.status_id "
                           f"where user_id = {user_info.id} "
