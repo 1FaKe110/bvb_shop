@@ -383,6 +383,8 @@ def cart(error_description=None):
                 if new_amount < 0:
                     flash("Товар закончился. Приносим извинения", 'error')
 
+                # TODO: if select position_id from orders where position_id = {row.id} is None:
+                # TODO: else: apply new positions to existing order
                 db.exec('INSERT into orders '
                         '(order_id, user_id, status_id, position_id, '
                         'position_price, amount, address, datetime, creation_time) '
