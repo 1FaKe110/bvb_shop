@@ -323,9 +323,9 @@ def cart(error_description=None):
 
         case 'POST':
             # получение данных с формы
-            phone = request.form.get('phone')
-            full_name = request.form.get('full_name')
-            order_place = request.form.get('order_place')
+            phone = request.form.get('phone') or request.form.get('phone_user')
+            full_name = request.form.get('full_name') or request.form.get('full_name_user')
+            order_place = request.form.get('order_place') or request.form.get('order_place_user')
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
