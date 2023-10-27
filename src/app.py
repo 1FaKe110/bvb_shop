@@ -329,7 +329,7 @@ def cart(error_description=None):
             order_time = request.form.get('order_time')
 
             logger.debug("Проверяю наличие пользователя в бд")
-            if check_session(db):
+            if check_session(session):
                 user_id = db.exec(f"Select id from users_new "
                                   f"where phone = '{phone}'",
                                   'fetchone')
