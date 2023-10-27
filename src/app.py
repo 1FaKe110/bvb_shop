@@ -188,7 +188,7 @@ def category(category_name):
         subcategories = db.exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id.parent_id}'  ORDER BY id",
                                 'fetchall')  # Получение дочерних категорий
 
-        products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id} ORDER BY id'",
+        products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id}' ORDER BY id",
                            'fetchall')  # Получение товаров в выбранной категории
 
         return render_template('category.html',
@@ -389,6 +389,22 @@ def cart(error_description=None):
                 logger.error(f"Ошибка отправки сообщения в тг. Сервис не доступен\n {ApiTelegramException}")
 
             return redirect(url_for('cart_clear', error_description=None))
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    # Получение данных из формы
+    query = request.form['query']
+    _products = db.exec(f"SELECT * FROM products "
+                        f"WHERE true "
+                        f"and name LIKE '%{query}%' "
+                        f"and amount > 0 "
+                        f"order by category_id asc;", 'fetchall')
+    _categories = db.exec(f"SELECT * FROM categories "
+                          f"WHERE true "
+                          f"and name LIKE '%{query}%' "
+                          f"", 'fetchall')
+
 
 
 def get_next_order_id():
