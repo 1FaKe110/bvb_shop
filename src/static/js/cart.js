@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('phone').value = getCookie('phone') || '';
     document.getElementById('full_name').value = getCookie('full_name') || '';
     document.getElementById('order_place').value = getCookie('order_place') || '';
-});
+})
 
 // Сохранение данных в cookie при отправке формы
 function saveFormData() {

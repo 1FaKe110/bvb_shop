@@ -86,7 +86,8 @@
                             {% endif %}
                         </td>
                         <td class="product-name-cell">
-                            <a class="product-name" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">{{product.name}}</a>
+                            <a class="product-name"
+                               href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">{{product.name}}</a>
                             <p class="product-description">{{ product.description }}</p>
                         </td>
                         <td class="product-price-cell">
@@ -142,21 +143,46 @@
                     <div class="input-fields">
                         <div class="phone">
                             <p>Номер телефона: </p>
+                            {% if login %}
+                            <input class="submit-input" type="tel" id="phone_user" name="phone_user" placeholder="+79992223131"
+                                   pattern="(+7)[0-9]{10}" autocomplete="on" enterkeyhint="next"
+                                   maxlength="12" minlength="12" required value="{{user_info.phone}}">
+                            {% else %}
                             <input class="submit-input" type="tel" id="phone" name="phone" placeholder="+79992223131"
                                    pattern="(+7)[0-9]{10}" autocomplete="on" enterkeyhint="next"
-                                   maxlength="12" minlength="12" required value="+7">
+                                   maxlength="12" minlength="12" value="+7" required>
+                            {% endif %}
                         </div>
                         <div class="full_name">
                             <p>ФИО:</p>
+                            {% if login %}
+                            <input class="submit-input" type="text" id="full_name_user" name="full_name_user"
+                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" required value="{{user_info.fio}}">
+                            {% else %}
                             <input class="submit-input" type="text" id="full_name" name="full_name"
-                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" required>
+                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" value="+7"
+                                   required>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="input-fields">
                         <div class="order_place">
                             <p>Адрес доставки:</p>
+                            {% if login %}
+                            <div>
+                                <input class="submit-input" type="text" list="userAddresses" id="order_place_user"
+                                       name="order_place_user" onkeyup="showSuggestions()"
+                                       placeholder="Адрес доставки" value="{{ address_list[0].address }}">
+                                <datalist id="userAddresses">
+                                  {% for row in address_list %}
+                                    <option value="{{ row.address }}">
+                                  {% endfor %}
+                                </datalist>
+                            </div>
+                            {% else %}
                             <input class="submit-input" type="text" id="order_place" name="order_place"
                                    placeholder="Адрес" autocomplete="street-address" enterkeyhint="next" required>
+                            {% endif %}
                         </div>
                         <div class="order_date">
                             <p>Дата доставки:</p>
@@ -172,7 +198,7 @@
                         </div>
                     </div>
                     <div class="order_sum">
-                        <p>Сумма заказа: {{ order.sum }} </p>
+                        <p>Сумма заказа: {{ order.sum }} рублей</p>
                     </div>
                     <div class="submit">
                         <input class="submit-input-confirm" type="submit" onclick="saveFormData()"

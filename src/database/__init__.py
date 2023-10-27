@@ -22,8 +22,11 @@ class ReplyFormatter:
         """
         data = cursor.fetchone()
 
-        if data is None: return data
-        if not add_keys: return data
+        if data is None:
+            return data
+
+        if not add_keys:
+            return data
 
         keys = [row[0] for row in cursor.description]
         return as_class(dict(zip(keys, data)))

@@ -2,16 +2,16 @@ import os
 import json
 import hashlib
 import datetime
-from time import sleep
 from telebot.apihelper import ApiTelegramException
-from werkzeug.security import generate_password_hash, check_password_hash
 from munch import DefaultMunch
 from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, url_for, abort, session, flash, make_response
 
+from assets import *
 from database import db
 from loguru import logger
 from telegram_bot.Bot import Telebot
+from tabulate import tabulate
 
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
@@ -145,21 +145,19 @@ def profile_order_details(order_id):
 
     return render_template('profile_order_detailed.html',
                            order=user_order,
-                           login=check_session())
+                           login=check_session(session))
 
 
 @logger.catch
 @app.route('/')
 def index():
     """# Определение маршрута Flask для главной страницы"""
-    __login = check_session()
-
     # Получение списка категорий верхнего уровня
     categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
                          'fetchall')
     return render_template('index.html',
                            categories=categories,
-                           login=check_session())
+                           login=check_session(session))
 
 
 @logger.catch
@@ -197,7 +195,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=check_session())
+                               login=check_session(session))
 
     subcategories = None
     cookies = request.cookies.get('formData', None)
@@ -213,7 +211,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=check_session())
+                               login=check_session(session))
 
     if not len(cart_data):
         return render_template('category.html',
@@ -222,7 +220,7 @@ def category(category_name):
                                category=category,
                                subcategories=subcategories,
                                products=products,
-                               login=check_session())
+                               login=check_session(session))
 
     for _product in products:
         if str(_product.id) in cart_data:
@@ -235,7 +233,7 @@ def category(category_name):
                            category=category,
                            subcategories=subcategories,
                            products=products,
-                           login=check_session())
+                           login=check_session(session))
 
 
 @logger.catch
@@ -250,7 +248,7 @@ def product(product_name, product_id):
     return render_template('product.html',
                            category_name=category_name,
                            product=product_info,
-                           login=check_session())
+                           login=check_session(session))
 
 
 @logger.catch
@@ -267,14 +265,14 @@ def cart(error_description=None):
                                order=None,
                                clear_cookie=True,
                                error_description=error_description,
-                               login=check_session())
+                               login=check_session(session))
 
     if cookies is None or len(json.loads(cookies)) < 1:
         return render_template('cart.html',
                                products=None,
                                order=None,
                                clear_cookie=None,
-                               login=check_session())
+                               login=check_session(session))
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
@@ -293,12 +291,34 @@ def cart(error_description=None):
 
     match request.method:
         case 'GET':
+            if check_session(session):
+                address_list = db.exec("select address "
+                                       "from addresses a "
+                                       "inner join users_new un on un.id = a.user_id  "
+                                       f"where un.login = '{session['username']}'",
+                                       'fetchall')
+                user_info = db.exec('SELECT phone, fio '
+                                    'FROM users_new un '
+                                    f"where un.login = '{session['username']}'",
+                                    'fetchone')
+
+                logger.info(f'{address_list = }')
+                logger.info(f'{user_info = }')
+                return render_template('cart.html',
+                                       products=products,
+                                       order=order,
+                                       error_description=None,
+                                       clear_cookie=None,
+                                       address_list=address_list,
+                                       user_info=user_info,
+                                       login=check_session(session))
+
             return render_template('cart.html',
                                    products=products,
                                    order=order,
                                    error_description=None,
                                    clear_cookie=None,
-                                   login=check_session())
+                                   login=check_session(session))
 
         case 'POST':
             # получение данных с формы
@@ -313,27 +333,16 @@ def cart(error_description=None):
                               'fetchone')
 
             if user_id is None:
-                logger.debug("Пользователя нет. Добавляю нового пользователя")
-                db.exec(f"INSERT into users_new (fio, phone) values ('{full_name}', '{phone}')")
-
-                sleep(0.3)
-                logger.debug('Пользователь добавлен')
-                user_id = db.exec(f"Select id from users_new "
-                                  f"where phone = '{phone}' and "
-                                  f"fio = '{full_name}'",
-                                  'fetchone').id
-
-                logger.debug(f"Пользователь {phone} c {user_id}")
-                next_order_id = get_next_order_id()
+                user_id = add_new_user(full_name, phone, db)
+                next_order_id = get_next_order_id(db)
             else:
+                logger.debug("Пользователя найден!")
                 orders_info = db.exec("select distinct(order_id), "
                                       "address, creation_time, status_id "
                                       "from orders "
                                       f"where user_id = {user_id.id}",
                                       'fetchall')
-                if orders_info is None:
-                    next_order_id = get_next_order_id()
-                else:
+                if orders_info is not None:
                     for _order in orders_info:
                         is_date_valid = _order.creation_time.date() == datetime.date.today()
                         is_status_valid = _order.status_id == 1
@@ -343,11 +352,11 @@ def cart(error_description=None):
                             next_order_id = _order.order_id
                             break
                     else:
-                        next_order_id = get_next_order_id()
+                        next_order_id = get_next_order_id(db)
+                else:
+                    next_order_id = get_next_order_id(db)
 
-            db.exec("INSERT INTO public.addresses "
-                    "(user_id, address) "
-                    f"VALUES({user_id.id}, '{order_place}');")
+            check_user_address(order_place, user_id, db)
 
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
@@ -356,10 +365,9 @@ def cart(error_description=None):
                         f" Место доставки - {order_place}\n"
                         f" Время доставки - {order_time}\n"
                         f" Корзина:")
-            for row in products:
-                logger.info(f'  id |   amount | name |')
-                logger.info(f"{row.id:4} | {row.in_card:8} | {row.name} ")
 
+            logger.info(tabulate(products))
+            for row in products:
                 _product = db.exec(
                     f"select amount, price from products where id={row.id}",
                     'fetchone'
@@ -370,15 +378,12 @@ def cart(error_description=None):
                     flash("Товар закончился. Приносим извинения", 'error')
 
                 db.exec('INSERT into orders '
-                        '(order_id, user_id, status_id, position_id, position_price, amount, address, datetime, creation_time) '
+                        '(order_id, user_id, status_id, position_id, '
+                        'position_price, amount, address, datetime, creation_time) '
                         'values '
                         f"({next_order_id}, {user_id.id}, 001, {row.id}, {_product.price}, {row.in_card}, "
                         f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
                         )
-
-                db.exec(f"INSERT INTO public.addresses "
-                        f"(user_id, address) "
-                        f"VALUES ({user_id.id}, '{order_place}');")
 
                 db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
                 logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
@@ -404,18 +409,7 @@ def search():
                           f"WHERE true "
                           f"and name LIKE '%{query}%' "
                           f"", 'fetchall')
-
-
-
-def get_next_order_id():
-    last_order_id = db.exec("Select max(order_id) as last_num from orders",
-                            'fetchone').last_num
-    match last_order_id:
-        case None:
-            next_order_id = 1
-        case _:
-            next_order_id = last_order_id + 1
-    return next_order_id
+    return render_template('not_ready.html', login=check_session(session))
 
 
 @logger.catch
@@ -427,21 +421,21 @@ def cart_clear():
                            products=None,
                            order=None,
                            clear_cookie=True,
-                           login=check_session())
+                           login=check_session(session))
 
 
 @logger.catch
 @app.route('/about')
 def about():
     """Старинца с информацией об организации"""
-    return render_template('about_us.html', login=check_session())
+    return render_template('about_us.html', login=check_session(session))
 
 
 @logger.catch
 @app.route('/delivery')
 def delivery():
     """Старинца с информацией о доставке"""
-    return render_template('delivery.html', login=check_session())
+    return render_template('delivery.html', login=check_session(session))
 
 
 @app.errorhandler(404)
@@ -461,10 +455,6 @@ def nonexistent_page():
     """Пример эндпоинта, которого нет"""
     # Генерируем ошибку 404 "Страница не найдена"
     abort(500)
-
-
-def check_session():
-    return True if 'username' in session else False
 
 
 def main():
