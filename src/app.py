@@ -357,7 +357,7 @@ def cart(error_description=None):
                 else:
                     next_order_id = get_next_order_id(db)
 
-            check_user_address(order_place, user_id, db)
+            check_user_address(order_place, user_id.id, db)
 
             logger.info(f"Полученные данные:\n"
                         f" Имя - {full_name}\n"
