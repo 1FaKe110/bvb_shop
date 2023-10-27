@@ -168,7 +168,7 @@
                     <div class="input-fields">
                         <div class="order_place">
                             <p>Адрес доставки:</p>
-                            {% if login and address_list|length >= 1 %}
+                            {% if login and address_list %}
                             <div>
                                 <input class="submit-input" type="text" list="userAddresses" id="order_place_user"
                                        name="order_place_user" onkeyup="showSuggestions()"
