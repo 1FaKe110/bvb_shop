@@ -435,7 +435,6 @@ def cart_clear():
                            clear_cookie=True,
                            login=check_session(session))
 
-
 @logger.catch
 @app.route('/about')
 def about():
