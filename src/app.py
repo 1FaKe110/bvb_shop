@@ -87,7 +87,9 @@ def profile():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    user_info = db.exec(f"select id, fio, login, phone, email from users_new where login = '{session['username']}'",
+    user_info = db.exec(f"select id, fio, login, phone, email "
+                        f"from users_new "
+                        f"where login = '{session['username']}'",
                         'fetchone')
     if user_info is None:
         # TODO: re do
@@ -203,7 +205,7 @@ def category(category_name):
                                login=check_session(session))
 
     subcategories = None
-    cookies = request.cookies.get('formData', None)
+    cookies = request.cookies.get('formData', '{}')
     cart_data = json.loads(cookies)
     products = db.exec(f"SELECT * FROM products WHERE category_id in "
                        f"(SELECT id FROM categories WHERE name='{category_name}') "
@@ -335,11 +337,11 @@ def cart(error_description=None):
             logger.debug("Проверяю наличие пользователя в бд")
             if check_session(session):
                 user_id = db.exec(f"Select id from users_new "
-                                  f"where phone = '{phone}'",
+                                  f"where login = '{session['username']}'",
                                   'fetchone')
             else:
                 user_id = db.exec(f"Select id from users_new "
-                                  f"where login = '{session['username']}'",
+                                  f"where phone = '{phone}'",
                                   'fetchone')
 
             if user_id is None:
@@ -348,23 +350,26 @@ def cart(error_description=None):
             else:
                 logger.debug("Пользователя найден!")
                 orders_info = db.exec("select distinct(order_id), "
-                                      "address, creation_time, status_id "
+                                      "address, datetime, status_id "
                                       "from orders "
                                       f"where user_id = {user_id.id}",
                                       'fetchall')
-                if orders_info is not None:
+                if orders_info is None:
+                    next_order_id = get_next_order_id(db)
+                else:
                     for _order in orders_info:
-                        is_date_valid = _order.creation_time.date() == datetime.date.today()
+                        is_date_valid = _order.datetime.date() == datetime.date.today()
+                        logger.debug(f'Date valid: {is_date_valid}')
                         is_status_valid = _order.status_id == 1
+                        logger.debug(f'Status valid: {is_status_valid}')
                         is_address_valid = _order.address == order_place
+                        logger.debug(f'Address valid: {is_address_valid}')
 
                         if all([is_date_valid, is_status_valid, is_address_valid]):
                             next_order_id = _order.order_id
                             break
                     else:
                         next_order_id = get_next_order_id(db)
-                else:
-                    next_order_id = get_next_order_id(db)
 
             check_user_address(order_place, user_id.id, db)
 
@@ -434,6 +439,7 @@ def cart_clear():
                            order=None,
                            clear_cookie=True,
                            login=check_session(session))
+
 
 @logger.catch
 @app.route('/about')

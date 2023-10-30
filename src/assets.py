@@ -21,8 +21,8 @@ def add_new_user(full_name, phone, db):
     user_id = db.exec(f"Select id from users_new "
                       f"where phone = '{phone}' and "
                       f"fio = '{full_name}'",
-                      'fetchone').id
-    logger.debug(f"Пользователь {phone} c {user_id}")
+                      'fetchone')
+    logger.debug(f"Пользователь {phone} c {user_id.id}")
     return user_id
 
 
