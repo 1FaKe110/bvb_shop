@@ -5,11 +5,13 @@ import datetime
 from telebot.apihelper import ApiTelegramException
 from munch import DefaultMunch
 from flask_cors import CORS
-from flask import Flask, render_template, request, redirect, url_for, abort, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
 
-from assets import *
+from assets.assets import *
 from database import db
 from loguru import logger
+
+from repository import DbQueries
 from telegram_bot.Bot import Telebot
 from tabulate import tabulate
 
@@ -24,13 +26,11 @@ bot = Telebot()
 def login():
     """Обработчик для входа"""
     if request.method == 'POST':
-        _login = request.form['username']
+        username = request.form['username']
         hashed_password = hashlib.sha256(request.form["password"].encode()).hexdigest()
         logger.info(f'Хэш пароля: {hashed_password}')
 
-        user_info = db.exec(f"Select login, password "
-                            f"from users_new "
-                            f"where login = '{_login}'", "fetchone")
+        user_info = db.exec(DbQueries.Users.by_login(username), "fetchone")
 
         if user_info is None:
             logger.info('Пользователь не найден')
@@ -42,7 +42,7 @@ def login():
             flash('Не верный логин или пароль', 'error')
             return render_template('login.html')
 
-        session['username'] = _login  # устанавливаем сессию
+        session['username'] = username  # устанавливаем сессию
         return redirect(url_for('index'))
 
     return render_template('login.html')
@@ -66,16 +66,27 @@ def register():
         email = request.form['email']
 
         # Проверка на наличие пользователя в бд по номеру телефона
-        user_info = db.exec(f"SELECT phone FROM users WHERE login = '{username}'", 'fetchall')
-        if user_info:
-            flash('Пользователь с таким номером телефона уже существует', 'error')
+        user_info = db.exec(DbQueries.Users.by_login_extended(username),
+                            'fetchall')
+
+        if user_info.is_registered:
+            if user_info.email:
+                flash('Пользователь с такой почтой уже существует', 'error')
+
+            if user_info.phone:
+                flash('Пользователь с таким номером телефона уже существует', 'error')
 
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        db.exec("INSERT INTO users_new "
-                "(login, phone, email, password, is_registered, fio) "
-                "VALUES "
-                f"('{username}', '{phone}', '{email}', '{hashed_password}', true, '{fio}');")
+        if user_info.email or user_info.phone:
+            db.exec(DbQueries.Users.register_by_id(
+                fio, password, email, phone, username, user_info.id
+            ))
 
+            return redirect(url_for('login'))
+
+        db.exec(DbQueries.Users.new_user(
+            username, phone, email, hashed_password, fio
+        ))
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -87,9 +98,7 @@ def profile():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    user_info = db.exec(f"select id, fio, login, phone, email "
-                        f"from users_new "
-                        f"where login = '{session['username']}'",
+    user_info = db.exec(DbQueries.Users.by_login_extended(session['username']),
                         'fetchone')
     if user_info is None:
         # TODO: re do
@@ -392,6 +401,9 @@ def cart(error_description=None):
                 if new_amount < 0:
                     flash("Товар закончился. Приносим извинения", 'error')
 
+                db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
+                logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
+
                 # TODO: if select position_id from orders where position_id = {row.id} is None:
                 # TODO: else: apply new positions to existing order
                 db.exec('INSERT into orders '
@@ -401,9 +413,6 @@ def cart(error_description=None):
                         f"({next_order_id}, {user_id.id}, 001, {row.id}, {_product.price}, {row.in_card}, "
                         f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
                         )
-
-                db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
-                logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
 
             try:
                 bot.__send_order__(next_order_id)
