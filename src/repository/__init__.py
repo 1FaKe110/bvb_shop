@@ -31,3 +31,12 @@ class DbQueries:
                     "(login, phone, email, password, is_registered, fio) "
                     "VALUES "
                     f"('{username}', '{phone}', '{email}', '{password}', true, '{fio}');")
+
+    class Orders:
+        pass
+
+    class Products:
+        pass
+
+    class Categories:
+        pass
