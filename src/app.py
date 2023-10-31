@@ -18,8 +18,8 @@ from tabulate import tabulate
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
-CORS(app)
 bot = Telebot()
+CORS(app)
 
 
 @app.route('/login', methods=['GET', 'POST'])
