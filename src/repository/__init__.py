@@ -10,7 +10,7 @@ class DbQueries:
         @staticmethod
         def by_login_extended(login):
             return (f"SELECT id, fio, login, phone, email, is_registered "
-                    f"FROM users "
+                    f"FROM users_new "
                     f"WHERE login = '{login}'")
 
         @staticmethod
