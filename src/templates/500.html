@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Об Организации</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <title>Об Организации</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
-    <nav class="nav-bar">
-        <ul class="nav-ul">
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
-            </li>
-            <li class="nav-li">
-                {% if login %}
-                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
-                {% else %}
-                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
-                {% endif %}
-            </li>
-        </ul>
-    </nav>
+  <nav class="nav-bar">
+    <ul class="nav-ul">
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+      </li>
+      <li class="nav-li">
+        {% if login %}
+        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+        {% else %}
+        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+        {% endif %}
+      </li>
+    </ul>
+  </nav>
 </div>
 
 
 <main>
-    <h1>Произошла ошибка</h1>
-    <p>К сожалению произошла непредвиденная ошибка. Мы уже работаем над этим</p>
-    <p>Просим вернуться на главную страницу</p>
-    <p><span class="highlight">Спасибо :)</span>.</p>
-    <a class="highlight" href="{{url_for('index')}}">Главная страница</a>
+  <h1>Произошла ошибка</h1>
+  <p>К сожалению произошла непредвиденная ошибка. Мы уже работаем над этим</p>
+  <p>Просим вернуться на главную страницу</p>
+  <p><span class="highlight">Спасибо :)</span>.</p>
+  <a class="highlight" href="{{url_for('index')}}">Главная страница</a>
 </main>
 
 
 <footer>
-    <div class="footer" style="height: 200px;"></div>
+  <div class="footer" style="height: 200px;"></div>
 </footer>
 </body>
 </html>
