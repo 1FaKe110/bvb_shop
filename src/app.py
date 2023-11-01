@@ -100,16 +100,14 @@ def profile():
 
     user_info = db.exec(DbQueries.Users.by_login_extended(session['username']),
                         'fetchone')
+
     if user_info is None:
-        # TODO: re do
         return redirect(url_for('logout'))
 
-    user_orders = db.exec(f"select distinct(o.order_id), o.address, cast(datetime as text), os.name from orders o "
-                          f"inner join order_status os on os.id = o.status_id "
-                          f"where user_id = {user_info.id} "
-                          f"order by o.order_id desc",
+    user_orders = db.exec(DbQueries.Orders.by_user_id(user_info.id),
                           'fetchall')
-    user_addresses = db.exec(f"select * from addresses where user_id = {user_info.id}", 'fetchall')
+
+    user_addresses = db.exec(DbQueries.Addresses.by_user_id(user_info.id), 'fetchall')
     return render_template('profile.html',
                            user_info=user_info,
                            orders=user_orders,
@@ -124,28 +122,13 @@ def profile_order_details(order_id):
         return redirect(url_for('login'))
 
     user = db.exec(f"select id from users_new where login = '{session['username']}'", 'fetchone')
-    user_order = db.exec(f"select distinct(o.order_id), "
-                         f"o.status_id, "
-                         f"os.name as status_name, "
-                         f"o.address, "
-                         f"cast(cast(o.datetime as date) as text), "
-                         f"cast(o.creation_time as text) "
-                         f"from orders o "
-                         f"inner join order_status os on os.id = o.status_id "
-                         f"where true "
-                         f"and order_id = {order_id} "
-                         f"and user_id = {user.id}", 'fetchone')
+    user_order = db.exec(
+        DbQueries.Orders.profile_order(order_id, user.id),
+        'fetchone')
 
-    user_order.positions = db.exec(f"select o.position_id as id, "
-                                   f"o.position_price as price, "
-                                   f"o.amount, "
-                                   f"p.amount as total_amount, "
-                                   f"p.name "
-                                   f"from orders o "
-                                   f"inner join products p on p.id = o.position_id "
-                                   f"where true "
-                                   f"and order_id = {order_id} "
-                                   f"and user_id = {user.id}", 'fetchall')
+    user_order.positions = db.exec(
+        DbQueries.Orders.profile_order_positions(order_id, user.id),
+        'fetchall')
 
     order_sum = 0
     order_pos_count = 0
@@ -169,8 +152,10 @@ def profile_order_details(order_id):
 def index():
     """# Определение маршрута Flask для главной страницы"""
     # Получение списка категорий верхнего уровня
-    categories = db.exec('SELECT * FROM categories WHERE parent_id is Null ORDER BY id',
-                         'fetchall')
+    categories = db.exec(
+        DbQueries.Categories.main(),
+        'fetchall')
+
     return render_template('index.html',
                            categories=categories,
                            login=check_session(session))
@@ -183,12 +168,11 @@ def category(category_name):
 
     # Получение выбранной категории
     cat_id = db.exec(
-        f"SELECT * FROM categories "
-        f"WHERE parent_id = (SELECT id FROM categories WHERE name='{category_name}') ORDER BY id",
+        DbQueries.Categories.by_category(category_name),
         'fetchone')
+
     prev_category = db.exec(
-        f"SELECT name FROM categories c "
-        f"where id = (SELECT parent_id FROM categories WHERE name = '{category_name}')  ORDER BY id",
+        DbQueries.Categories.prev_category_name(category_name),
         'fetchone')
 
     logger.debug(f'Проверяю наличие подкатегорий у {category_name}: [{cat_id}]')
@@ -199,8 +183,9 @@ def category(category_name):
 
     if cat_id is not None:
         logger.debug(f'У {category_name} есть подкатегории')
-        subcategories = db.exec(f"SELECT * FROM categories WHERE parent_id = '{cat_id.parent_id}'  ORDER BY id",
-                                'fetchall')  # Получение дочерних категорий
+        subcategories = db.exec(
+            DbQueries.Categories.check_sub_categories(cat_id.parent_id),
+            'fetchall')
 
         products = db.exec(f"SELECT * FROM products WHERE category_id = '{cat_id.parent_id}' ORDER BY id",
                            'fetchall')  # Получение товаров в выбранной категории
@@ -216,10 +201,10 @@ def category(category_name):
     subcategories = None
     cookies = request.cookies.get('formData', '{}')
     cart_data = json.loads(cookies)
-    products = db.exec(f"SELECT * FROM products WHERE category_id in "
-                       f"(SELECT id FROM categories WHERE name='{category_name}') "
-                       f"ORDER BY id",
-                       'fetchall')  # Получение товаров в выбранной категории
+    products = db.exec(
+        DbQueries.Products.by_category(category_name),
+        'fetchall')  # Получение товаров в выбранной категории
+
     if products is None:
         return render_template('category.html',
                                prev_category=prev_category,
@@ -257,12 +242,16 @@ def category(category_name):
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
 
-    product_info = db.exec(fr"SELECT * FROM products WHERE name = '{product_name}' and id = {product_id}",
-                           'fetchall')[0]
-    category_name = db.exec(f"SELECT name FROM categories WHERE id = '{product_info['category_id']}'",
-                            'fetchone').name
+    product_info = db.exec(
+        DbQueries.Products.by_name_and_id(product_name, product_id),
+        'fetchone')
+
+    category_name = db.exec(
+        DbQueries.Categories.by_id(product_info.category_id),
+        'fetchone')
+
     return render_template('product.html',
-                           category_name=category_name,
+                           category_name=category_name.name,
                            product=product_info,
                            login=check_session(session))
 
@@ -292,10 +281,9 @@ def cart(error_description=None):
 
     cart_data = json.loads(cookies)
     logger.info(f'Data from cookies: {cart_data}: {type(cart_data)}')
-    products = db.exec(f"SELECT * FROM products "
-                       f"WHERE id in ({','.join(list(cart_data.keys()))}) "
-                       f"order by id asc",
-                       'fetchall')
+    products = db.exec(
+        DbQueries.Products.by_id_list(list(cart_data.keys())),
+        'fetchall')
 
     logger.info(f'request type: [{request.method}] ')
     logger.info(f'products: [{json.dumps(products, indent=2, ensure_ascii=False)}] ')
@@ -308,15 +296,12 @@ def cart(error_description=None):
     match request.method:
         case 'GET':
             if check_session(session):
-                address_list = db.exec("select address "
-                                       "from addresses a "
-                                       "inner join users_new un on un.id = a.user_id  "
-                                       f"where un.login = '{session['username']}'",
-                                       'fetchall')
-                user_info = db.exec('SELECT phone, fio '
-                                    'FROM users_new un '
-                                    f"where un.login = '{session['username']}'",
-                                    'fetchone')
+                address_list = db.exec(
+                    DbQueries.Addresses.by_login(session['username']),
+                    'fetchall')
+                user_info = db.exec(
+                    DbQueries.Users.by_login_extended(session['username']),
+                    'fetchone')
 
                 logger.info(f'{address_list = }')
                 logger.info(f'{user_info = }')
@@ -345,40 +330,39 @@ def cart(error_description=None):
 
             logger.debug("Проверяю наличие пользователя в бд")
             if check_session(session):
-                user_id = db.exec(f"Select id from users_new "
-                                  f"where login = '{session['username']}'",
-                                  'fetchone')
+                user_id = db.exec(
+                    DbQueries.Users.by_login_extended(session['username']),
+                    'fetchone')
             else:
-                user_id = db.exec(f"Select id from users_new "
-                                  f"where phone = '{phone}'",
-                                  'fetchone')
+                user_id = db.exec(
+                    DbQueries.Users.by_phone(phone),
+                    'fetchone')
 
-            if user_id is None:
-                user_id = add_new_user(full_name, phone, db)
-                next_order_id = get_next_order_id(db)
-            else:
-                logger.debug("Пользователя найден!")
-                orders_info = db.exec("select distinct(order_id), "
-                                      "address, datetime, status_id "
-                                      "from orders "
-                                      f"where user_id = {user_id.id}",
-                                      'fetchall')
-                if orders_info is None:
+            match user_id:
+                case None:
+                    user_id = add_new_user(full_name, phone, db)
                     next_order_id = get_next_order_id(db)
-                else:
-                    for _order in orders_info:
-                        is_date_valid = _order.datetime.date() == datetime.date.today()
-                        logger.debug(f'Date valid: {is_date_valid}')
-                        is_status_valid = _order.status_id == 1
-                        logger.debug(f'Status valid: {is_status_valid}')
-                        is_address_valid = _order.address == order_place
-                        logger.debug(f'Address valid: {is_address_valid}')
-
-                        if all([is_date_valid, is_status_valid, is_address_valid]):
-                            next_order_id = _order.order_id
-                            break
-                    else:
+                case _:
+                    logger.debug("Пользователя найден!")
+                    orders_info = db.exec(DbQueries.Orders.by_user_id(user_id.id),
+                                          'fetchall')
+                    if orders_info is None:
                         next_order_id = get_next_order_id(db)
+                    else:
+                        for _order in orders_info:
+                            is_date_valid = (datetime.datetime.fromisoformat(_order.datetime).date() ==
+                                             datetime.date.today() + datetime.timedelta(days=2))
+                            logger.info(f'Date valid: {is_date_valid}')
+                            is_status_valid = _order.status_id == 1
+                            logger.info(f'Status valid: {is_status_valid}')
+                            is_address_valid = _order.address == order_place
+                            logger.info(f'Address valid: {is_address_valid}')
+
+                            if all([is_date_valid, is_status_valid, is_address_valid]):
+                                next_order_id = _order.order_id
+                                break
+                        else:
+                            next_order_id = get_next_order_id(db)
 
             check_user_address(order_place, user_id.id, db)
 
@@ -390,29 +374,45 @@ def cart(error_description=None):
                         f" Время доставки - {order_time}\n"
                         f" Корзина:")
 
-            logger.info(tabulate(products))
+            logger.trace(tabulate(products))
+
+            temp_positions = db.exec(
+                DbQueries.Orders.positions_by_order_id(next_order_id),
+                'fetchall')
+
             for row in products:
                 _product = db.exec(
-                    f"select amount, price from products where id={row.id}",
+                    DbQueries.Products.by_id(row.id),
                     'fetchone'
                 )
 
                 new_amount = _product.amount - row.in_card
                 if new_amount < 0:
                     flash("Товар закончился. Приносим извинения", 'error')
+                    return redirect(url_for('cart'))
 
-                db.exec(f"UPDATE products SET amount={new_amount} WHERE id={row.id};")
+                db.exec(DbQueries.Products.Update.amount_by_id(row.id, new_amount))
                 logger.debug(f"Обновил остаток товара с id = {row.id} в бд: ({_product.amount} -> {new_amount})")
 
-                # TODO: if select position_id from orders where position_id = {row.id} is None:
-                # TODO: else: apply new positions to existing order
-                db.exec('INSERT into orders '
-                        '(order_id, user_id, status_id, position_id, '
-                        'position_price, amount, address, datetime, creation_time) '
-                        'values '
-                        f"({next_order_id}, {user_id.id}, 001, {row.id}, {_product.price}, {row.in_card}, "
-                        f"'{order_place}', '{order_time}', '{datetime.datetime.now().isoformat()}')"
-                        )
+                match temp_positions:
+                    case None:
+                        db.exec(DbQueries.Orders.Insert.new_order(
+                            next_order_id, user_id.id, row.id, _product.price, row.in_card,
+                            order_place, order_time
+                        ))
+                    case _:
+                        for pos_row in temp_positions:
+                            if row.id == pos_row.position_id:
+                                new_amount = pos_row.amount + row.in_card
+                                db.exec(DbQueries.Orders.Update.update_position_amount(
+                                    pos_row.id, new_amount
+                                ))
+                                break
+                        else:
+                            db.exec(DbQueries.Orders.Insert.new_order(
+                                next_order_id, user_id.id, row.id, _product.price, row.in_card,
+                                order_place, order_time
+                            ))
 
             try:
                 bot.__send_order__(next_order_id)
