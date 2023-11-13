@@ -121,6 +121,13 @@ class DbQueries:
                         f"WHERE id={idx};")
 
         @staticmethod
+        def random(limit):
+            return (f"SELECT * "
+                    f"FROM products "
+                    f"ORDER BY RANDOM() "
+                    f"LIMIT {limit};")
+
+        @staticmethod
         def by_id(idx):
             return (f"SELECT * "
                     f"FROM products "
@@ -148,6 +155,12 @@ class DbQueries:
                     f"WHERE name = '{name}' "
                     f"and id = {product_id} "
                     f"LIMIT 1")
+
+        @staticmethod
+        def by_brand(brand):
+            return ("SELECT * "
+                    "FROM products "
+                    f"where brand like '%{brand}%'")
 
     class Categories:
 

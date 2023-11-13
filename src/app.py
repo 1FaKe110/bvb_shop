@@ -156,8 +156,15 @@ def index():
         DbQueries.Categories.main(),
         'fetchall')
 
+    # выбираем 4 рандомных товара из бд
+    products = db.exec(
+        DbQueries.Products.random(4),
+        'fetchall'
+    )
+
     return render_template('index.html',
                            categories=categories,
+                           products=products,
                            login=check_session(session))
 
 

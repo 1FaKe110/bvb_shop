@@ -1,85 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Магазин сантехники</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main_page.css') }}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <title>Магазин сантехники</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main_page.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
-    <nav class="nav-bar">
-        <ul class="nav-ul">
-            <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
-            </li>
-            <li class="nav-li">
-                {% if login %}
-                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
-                {% else %}
-                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
-                {% endif %}
-            </li>
-        </ul>
-    </nav>
+  <nav class="nav-bar">
+    <ul class="nav-ul">
+      <li class="nav-li-active">
+        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+      </li>
+      <li class="nav-li">
+        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+      </li>
+      <li class="nav-li">
+        {% if login %}
+        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+        {% else %}
+        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+        {% endif %}
+      </li>
+    </ul>
+  </nav>
 </div>
 
 
 <main>
 
-    <div class="content">
-        <div class="content-left">
-            <div class="sidebar">
-                <div class="filter">
-                    <!-- Добавьте содержимое фильтра по желанию -->
-                </div>
-            </div>
+  <div class="content">
+    <div class="content-top">
+      <div class="search-block">
+        <div class="search-container">
+          <!--                    <p class="search-label">Поиск: </p>-->
+          <input class="search-text" type="text" name="search-text" id="search-text"
+                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
         </div>
-        <div class="content-right">
-            <div class="search-block">
-                <div class="search-container">
-                    <!--                    <p class="search-label">Поиск: </p>-->
-                    <input class="search-text" type="text" name="search-text" id="search-text"
-                           placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
-                </div>
-            </div>
-            <div class="categories">
-                {% for category in categories %}
-                <div class="category-block">
-                    <a class="category-href" href="{{ url_for('category', category_name=category.name) }}">
-                        <div class="category-card">
-                            {% if category.image_path == '../static/images/categories/categories-blank.png' %}
-                            <div class="img">
-                                <span class="material-icons">list</span>
-                            </div>
-                            {% else %}
-                            <div class="img">
-                                <img src="{{ category.image_path }}" alt="{{category.name}}"/>
-                            </div>
-                            {% endif %}
-                            <p class="category-name">{{ category.name}}</p>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
+      </div>
+        <div class="block-name">
+          <h3>Категории</h3>
         </div>
+      <div class="categories">
+        {% for category in categories %}
+        <div class="category-block">
+          <a class="category-href" href="{{ url_for('category', category_name=category.name) }}">
+            <div class="category-card-main">
+              {% if category.image_path == '../static/images/categories/categories-blank.png' %}
+              <div class="img-main">
+                <span class="material-icons">list</span>
+              </div>
+              {% else %}
+              <div class="img-main">
+                <img src="{{ category.image_path }}" alt="{{category.name}}"/>
+              </div>
+              {% endif %}
+              <p class="category-name">{{ category.name}}</p>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
     </div>
+    <div class="content-bottom">
+      <div class="top-sells">
+        <div class="block-name">
+          <h3>Лучшие товары</h3>
+        </div>
+        <div class="items-block">
+          {% for product in products %}
+          <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
+            <div class="category-card">
+              {% if product.image_path == '' %}
+              <div class="img">
+                <span class="material-icons">qr_code_2</span>
+              </div>
+              {% else %}
+              <div class="img">
+                <img class="top-rated-image" src="{{ product.image_path }}" alt="{{product.name}}"/>
+              </div>
+              {% endif %}
+              <div class="product-name">
+                <p class="">{{ product.name }}</p>
+              </div>
+              {% if product.in_card %}
+              <div class="product-price-added">
+                <p class="">{{ product.price }} р.</p>
+              </div>
+              {% else %}
+              <div class="product-price">
+                <p class="">{{ product.price }} р.</p>
+              </div>
+              {% endif %}
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <footer>
-    <div class="footer" style="height: 200px;"></div>
+  <div class="footer" style="height: 200px;"></div>
 </footer>
 </body>
 </html>

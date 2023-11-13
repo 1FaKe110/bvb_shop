@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Категория: {{ category_name }}</title>
+  <title>Поиск по запросу: {{ user_request }}</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
@@ -13,7 +13,7 @@
   <nav class="nav-bar">
 
     <ul class="nav-ul">
-      <li class="nav-li-active">
+      <li class="nav-li">
         <a class="nav-a" href="{{url_for('index')}}">Главная</a>
       </li>
       <li class="nav-li">
@@ -40,24 +40,14 @@
 <main>
   <div class="content">
     <div class="content-right">
+
       <div class="search-block">
-        <div class="router">
-          <div class="router-block">
-            <p class="router-content">
-              {% if prev_category.name %}
-              <a href="{{ url_for('category', category_name=prev_category.name) }}">
-                {{prev_category.name}}</a>
-              {% else %}
-              <a href="{{ url_for('index') }}">Главная</a>
-              {% endif %}
-              / {{ category_name }}</p>
-          </div>
-        </div>
         <div class="search-container">
           <input type="text" class="search-text" name="search-text" id="search-text"
                  placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
         </div>
       </div>
+
       {% if subcategories or products %}
       {% if subcategories %}
       <h2>Категории</h2>
