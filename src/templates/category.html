@@ -55,7 +55,8 @@
         </div>
         <div class="search-container">
           <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
+                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                 autocomplete="on" onkeypress="runFunction(event)">
         </div>
       </div>
       {% if subcategories or products %}

@@ -11,6 +11,10 @@ ENV db_name=bvb_shop
 ENV db_username=gen_user
 ENV db_password=bvb_admin
 ENV secret_key=eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9
+
+ENV elastic_host=80.90.184.119
+ENV elastic_port=4401
+
 ENV BOT_TOKEN=6542986021:AAGhL8Yf4bTLdI5cf48Pf6ryksmaFJW6-7c
 ENV CHANNEL_ID=-1001845833328
 

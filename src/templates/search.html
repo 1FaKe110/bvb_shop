@@ -44,82 +44,62 @@
       <div class="search-block">
         <div class="search-container">
           <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи">
+                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                 autocomplete="on" onkeypress="runFunction(event)">
         </div>
       </div>
 
-      {% if subcategories or products %}
-      {% if subcategories %}
-      <h2>Категории</h2>
-      <div class="categories">
-        {% for subcategory in subcategories %}
-        <a class="category-href" href="{{ url_for('category', category_name=subcategory.name) }}">
-          <div class="category-card">
-            {% if subcategory.image_path == '' %}
-            <div class="img">
-              <span class="material-icons">list</span>
-            </div>
-            {% else %}
-            <div class="img">
-              <img src="{{ subcategory.image_path }}" alt="{{subcategory.name}}"/>
-            </div>
-            {% endif %}
-            <p class="category-name">{{ subcategory.name}}</p>
-          </div>
-        </a>
-        {% endfor %}
-      </div>
-      {% endif %}
+      {% if categories or products %}
       {% if products %}
       <h2>Товары</h2>
       <div class="products">
         {% for product in products %}
-        <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
-          {% if product.amount >= 5 %}
+        <a class="product-href" href="{{ url_for('product', product_name=product.p_name, product_id=product.p_id) }}">
+          {% if product.p_amount >= 5 %}
           <div class="product-card">
-            {% if product.image_path == '' %}
+            {% if product.p_image_path == '' %}
             <div class="img">
               <span class="material-icons">qr_code_2</span>
             </div>
             {% else %}
             <div class="img">
-              <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+              <img src="{{ product.p_image_path }}" alt="{{product.p_name}}"/>
             </div>
             {% endif %}
             <div class="product-name">
-              <p class="">{{ product.name }}</p>
+              <p class="">{{ product.p_name }}</p>
             </div>
-            {% if product.in_card %}
-            <div class="product-price-added">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% else %}
+<!--            {% if product.in_card %}-->
+<!--            <div class="product-price-added">-->
+<!--              <p class="">{{ product.p_price }} р.</p>-->
+<!--            </div>-->
+<!--            {% else %}-->
             <div class="product-price">
-              <p class="">{{ product.price }} р.</p>
+              <p class="">{{ product.p_price }} р.</p>
             </div>
             {% endif %}
           </div>
-          {% elif 0 < product.amount < 5 %}
+          {% elif 0 < product.p_amount < 5 %}
           <div class="product-card-almost-empty">
-            {% if product.image_path == '' %}
+            {% if product.p_image_path == '' %}
             <div class="img">
               <span class="material-icons">qr_code_2</span>
             </div>
             {% else %}
             <div class="img">
-              <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+              <img src="{{ product.p_image_path }}" alt="{{product.p_name}}"/>
             </div>
             {% endif %}
             <div class="product-name">
-              <p class="">{{ product.name }}</p>
+              <p class="">{{ product.p_name }}</p>
             </div>
-            {% if product.in_card %}
-            <div class="product-price-added">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% else %}
+<!--            {% if product.in_card %}-->
+<!--            <div class="product-price-added">-->
+<!--              <p class="">{{ product.p_price }} р.</p>-->
+<!--            </div>-->
+<!--            {% else %}-->
             <div class="product-price">
-              <p class="">{{ product.price }} р.</p>
+              <p class="">{{ product.p_price }} р.</p>
             </div>
             {% endif %}
           </div>
@@ -128,19 +108,34 @@
         </a>
       </div>
       {% endif %}
+      {% if categories %}
+      <h2>Категории</h2>
+      <div class="categories">
+        {% for category in categories %}
+        <a class="category-href" href="{{ url_for('category', category_name=category.c_name) }}">
+          <div class="category-card">
+            {% if category.c_image_path == '' %}
+            <div class="img">
+              <span class="material-icons">list</span>
+            </div>
+            {% else %}
+            <div class="img">
+              <img src="{{ category.c_image_path }}" alt="{{category.c_name}}"/>
+            </div>
+            {% endif %}
+            <p class="category-name">{{ category.c_name}}</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
       {% else %}
       <div class="categories">
         <div class="no-category">
           <div class="h-tag">
             <h5 class="aljbgl">Тут пока ничего нет</h5>
-          </div>
-          <div class="url">
-            {% if prev_category.name %}
-            <a href="{{ url_for('category', category_name=prev_category.name) }}">
-              {{prev_category.name}}</a>
-            {% else %}
-            <a href="{{ url_for('index') }}">Главная</a>
-            {% endif %}
+            <p>По запросу: <span class="highlight">{{ user_request }}</span> не удалось ничего найти.</p>
+            <a class="highlight" href="{{url_for('index')}}">Главная страница</a>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 from loguru import logger
 from time import sleep
 
+from repository import DbQueries
+
 
 def get_next_order_id(db):
     last_order_id = db.exec("Select max(order_id) as last_num from orders",
@@ -39,3 +41,21 @@ def check_user_address(order_place, user_id, db):
 
 def check_session(session):
     return True if 'username' in session else False
+
+
+def index_postgres_data_for_search(db, es):
+    records = db.exec(
+        DbQueries.Products.all(),
+        'fetchall')
+
+    logger.debug('Добавляю индексы бд [Products] в elasticSearch')
+    for record in records:
+        es.index(index='products-index', id=record['p_id'], body=record)
+
+    records = db.exec(
+        DbQueries.Categories.all(),
+        'fetchall')
+
+    logger.debug('Добавляю индексы бд [Categories] в elasticSearch')
+    for record in records:
+        es.index(index='categories-index', id=record['c_id'], body=record)

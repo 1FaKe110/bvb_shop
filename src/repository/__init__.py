@@ -42,7 +42,6 @@ class DbQueries:
                     f"('{username}', '{phone}', '{email}', '{password}', true, '{fio}');")
 
     class Orders:
-
         class Insert:
 
             @staticmethod
@@ -162,6 +161,21 @@ class DbQueries:
                     "FROM products "
                     f"where brand like '%{brand}%'")
 
+        @staticmethod
+        def all():
+            return ("select p.id as p_id, "
+                    "p.name as p_name, "
+                    "p.price as p_price, "
+                    "p.amount as p_amount, "
+                    "p.image_path as p_image_path, "
+                    "p.brand as p_brand, "
+                    "c.name as c_name, "
+                    "c.parent_id as c_parent_id " 
+                    "from products p "
+                    "inner join categories c on p.category_id = c.id "
+                    "inner join brands b on p.brand = b.name "
+                    "order by p.id asc")
+
     class Categories:
 
         @staticmethod
@@ -197,6 +211,15 @@ class DbQueries:
                     f"FROM categories "
                     f"WHERE parent_id = '{parent_id}' "
                     f"ORDER BY id")
+
+        @staticmethod
+        def all():
+            return ("select c.id as c_id, "
+                    "c.parent_id as c_parent_id, "
+                    "c.name as c_name, "
+                    "c.image_path as c_image_path "
+                    "from categories c "
+                    "order by id")
 
     class Addresses:
 

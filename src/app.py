@@ -5,7 +5,7 @@ import datetime
 from telebot.apihelper import ApiTelegramException
 from munch import DefaultMunch
 from flask_cors import CORS
-from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash, jsonify
 
 from assets.assets import *
 from database import db
@@ -14,7 +14,12 @@ from loguru import logger
 from repository import DbQueries
 from telegram_bot.Bot import Telebot
 from tabulate import tabulate
+from elasticsearch import Elasticsearch
 
+es = Elasticsearch([{'host': os.getenv('elastic_host'), 'port': os.getenv('elastic_port')}])
+logger.info("Connected to ElasticSearch") if es.ping() else logger.error("Could not connect to ElasticSearch")
+
+index_postgres_data_for_search(db, es)
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
@@ -429,20 +434,44 @@ def cart(error_description=None):
             return redirect(url_for('cart_clear', error_description=None))
 
 
-@app.route('/search', methods=['POST'])
+# Маршрут для выполнения поисковых запросов
+@app.route('/search', methods=['GET'])
 def search():
-    # Получение данных из формы
-    query = request.form['query']
-    _products = db.exec(f"SELECT * FROM products "
-                        f"WHERE true "
-                        f"and name LIKE '%{query}%' "
-                        f"and amount > 0 "
-                        f"order by category_id asc;", 'fetchall')
-    _categories = db.exec(f"SELECT * FROM categories "
-                          f"WHERE true "
-                          f"and name LIKE '%{query}%' "
-                          f"", 'fetchall')
-    return render_template('not_ready.html', login=check_session(session))
+    user_request = request.args.get('q')
+    if not user_request:
+        return jsonify({'error': 'Missing search term'})
+
+    # Поиск в ElasticSearch продуктов
+    res = es.search(index="products-index",
+                    body={"query": {
+                        "match": {
+                            "p_name": {
+                                "query": user_request,
+                                "fuzziness": "AUTO"
+                            }}}})
+    products = [row['_source'] for row in res['hits']['hits']]
+
+    # Поиск в ElasticSearch категорий
+    res = es.search(index="categories-index",
+                    body={"query": {
+                        "match": {
+                            "c_name": {
+                                "query": user_request,
+                                "fuzziness": "AUTO"
+                            }}}})
+    categories = [row['_source'] for row in res['hits']['hits']]
+
+    logger.info("Результаты запроса в бд [Products]")
+    logger.info(json.dumps(products, indent=2, ensure_ascii=False))
+
+    logger.info("Результаты запроса в бд [Categories]")
+    logger.info(json.dumps(categories, indent=2, ensure_ascii=False))
+
+    return render_template('search.html',
+                           products=products,
+                           categories=categories,
+                           user_request=user_request,
+                           session=check_session(session))
 
 
 @logger.catch

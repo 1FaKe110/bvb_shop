@@ -144,3 +144,9 @@
     background: rgba(255, 255, 255, 0.8);
     transition: 0.2s all ease-in-out;
 }
+
+/* Дополнительные стили */
+.highlight {
+    color: #007bff;
+    font-weight: 700;
+}

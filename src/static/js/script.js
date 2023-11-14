@@ -1,3 +1,15 @@
+function runFunction(event) {
+  var x = event.which || event.keyCode;
+  if (x === 13) {   // Код клавиши 13 соответствует клавише "Enter"
+    userSearch();
+  }
+}
+
+function userSearch() {
+    user_request = document.getElementById('search-text').value;
+    window.location.href = '/search?q=' + user_request;
+}
+
 
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
