@@ -439,7 +439,7 @@ def cart(error_description=None):
 def search():
     user_request = request.args.get('q')
     if not user_request:
-        return jsonify({'error': 'Missing search term'})
+        return jsonify(dict(code='error', message='Missing search term'))
 
     # Поиск в ElasticSearch продуктов
     res = es.search(index="products-index",
@@ -447,7 +447,8 @@ def search():
                         "match": {
                             "p_name": {
                                 "query": user_request,
-                                "fuzziness": "AUTO"
+                                "boost": 1.0,
+                                "fuzziness": "2"
                             }}}})
     products = [row['_source'] for row in res['hits']['hits']]
 
@@ -457,7 +458,8 @@ def search():
                         "match": {
                             "c_name": {
                                 "query": user_request,
-                                "fuzziness": "AUTO"
+                                "boost": 1.0,
+                                "fuzziness": "2"
                             }}}})
     categories = [row['_source'] for row in res['hits']['hits']]
 
