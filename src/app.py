@@ -474,7 +474,19 @@ def search():
                            categories=categories,
                            user_request=user_request,
                            session=check_session(session))
-
+@app.route('/search-helper', methods=['GET'])
+def search_helper():
+    """ Подсказки для поисковой строки """
+    # Поиск в ElasticSearch категорий
+    res = es.search(index="categories-index",
+                    body={"query": {
+                        "match": {
+                            "c_name": {
+                                "query": user_request,
+                                "boost": 1.0,
+                                "fuzziness": "2"
+                            }}}})
+    categories = [row['_source'] for row in res['hits']['hits']]
 
 @logger.catch
 @app.route('/cart/c/', methods=['GET', 'POST'])
