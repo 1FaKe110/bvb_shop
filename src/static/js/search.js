@@ -13,7 +13,7 @@ function searchHelper() {
                 var option = document.createElement('a');
                 console.log(item['c_name']);
                 option.classList.add('searchCategory')
-                option.href = 'http://localhost:1111/category/' + item['c_name']
+                option.href = '/category/' + item['c_name']
                 option.text = item['c_name'];
                 option.classList.add("fadeInAnimation"); // Добавляем класс с анимацией
                 resultsDataList.appendChild(option);
