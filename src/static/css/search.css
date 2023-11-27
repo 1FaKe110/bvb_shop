@@ -1,12 +1,13 @@
 /* Стили для блока поиска */
 
 .search-container {
-    width: 70%;
+    width: 100%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-direction: column;
     align-content: flex-start;
     justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 .search-text {
     width: 80%;
@@ -90,4 +91,75 @@ input[type='text']:active {
 
 input[type='text']:hover {
   box-shadow: rgb(215 215 215 / 98%) 0 6px 12px;
+}
+
+/* Добавляем стиль для анимации плавного появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* Добавляем стиль для анимации плавного появления */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+
+/* Применяем анимацию для class fadeInAnimation */
+.fadeInAnimation {
+  animation: fadeIn 0.5s ease-in-out; /* Настраиваем анимацию появления */
+}
+/* Применяем анимацию для class fadeInAnimation */
+.fadeOutAnimation {
+  animation: fadeOut 0.5s ease-in-out; /* Настраиваем анимацию появления */
+}
+
+
+.search-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    justify-content: center;
+}
+
+
+#searchResults {
+    top: 50px;
+    z-index: 9999;
+    min-width: 80%;
+    max-width: 80%;
+    border: 1px solid #fffaaa;
+    position: absolute;
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cfc3c352;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px 2px rgb(229 229 229);
+}
+
+#searchResults a {
+    transition: ease-in-out all 0.5s;
+    margin-left: 30px;
+    min-width: 80%;
+    max-width: 80%;
+    position: relative;
+    padding: 5px;
+    border-bottom: 1px solid #cfc3c352;
+    z-index: 9;
 }

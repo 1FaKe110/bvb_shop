@@ -474,9 +474,14 @@ def search():
                            categories=categories,
                            user_request=user_request,
                            session=check_session(session))
+
+
 @app.route('/search-helper', methods=['GET'])
 def search_helper():
     """ Подсказки для поисковой строки """
+
+    user_request = request.args.get('q')
+
     # Поиск в ElasticSearch категорий
     res = es.search(index="categories-index",
                     body={"query": {
@@ -484,9 +489,10 @@ def search_helper():
                             "c_name": {
                                 "query": user_request,
                                 "boost": 1.0,
-                                "fuzziness": "2"
+                                "fuzziness": "1"
                             }}}})
-    categories = [row['_source'] for row in res['hits']['hits']]
+    categories = [row['_source'] for row in res['hits']['hits']][:5]
+    return jsonify(categories)
 
 @logger.catch
 @app.route('/cart/c/', methods=['GET', 'POST'])

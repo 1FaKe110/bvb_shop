@@ -7,6 +7,7 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -56,7 +57,8 @@
         <div class="search-container">
           <input type="text" class="search-text" name="search-text" id="search-text"
                  placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)">
+                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+          <div id="searchResults"></div>
         </div>
       </div>
       {% if subcategories or products %}

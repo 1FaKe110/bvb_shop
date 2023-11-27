@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script>
         {% if error_description %}
             alert('{{error_description}}');
@@ -52,8 +53,9 @@
                 <div class="search-container">
                     <input type="text" class="search-text" name="search-text" id="search-text"
                  placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)">
+                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
                 </div>
+                <div id="searchResults"></div>
             </div>
             {% if products %}
             <div class="card-items">
