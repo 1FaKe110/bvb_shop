@@ -22,7 +22,14 @@ main {
     align-items: center;
 }
 
+.search-text {
+    width: 68%;
+}
 
+#searchResults {
+    min-width: 45%;
+    max-width: 80%;
+}
 
 /* Стили для router | overrides styles.css  */
 .router {

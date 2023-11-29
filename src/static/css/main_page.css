@@ -39,8 +39,8 @@
 
 
 #searchResults {
-    top: 50px;
-    z-index: 9999;
+    top: 46px;
+    z-index: -1;
     min-width: 80%;
     max-width: 80%;
     border: 1px solid #fffaaa;
