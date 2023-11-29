@@ -98,7 +98,7 @@ input[type='button'].add-to-card, input[type='button'].go-to-card-button {
 }
 
 input[type='text']:hover {
-  background-color: #b8c1be2e;
+  background-color: #b8bfc11f;
   opacity: 1;
   transform: translateY(0);
   transition-duration: .35s;
