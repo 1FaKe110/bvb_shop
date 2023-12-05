@@ -72,9 +72,13 @@ def register():
         email = request.form['email']
 
         # Проверка на наличие пользователя в бд по номеру телефона
-        user_info = db.exec(DbQueries.Users.by_login_extended(username),
-                            'fetchall')
+        user_info = db.exec(DbQueries.Users.by_login_extended(username), 'fetchall')
+        if user_info is not None:
+            logger.info(f'Имя пользователя: {username} Занято')
+            flash('Пользователь с таким логином уже существует', 'error')
+            return render_template('register.html')
 
+        user_info = db.exec(DbQueries.Users.by_phone(phone), 'fetchone')
         if user_info is None:
             db.exec(DbQueries.Users.new_user(
                 username, phone, email, hashed_password, fio
@@ -501,6 +505,7 @@ def search_helper():
                             }}}})
     categories = [row['_source'] for row in res['hits']['hits']][:5]
     return jsonify(categories)
+
 
 @logger.catch
 @app.route('/cart/c/', methods=['GET', 'POST'])
