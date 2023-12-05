@@ -80,6 +80,7 @@ def register():
 
         user_info = db.exec(DbQueries.Users.by_phone(phone), 'fetchone')
         if user_info is None:
+            logger.info('Новый номер телефона. такого пользователя не было')
             db.exec(DbQueries.Users.new_user(
                 username, phone, email, hashed_password, fio
             ))
@@ -87,20 +88,25 @@ def register():
             return redirect(url_for('profile'))
 
         if user_info.is_registered:
+            logger.info("Пользователь зарегистрирован")
             if user_info.email == email:
+                logger.warning('Пользователь с такой почтой уже существует')
                 flash('Пользователь с такой почтой уже существует', 'error')
                 return render_template('register.html')
 
             if user_info.phone == phone:
+                logger.warning('Пользователь с таким номером телефона уже существует')
                 flash('Пользователь с таким номером телефона уже существует', 'error')
                 return render_template('register.html')
 
         session['username'] = username
         if user_info.email or user_info.phone:
+            logger.info("есть данные по пользователю, но он не зарегистрирован")
             db.exec(DbQueries.Users.register_by_id(
                 fio, password, email, phone, username, user_info.id
             ))
         else:
+            logger.info('Такого пользователя не было, регистрирую')
             db.exec(DbQueries.Users.new_user(
                 username, phone, email, hashed_password, fio
             ))
