@@ -83,11 +83,13 @@ def register():
             return redirect(url_for('profile'))
 
         if user_info.is_registered:
-            if user_info.email:
+            if user_info.email == email:
                 flash('Пользователь с такой почтой уже существует', 'error')
+                return render_template('register.html')
 
-            if user_info.phone:
+            if user_info.phone == phone:
                 flash('Пользователь с таким номером телефона уже существует', 'error')
+                return render_template('register.html')
 
         session['username'] = username
         if user_info.email or user_info.phone:
