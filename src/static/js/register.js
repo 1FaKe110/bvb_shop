@@ -78,7 +78,9 @@ function validatePassword() {
     const passwordStrengthValue = calculatePasswordStrength(passwordInput.value);
     passwordStrength.style.background = getStrengthColor(passwordStrengthValue);
 
-    checkFields();
+    if (checkFields()) {
+        passwordStrength.style.background = '#00ff00';
+    }
 }
 
 // Функция оценки сложности пароля (можно изменить по своему усмотрению)
@@ -98,8 +100,10 @@ function getStrengthColor(strengthValue) {
 function checkFields() {
     if (fioInput.validity.valid && phoneInput.validity.valid && emailInput.validity.valid && usernameInput.validity.valid && passwordInput.validity.valid) {
         registerButton.disabled = false;
+        return true;
     } else {
         registerButton.disabled = true;
+        return false;
     }
 }
 
