@@ -79,7 +79,7 @@ function validatePassword() {
     passwordStrength.style.background = getStrengthColor(passwordStrengthValue);
 
     if (checkFields()) {
-        passwordStrength.style.background = '#00ff00';
+        passwordStrength.style.background = 'lime';
     }
 }
 

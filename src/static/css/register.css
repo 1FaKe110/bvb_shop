@@ -41,3 +41,7 @@
 div#passwordError {
     margin-top: 10px;
 }
+
+input[type='text']:focus-visible {
+    outline: none;
+}
