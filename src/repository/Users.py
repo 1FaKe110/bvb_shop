@@ -14,7 +14,7 @@ class Users:
 
     @staticmethod
     def by_phone(phone):
-        return (f"Select id "
+        return (f"Select * "
                 f"from users_new "
                 f"where phone = '{phone}'")
 
