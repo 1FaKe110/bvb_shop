@@ -10,7 +10,8 @@ class Products:
     @staticmethod
     def random(limit):
         return (f"SELECT * "
-                f"FROM products "
+                f"FROM products p "
+                f"where p.amount > 0"
                 f"ORDER BY RANDOM() "
                 f"LIMIT {limit};")
 

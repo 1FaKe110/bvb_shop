@@ -66,6 +66,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
         fio = request.form['fio']
         phone = request.form['phone']
         email = request.form['email']
@@ -74,6 +75,13 @@ def register():
         user_info = db.exec(DbQueries.Users.by_login_extended(username),
                             'fetchall')
 
+        if user_info is None:
+            db.exec(DbQueries.Users.new_user(
+                username, phone, email, hashed_password, fio
+            ))
+            session['username'] = username  # устанавливаем сессию
+            return redirect(url_for('profile'))
+
         if user_info.is_registered:
             if user_info.email:
                 flash('Пользователь с такой почтой уже существует', 'error')
@@ -81,18 +89,16 @@ def register():
             if user_info.phone:
                 flash('Пользователь с таким номером телефона уже существует', 'error')
 
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        session['username'] = username
         if user_info.email or user_info.phone:
             db.exec(DbQueries.Users.register_by_id(
                 fio, password, email, phone, username, user_info.id
             ))
-
-            return redirect(url_for('login'))
-
-        db.exec(DbQueries.Users.new_user(
-            username, phone, email, hashed_password, fio
-        ))
-        return redirect(url_for('login'))
+        else:
+            db.exec(DbQueries.Users.new_user(
+                username, phone, email, hashed_password, fio
+            ))
+        return redirect(url_for('profile'))
 
     return render_template('register.html')
 

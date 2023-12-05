@@ -7,8 +7,37 @@
     background-color: #4c8faf;
 }
 
+.login-form button:disabled,
+.login-form button[disabled]{
+  background-color: #74a0ad;
+}
+
 .error {
     font-size: 10px;
     font-weight: 400;
     color: red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8em;
+    display: none;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    width: 290px;
+}
+
+.invalid-input {
+  border: 1px solid red;
+}
+
+.password-strength {
+    height: 4px;
+    margin-top: -18px;
+    width: 298px;
+    border-radius: 10px;
+}
+
+div#passwordError {
+    margin-top: 10px;
 }
