@@ -11,6 +11,10 @@
     width: 100%;
 }
 
+#searchResults {
+    top: 46px;
+}
+
 table {
     padding: 20px;
 }

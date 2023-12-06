@@ -57,6 +57,7 @@
                 <input type="tel" name="tel" id="tel" value="{{user_info.phone}}" readonly>
 
                 <a href="{{url_for('recover_password')}}">Сбросить пароль</a>
+                <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
 <!--                <a href="#">Сменить номер телефона</a>-->
             </div>
         </div>
@@ -124,8 +125,6 @@
             {% endif %}
         </div>
     </div>
-    <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
-
 </main>
 
 <footer>

@@ -158,7 +158,7 @@ main {
 
 /* main.right-side */
 .content-right, .content-top, .content-bottom  {
-    top: 50px;
+    top: 35px;
     position: relative;
     width: 60%
 }

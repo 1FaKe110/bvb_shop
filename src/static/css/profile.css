@@ -84,6 +84,7 @@ main h2 span{
 
 
 .user-info a {
+    width: fit-content;
     font-size: 14px;
 }
 
