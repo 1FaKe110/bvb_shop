@@ -558,11 +558,11 @@ def set_new_password(token):
         del password_reset_tokens[token]
         [password_reset_tokens.pop(t) for t in password_reset_tokens if password_reset_tokens[t]['email'] == email]
         logger.info('Токены удалены')
-        return redirect(url_for('login'))
+        return redirect(url_for('login', login=check_session(session)))
 
     else:
         flash("Ссылка для сброса пароля недействительна или устарела", 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('login', login=check_session(session)))
 
 
 @logger.catch
@@ -586,7 +586,6 @@ def recover_password():
         mailer.recover_password(user.email, user.fio, token)
         flash(f'Сообщение о смене пароля отправлено на почту {email}', 'info')
         return redirect(url_for('login', login=check_session(session)))
-
 
 
 @app.errorhandler(404)
