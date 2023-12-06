@@ -548,7 +548,7 @@ def set_new_password(token):
         if request.method == 'GET':
             return render_template('set_new_password.html', token=token)
 
-        password = request.form['new_password']
+        password = request.form['password']
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         email = password_reset_tokens[token]["email"]
 
