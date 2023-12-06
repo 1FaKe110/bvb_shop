@@ -15,7 +15,7 @@ ENV secret_key=eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9
 ENV elastic_host=80.90.184.119
 ENV elastic_port=4401
 
-ENV smpt_host=smpt.timeweb.cloud
+ENV smpt_host=smpt.timeweb.ru
 ENV smpt_port=25
 ENV smpt_login=ifake@test-bvb-shop.ru
 ENV smpt_password=vfvfgfgf10
