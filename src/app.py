@@ -553,7 +553,11 @@ def set_new_password(token):
         email = password_reset_tokens[token]["email"]
 
         db.exec(DbQueries.Users.update_password(hashed_password, email))
+
+        logger.info(f'удаляю все токены для сброса пароля по [{email}]')
         del password_reset_tokens[token]
+        [password_reset_tokens.pop(t) for t in password_reset_tokens if password_reset_tokens[t]['email'] == email]
+        logger.info('Токены удалены')
         return redirect(url_for('login'))
 
     else:
@@ -571,17 +575,19 @@ def recover_password():
         user = db.exec(DbQueries.Users.by_email(email), 'fetchone')
         if user is None:
             flash("Такой почты нет!", 'error')
-            return render_template('reset_password.html')
+            return render_template('recover_password.html')
 
         token = secrets.token_urlsafe(16)
         password_reset_tokens[token] = {
             "email": email,
             "timestamp": datetime.datetime.now()
         }
+
         mailer.recover_password(user.email, user.fio, token)
+        flash(f'Сообщение о смене пароля отправлено на почту {email}', 'info')
+        return redirect(url_for('login', login=check_session(session)))
 
 
-# Страница установки нового пароля
 
 @app.errorhandler(404)
 def page_not_found(error):
