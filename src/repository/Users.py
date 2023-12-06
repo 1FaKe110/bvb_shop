@@ -7,6 +7,12 @@ class Users:
                 f"where login = '{login}'")
 
     @staticmethod
+    def by_email(email):
+        return (f"Select u.email, fio "
+                f"from users_new u "
+                f"where email = '{email}'")
+
+    @staticmethod
     def by_login_extended(login):
         return (f"SELECT id, fio, login, phone, email, is_registered "
                 f"FROM users_new "
@@ -29,6 +35,12 @@ class Users:
                 "is_registered=true, "
                 f"login='{username}' "
                 f"WHERE id={user_id};")
+
+    @staticmethod
+    def update_password(password, email):
+        return ("UPDATE public.users_new "
+                f"SET password='{password}' "
+                f"where email='{email}'")
 
     @staticmethod
     def new_user(username, phone, email, password, fio):

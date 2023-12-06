@@ -2,6 +2,8 @@ import os
 import json
 import hashlib
 import datetime
+import secrets
+
 from telebot.apihelper import ApiTelegramException
 from munch import DefaultMunch
 from flask_cors import CORS
@@ -11,6 +13,7 @@ from assets.assets import *
 from database import db
 from loguru import logger
 
+from mail import Mailer
 from repository import DbQueries
 from telegram_bot.Bot import Telebot
 from tabulate import tabulate
@@ -25,6 +28,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
 CORS(app)
 bot = Telebot()
+mailer = Mailer()
+password_reset_tokens = {}
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -536,6 +541,47 @@ def delivery():
     """Старинца с информацией о доставке"""
     return render_template('delivery.html', login=check_session(session))
 
+
+@app.route('/set_new_password/<token>', methods=['GET', 'POST'])
+def set_new_password(token):
+    if token in password_reset_tokens:
+        if request.method == 'GET':
+            return render_template('set_new_password.html', token=token)
+
+        password = request.form['new_password']
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        email = password_reset_tokens[token]["email"]
+
+        db.exec(DbQueries.Users.update_password(hashed_password, email))
+        del password_reset_tokens[token]
+        return redirect(url_for('login'))
+
+    else:
+        flash("Ссылка для сброса пароля недействительна или устарела", 'error')
+        return redirect(url_for('login'))
+
+
+@logger.catch
+@app.route('/recover_password', methods=['GET', 'POST'])
+def recover_password():
+    if request.method == 'GET':
+        return render_template('recover_password.html')
+    else:
+        email = request.form['email']
+        user = db.exec(DbQueries.Users.by_email(email), 'fetchone')
+        if user is None:
+            flash("Такой почты нет!", 'error')
+            return render_template('reset_password.html')
+
+        token = secrets.token_urlsafe(16)
+        password_reset_tokens[token] = {
+            "email": email,
+            "timestamp": datetime.datetime.now()
+        }
+        mailer.recover_password(user.email, user.fio, token)
+
+
+# Страница установки нового пароля
 
 @app.errorhandler(404)
 def page_not_found(error):
