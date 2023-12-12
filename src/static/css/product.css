@@ -6,6 +6,7 @@ main {
 /* Стили для поиска */
 .search-block {
     margin-bottom: 20px;
+    margin-top: 20px;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -27,6 +28,7 @@ main {
 }
 
 #searchResults {
+    top: 50px;
     min-width: 45%;
     max-width: 80%;
 }
@@ -42,7 +44,7 @@ main {
 
 
 /* Стили для категорий товара или карточек товаров */
-.product {
+.reviews, .product {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -160,7 +162,7 @@ p.description-data {
 }
 
 /* CSS button add */
-input[type='button'].add-to-card, input[type='button'].go-to-card-button {
+input[type='button'].add-to-card, input[type='button'].new-review-button, input[type='button'].go-to-card-button {
   appearance: none;
   backface-visibility: hidden;
   background-color: #27ae60;
@@ -192,7 +194,7 @@ input[type='button'].add-to-card, input[type='button'].go-to-card-button {
 }
 
 input[type='button'].add-to-card:hover, input[type='button'].go-to-card-button:hover {
-  background-color: #21eeaf2e;
+  background-color: #348b23;
   opacity: 1;
   transform: translateY(0);
   transition-duration: .35s;
@@ -254,3 +256,80 @@ input[type='button'].remove-from-card-button:active {
 input[type='button'].remove-from-card-button:hover {
   box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
 }
+
+/* ОТЗЫВЫ */
+
+.review-block {
+    max-width: 1000px;
+    min-width: 600px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* новый отзыв */
+.new-review {
+    width: 100%;
+    margin-top: 43px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#reviewForm {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+
+}
+
+#reviewText {
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 60px;
+}
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    text-align: center;
+}
+.rating input {
+    display: none;
+}
+.rating label {
+    display: inline-block;
+    padding: 5px;
+    font-size: 35px;
+    color: #888;
+}
+
+.error, .info {
+    font-size: 14px;
+    font-weight: 400;
+    color: red;
+}
+.info {
+    color: blue;
+}
+
+.rating label:before {
+    content: '★';
+}
+.rating input:checked ~ label {
+    color: #f90;
+}
+
+.review-list {
+
+
+}
+

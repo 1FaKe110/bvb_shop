@@ -2,7 +2,7 @@ class Users:
 
     @staticmethod
     def by_login(login):
-        return (f"Select login, password "
+        return (f"Select id, login, password "
                 f"from users_new "
                 f"where login = '{login}'")
 

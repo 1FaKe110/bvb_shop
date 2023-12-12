@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/review.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -40,9 +41,9 @@
 <main>
     <div class="search-block">
         <div class="search-container">
-          <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+            <input type="text" class="search-text" name="search-text" id="search-text"
+                   placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                   autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
             <div id="searchResults"></div>
         </div>
     </div>
@@ -69,7 +70,8 @@
 
                 <div class="router">
                     <div class="router-block">
-                        <p>Категория: <a href="{{ url_for('category', category_name=category_name) }}">{{ category_name }}
+                        <p>Категория: <a href="{{ url_for('category', category_name=category_name) }}">{{ category_name
+                            }}
                             / </a> {{ product.name }}</p>
                     </div>
                 </div>
@@ -88,6 +90,38 @@
             </div>
         </div>
     </div>
+    <div class="reviews">
+        <div class="review-block">
+            {% if login %}
+            <div class="new-review">
+                <form id="reviewForm">
+                    <textarea id="reviewText" name="review_text" placeholder="Будем рады получить от Вас отзыв :)"></textarea>
+                    <br>
+                    <div class="rating">
+                        <input type="radio" id="star5" name="rating" value="5"/><label for="star5"
+                                                                                       title="5 stars"></label>
+                        <input type="radio" id="star4" name="rating" value="4"/><label for="star4"
+                                                                                       title="4 stars"></label>
+                        <input type="radio" id="star3" name="rating" value="3"/><label for="star3"
+                                                                                       title="3 stars"></label>
+                        <input type="radio" id="star2" name="rating" value="2"/><label for="star2"
+                                                                                       title="2 stars"></label>
+                        <input type="radio" id="star1" name="rating" value="1"/><label for="star1"
+                                                                                       title="1 star"></label>
+                    </div>
+                    <br>
+                    <input type="button" class="new-review-button" value="Отправить отзыв" onclick="addNewReview({{ user.id }}, {{ product.id }})">
+                </form>
+
+                <div id="notification"
+                     style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f2f2f2; padding: 20px; box-shadow: 0 0 10px 2px #aaa;"></div>
+            </div>
+            {% endif %}
+            <div class="reviewsContainer" id="reviewsContainer">
+                <h5>ТУТ БУДУТ ОТЗЫВЫ ПО ТОВАРУ</h5>
+            </div>
+        </div>
+    </div>
 </main>
 <script>
     // Сохранение данных формы в cookies при отправке
@@ -96,18 +130,17 @@
         var formDataCookie = getCookie('formData');
         if (formDataCookie) {
             var formData = JSON.parse(formDataCookie);
-            if ({{product.id }} in formData) {
-                formData[{{ product.id }}] += 1;
+            if ({{product.id}} in formData) {
+                formData[{{product.id}}] += 1;
             } else {
-                formData[{{ product.id }}] = 1;
+                formData[{{product.id}}] = 1;
             }
         } else {
             var formData = {};
-            formData[{{ product.id }}] = 1;
+            formData[{{product.id}}] = 1;
         }
-        if (formData[{{ product.id }}] > {{ product.amount }}) {
-            formData[{{ product.id }}] = {{ product.amount }}
-        }
+        if (formData[{{product.id}}] > {{product.amount}}) {
+            formData[{{product.id}}] = {{product.amount}}}
 
         document.cookie = 'formData=' + JSON.stringify(formData) + '; path=/';
         console.log(document.cookie)
@@ -143,7 +176,7 @@
             buttons.appendChild(inputButton);
         }
         addButton = document.querySelector('.add-to-card');
-        let product_id = {{ product.id }};
+        let product_id = {{product.id}};
         addButton.value = "Добавить еще | уже " + formData[product_id.toString()];
     }
 
@@ -158,8 +191,8 @@
             return
         }
         var formData = JSON.parse(formDataCookie);
-        console.log('ID {{ product.id }} продукта в cookie? ' + {{ product.id }} in formData );
-        if ({{product.id}} in formData) {
+        console.log('ID {{ product.id }} продукта в cookie? ' + {{product.id}} in formData);
+        if ({{product.id}} in formData ) {
             check_buttons(formData)
         }
     }
@@ -171,10 +204,10 @@
         var formDataCookie = getCookie('formData');
         if (formDataCookie) {
             var formData = JSON.parse(formDataCookie);
-            console.log("ID {{ product.id }} продукта в cookie? " + {{ product.id }} in formData);
+            console.log("ID {{ product.id }} продукта в cookie? " + {{product.id}} in formData);
             console.log(formData);
-            if ({{ product.id }} in formData ) {
-                let key = {{ product.id }};
+            if ({{product.id}} in formData) {
+                let key = {{product.id}};
                 addButton = form.querySelector('.add-to-card');
                 if (formData[key.toString()] <= 1) {
                     delete formData[key.toString()];
@@ -191,36 +224,37 @@
             console.log(document.cookie);
         }
     }
-// Получаем ссылки на основное изображение и модальное окно
-const mainImage = document.querySelector('.main-image');
-const modal = document.getElementById('modal');
 
-// Назначаем обработчик клика на основное изображение
-mainImage.addEventListener('click', function() {
-    // Получаем ссылку на увеличенное изображение
-    const modalImage = document.getElementById('modal-image');
-    modalImage.src = this.src;
+    // Получаем ссылки на основное изображение и модальное окно
+    const mainImage = document.querySelector('.main-image');
+    const modal = document.getElementById('modal');
 
-    // Увеличиваем размер увеличенного изображения в 2 раза
-    modalImage.style.width = (this.width * 2) + 'px';
-    modalImage.style.height = (this.height * 2) + 'px';
+    // Назначаем обработчик клика на основное изображение
+    mainImage.addEventListener('click', function () {
+        // Получаем ссылку на увеличенное изображение
+        const modalImage = document.getElementById('modal-image');
+        modalImage.src = this.src;
 
-    // Отображаем модальное окно
-    modal.style.display = 'block';
-});
+        // Увеличиваем размер увеличенного изображения в 2 раза
+        modalImage.style.width = (this.width * 2) + 'px';
+        modalImage.style.height = (this.height * 2) + 'px';
 
-// Назначаем обработчик клика на кнопку закрытия модального окна
-modal.querySelector('.close').addEventListener('click', function() {
-    // Скрываем модальное окно
-    modal.style.display = 'none';
-});
+        // Отображаем модальное окно
+        modal.style.display = 'block';
+    });
 
-// Назначаем обработчик клика на область вне увеличенного изображения, чтобы закрыть модальное окно при клике вне него
-window.addEventListener('click', function(event) {
-    if (event.target == modal) {
+    // Назначаем обработчик клика на кнопку закрытия модального окна
+    modal.querySelector('.close').addEventListener('click', function () {
+        // Скрываем модальное окно
         modal.style.display = 'none';
-    }
-});
+    });
+
+    // Назначаем обработчик клика на область вне увеличенного изображения, чтобы закрыть модальное окно при клике вне него
+    window.addEventListener('click', function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
 
 </script>
 </body>

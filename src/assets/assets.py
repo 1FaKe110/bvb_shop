@@ -1,7 +1,7 @@
 from loguru import logger
 from time import sleep
 
-from repository import DbQueries
+from repository.sql import DbQueries
 
 
 def get_next_order_id(db):
@@ -43,6 +43,15 @@ def check_session(session):
     return True if 'username' in session else False
 
 
+def map_nested_dict_to_lowercase(d):
+    for key, value in d.items():
+        if isinstance(value, str):
+            d[key] = value.lower()
+        elif isinstance(value, dict):
+            map_nested_dict_to_lowercase(value)
+    return d
+
+
 def index_postgres_data_for_search(db, es):
     records = db.exec(
         DbQueries.Products.all(),
@@ -50,7 +59,7 @@ def index_postgres_data_for_search(db, es):
 
     logger.debug('Добавляю индексы бд [Products] в elasticSearch')
     for record in records:
-        es.index(index='products-index', id=record['p_id'], body=record)
+        es.index(index='products-index', id=record['p_id'], body=map_nested_dict_to_lowercase(record))
 
     records = db.exec(
         DbQueries.Categories.all(),
@@ -58,4 +67,4 @@ def index_postgres_data_for_search(db, es):
 
     logger.debug('Добавляю индексы бд [Categories] в elasticSearch')
     for record in records:
-        es.index(index='categories-index', id=record['c_id'], body=record)
+        es.index(index='categories-index', id=record['c_id'], body=map_nested_dict_to_lowercase(record))

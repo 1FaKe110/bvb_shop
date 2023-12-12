@@ -14,15 +14,18 @@ from database import db
 from loguru import logger
 
 from mail import Mailer
-from repository import DbQueries
+from repository.sql import DbQueries
 from telegram_bot.Bot import Telebot
 from tabulate import tabulate
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch([{'host': os.getenv('elastic_host'), 'port': os.getenv('elastic_port')}])
-logger.info("Connected to ElasticSearch") if es.ping() else logger.error("Could not connect to ElasticSearch")
+if es.ping():
+    logger.info("Connected to ElasticSearch")
+    index_postgres_data_for_search(db, es)
+else:
+    logger.error("Could not connect to ElasticSearch")
 
-index_postgres_data_for_search(db, es)
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
@@ -274,6 +277,14 @@ def category(category_name):
 @app.route('/product/<product_name>/<product_id>')
 def product(product_name, product_id):
     """# Определение маршрута Flask для просмотра товара"""
+    if check_session(session):
+        user = db.exec(
+            DbQueries.Users.by_login(session['username']),
+            'fetchone'
+        )
+    else:
+        user = None
+        logger.debug("Пользователь не залогинен, отзыв оставить нельзя")
 
     product_info = db.exec(
         DbQueries.Products.by_name_and_id(product_name, product_id),
@@ -286,6 +297,7 @@ def product(product_name, product_id):
     return render_template('product.html',
                            category_name=category_name.name,
                            product=product_info,
+                           user=user,
                            login=check_session(session))
 
 
@@ -508,12 +520,44 @@ def search_helper():
                     body={"query": {
                         "match": {
                             "c_name": {
-                                "query": user_request,
+                                "query": user_request.lower(),
                                 "boost": 1.0,
                                 "fuzziness": "1"
                             }}}})
     categories = [row['_source'] for row in res['hits']['hits']][:5]
     return jsonify(categories)
+
+
+@app.route('/get_reviews/<product_id>')
+def get_review(product_id):
+    reviews = db.exec(
+        DbQueries.Reviews.Select.review_by_product_id(product_id),
+        'fetchall'
+    )
+    return jsonify(reviews)
+
+
+@app.route('/add_review', methods=['POST'])
+def add_review():
+    # Получаем данные от пользователя
+    data = request.get_json()
+    logger.debug(f"Добавление нового отзыва для товара с id: {data['product_id']}")
+    user_id = data['user_id']
+    review_text = data['review_text']
+    rating = data['rating']
+    review_date = datetime.datetime.now().isoformat()
+    product_id = data['product_id']
+
+    try:
+        db.exec(
+            DbQueries.Reviews.Insert.new(
+                user_id, review_text, rating, review_date, product_id
+            ))
+        logger.info("Отзыв добавлен")
+        return jsonify(dict(code='info', message="Отзыв успешно добавлен"))
+    except Exception as ex:
+        logger.error(ex)
+        return jsonify(dict(code='error', message=f'Ошибка при добавлении отзыва \n {ex}'))
 
 
 @logger.catch
