@@ -9,11 +9,13 @@ class Products:
 
     @staticmethod
     def random(limit):
-        return (f"SELECT * "
-                f"FROM products p "
-                f"where p.amount > 0"
-                f"ORDER BY RANDOM() "
-                f"LIMIT {limit};")
+        return ("select "
+                "p.*, AVG(r.rating) as average_rating "
+                "from products p "
+                "inner join reviews r on p.id = r.product_id "
+                "group by p.id, p.name "
+                "order by average_rating desc "
+                f"limit {limit};")
 
     @staticmethod
     def by_id(idx):
