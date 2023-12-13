@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function fetchReviews() {
 
-    fetch('/get_reviews/' + location.href.split('/').slice(-1)[0])  // замените на ваш реальный эндпоинт для получения отзывов
+    fetch('/get_reviews/' + location.href.split('/').slice(-1)[0])
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -59,15 +59,62 @@ function fetchReviews() {
         });
 }
 
+function createStarsContainer(n) {
+    const starsContainer = document.createElement('div');
+    let stars = '';
+    for (let i = 0; i < n; i++) {
+        stars += '⭐️';  // Юникод символ звезды
+    }
+    starsContainer.innerHTML = stars;
+    starsContainer.style.color = 'gold';  // Желтый цвет звезд
+    return starsContainer;
+}
+
 function renderReviews(reviews) {
     const reviewsContainer = document.getElementById('reviewsContainer');
     reviews.slice(0, 20).forEach(review => {
         const reviewDiv = document.createElement('div');
         reviewDiv.classList.add('review');
-        reviewDiv.innerHTML = "<p><strong>" + review.full_name + "</strong>" +
-            " - Оценка: " + review.rating +
-            " Дата: " + review.review_date +
-            "</p><p>" + review.review_text + "</p>";
+
+        const reviewDivTop = document.createElement('div');
+        reviewDivTop.classList.add('reviewTop');
+
+        const reviewDivBottom = document.createElement('div');
+        reviewDivBottom.classList.add('reviewBottom');
+
+        const nameDiv = document.createElement('div');
+        nameDiv.classList.add('username');
+        const nameP = document.createElement('p');
+        const nameStrong = document.createElement('strong');
+        nameStrong.innerHTML = review.full_name;
+        nameP.appendChild(nameStrong);
+        nameDiv.appendChild(nameP);
+
+        const ratingDiv = document.createElement('div');
+        ratingDiv.classList.add('reviewRating');
+        ratingDiv.appendChild(createStarsContainer(review.rating));
+
+        const dateReviewDiv = document.createElement('div');
+        dateReviewDiv.classList.add('dateReview');
+        const dateReviewText = document.createElement('p');
+        dateReviewText.innerHTML = review.review_date.toString();
+        dateReviewDiv.appendChild(dateReviewText);
+
+
+        const textReviewDiv = document.createElement('div');
+        textReviewDiv.classList.add('textReview');
+        const textReviewText = document.createElement('p');
+        textReviewText.innerHTML = review.review_text;
+        textReviewDiv.appendChild(textReviewText);
+
+
+        reviewDivTop.appendChild(nameDiv);
+        reviewDivTop.appendChild(dateReviewDiv);
+        reviewDivBottom.appendChild(ratingDiv);
+        reviewDivBottom.appendChild(textReviewDiv);
+        reviewDiv.appendChild(reviewDivTop);
+        reviewDiv.appendChild(reviewDivBottom);
+
         reviewsContainer.appendChild(reviewDiv);
     });
 }

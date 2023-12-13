@@ -43,8 +43,8 @@
     {% endwith %}
     <form class="login-form" action="/login" method="post">
         <div class="inputs">
-            <input type="text" name="username" placeholder="Логин" required>
-            <input type="password" name="password" placeholder="Пароль" required>
+            <input type="text" name="username" minlength="5" maxlength="40" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required minlength="8" maxlength="50">
         </div>
         <p class="account">Нет аккаунта? <a href="{{url_for('register')}}">Регистрация</a></p>
         <p class="account">Забыли пароль? <a href="{{url_for('recover_password')}}">Восстановить</a></p>

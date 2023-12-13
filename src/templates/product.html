@@ -110,16 +110,14 @@
                                                                                        title="1 star"></label>
                     </div>
                     <br>
-                    <input type="button" class="new-review-button" value="Отправить отзыв" onclick="addNewReview({{ user.id }}, {{ product.id }})">
+                    <input type="button" class="new-review-button" maxlength="4096" value="Отправить отзыв" onclick="addNewReview({{ user.id }}, {{ product.id }})">
                 </form>
 
                 <div id="notification"
                      style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f2f2f2; padding: 20px; box-shadow: 0 0 10px 2px #aaa;"></div>
             </div>
             {% endif %}
-            <div class="reviewsContainer" id="reviewsContainer">
-                <h5>ТУТ БУДУТ ОТЗЫВЫ ПО ТОВАРУ</h5>
-            </div>
+            <div class="reviewsContainer" id="reviewsContainer"></div>
         </div>
     </div>
 </main>

@@ -539,6 +539,9 @@ def get_review(product_id):
 
 @app.route('/add_review', methods=['POST'])
 def add_review():
+    if not check_session(session):
+        return jsonify(dict(code='error', message="Нужно быть авторизованным пользователем,\n чтобы оставить отзыв"))
+
     # Получаем данные от пользователя
     data = request.get_json()
     logger.debug(f"Добавление нового отзыва для товара с id: {data['product_id']}")

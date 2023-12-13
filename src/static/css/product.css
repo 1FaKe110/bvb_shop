@@ -328,8 +328,62 @@ input[type='button'].remove-from-card-button:hover {
     color: #f90;
 }
 
-.review-list {
-
-
+.reviewsContainer {
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
+    border-radius: 10px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 15px;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-content: space-around;
+    justify-content: center;
+    align-items: flex-start;
 }
 
+.review {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.reviewTop {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.reviewTop div {
+    margin-left: 10px;
+}
+.reviewBottom {
+    margin-left: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.textReview {
+    width: 500px;
+    min-height: 40px;
+    max-height: 124px;
+    overflow-y: auto;
+}
+.textReview p {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+}

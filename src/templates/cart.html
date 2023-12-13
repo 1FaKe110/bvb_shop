@@ -152,10 +152,10 @@
                             <p>ФИО:</p>
                             {% if login %}
                             <input class="submit-input" type="text" id="full_name_user" name="full_name_user"
-                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" required value="{{user_info.fio}}">
+                                   placeholder="Иванов Иван Иванович" maxlength="50" enterkeyhint="next" required value="{{user_info.fio}}">
                             {% else %}
                             <input class="submit-input" type="text" id="full_name" name="full_name"
-                                   placeholder="Иванов Иван Иванович" enterkeyhint="next" value="+7"
+                                   placeholder="Иванов Иван Иванович" maxlength="50" enterkeyhint="next" value="+7"
                                    required>
                             {% endif %}
                         </div>
@@ -167,7 +167,7 @@
                             <div>
                                 <input class="submit-input" type="text" list="userAddresses" id="order_place_user"
                                        name="order_place_user" onkeyup="showSuggestions()"
-                                       placeholder="Адрес доставки" value="{{ address_list[0].address }}">
+                                       placeholder="Адрес доставки" value="{{ address_list[0].address }}" maxlength="150">
                                 <datalist id="userAddresses">
                                   {% for row in address_list %}
                                     <option value="{{ row.address }}">
@@ -176,7 +176,7 @@
                             </div>
                             {% else %}
                             <input class="submit-input" type="text" id="order_place" name="order_place"
-                                   placeholder="Адрес" autocomplete="street-address" enterkeyhint="next" required>
+                                   placeholder="Адрес" autocomplete="street-address" enterkeyhint="next" required maxlength="150">
                             {% endif %}
                         </div>
                         <div class="order_date">
