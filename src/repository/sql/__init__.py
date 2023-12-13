@@ -16,3 +16,4 @@ class DbQueries:
     Products = Products
     Categories = Categories
     Reviews = Review
+
