@@ -6,7 +6,7 @@ main {
 /* Стили для поиска */
 .search-block {
     margin-bottom: 20px;
-    margin-top: 20px;
+    margin-top: 40px;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;

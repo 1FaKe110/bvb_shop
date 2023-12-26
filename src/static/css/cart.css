@@ -1,4 +1,5 @@
 .search-block {
+    margin-top: 20px;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -12,7 +13,7 @@
 }
 
 #searchResults {
-    top: 46px;
+    top: 64px;
 }
 
 table {
@@ -48,6 +49,10 @@ td.product-amount-cell {
     text-align: center;
 }
 td.product-sum-cell p {
+    text-align: center;
+}
+
+.empty-cart {
     text-align: center;
 }
 
@@ -148,6 +153,16 @@ td.product-sum-cell p {
     justify-content: center;
     align-items: center;
 }
+
+.total {
+    display: inline-flex;
+    align-items: center;
+}
+
+.total * {
+    margin: 10px;
+}
+
 
 /* CSS button add */
 input[type='button'].add-to-card, input[type='submit'].submit-input-confirm {

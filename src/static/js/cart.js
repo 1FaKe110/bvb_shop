@@ -105,5 +105,23 @@ function saveFormData() {
     document.cookie = 'order_place=' + document.getElementById('order_place').value + '; path=/'
 }
 
+function removeAll(itemId) {
+    var formDataCookie = getCookie('formData');
+    if (formDataCookie) {
+        var formData = JSON.parse(formDataCookie);
+        console.log("ID product_id " + itemId + " продукта в cookie? " + (itemId in formData));
+        console.log(formData);
+        if (itemId in formData) {
+            var result = window.confirm("Подтвердить удаление из корзины");
 
-// AIzaSyBYoCWzhnWyyP9gl6mltC0bbggc_Bo7y_U
+            if (result) {
+                // Код, который исполняется при нажатии "Подтвердить"
+                delete formData[itemId.toString()];
+                location.reload();
+            }
+        }
+        document.cookie = 'formData=' + JSON.stringify(formData) + '; path=/';
+        console.log(document.cookie);
+    }
+    location.reload();
+}

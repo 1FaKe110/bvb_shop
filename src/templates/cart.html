@@ -63,6 +63,7 @@
                     <thead>
                     <tr>
                         <th></th>
+                        <th></th>
                         <th>Наименование</th>
                         <th>Цена</th>
                         <th>Добавить Удалить</th>
@@ -73,6 +74,9 @@
                     <tbody>
                     {% for product in products %}
                     <tr class="card-{{product.id}}">
+                        <td class="remove-item">
+                            <span class="material-icons" onclick="removeAll({{product.id}})" style="color: red;">close</span>
+                        </td>
                         <td class="image-block-mini">
                             {% if product.image != '' %}
                             <img src="{{product.image_path}}" alt="{{product.name}}"/>
@@ -111,15 +115,15 @@
                 <div class="cart-total">
                     <div class="total">
                         <p class="sum-card-price"> Общая сумма заказа: {{order.sum}} р. </p>
+                        <a href="{{url_for('cart_clear')}}">Очистить корзину?</a>
                     </div>
                 </div>
 
             </div>
             {% else %}
             <div class="empty-cart">
-                <h5>Корзина пуста</h5>
+                <h4>Корзина пуста</h4>
                 <a class="to-main-page" href="{{ url_for('index')}}">Перейти к покупкам</a>
-
             </div>
             {% endif %}
             {% if products %}
