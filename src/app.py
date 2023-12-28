@@ -338,6 +338,11 @@ def cart(error_description=None):
         order.sum += p_row.price * p_row.in_card
     order.sum = f"{order.sum:.2f}"
 
+    interest_products = db.exec(
+        DbQueries.Products.random(6),
+        'fetchall'
+    )
+
     match request.method:
         case 'GET':
             if check_session(session):
@@ -357,6 +362,7 @@ def cart(error_description=None):
                                        clear_cookie=None,
                                        address_list=address_list,
                                        user_info=user_info,
+                                       interest_products=interest_products,
                                        login=check_session(session))
 
             return render_template('cart.html',
@@ -364,6 +370,7 @@ def cart(error_description=None):
                                    order=order,
                                    error_description=None,
                                    clear_cookie=None,
+                                   interest_products=interest_products,
                                    login=check_session(session))
 
         case 'POST':

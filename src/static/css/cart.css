@@ -428,3 +428,46 @@ div.order_sum input {
 a.product-name:hover {
     font-size: 16px;
 }
+
+/* Интересующие продукты */
+
+.products {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.product-href {
+    flex: 1 0 21%; /* explanation below */
+    margin: 10px;
+}
+
+.product-card {
+    width: 100%;
+    padding: -10px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: fit-content;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.img-block img {
+    width: 178px;
+    height: 178px;
+    margin: 10px;
+    padding: 5px;
+    border-radius: 10px;
+    /* background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgb(0 0 0 / 13%); */
+}
+
+.content-bottom h4 {
+    text-align: center;
+}
