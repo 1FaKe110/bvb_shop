@@ -9,6 +9,14 @@ class Products:
 
     @staticmethod
     def random(limit):
+        return (f"SELECT * "
+                f"FROM products p "
+                f"where p.amount > 0"
+                f"ORDER BY RANDOM() "
+                f"LIMIT {limit};")
+
+    @staticmethod
+    def by_rating(limit):
         return ("select "
                 "p.*, AVG(r.rating) as average_rating "
                 "from products p "

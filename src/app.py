@@ -187,7 +187,7 @@ def index():
 
     # выбираем 4 рандомных товара из бд
     products = db.exec(
-        DbQueries.Products.random(4),
+        DbQueries.Products.by_rating(4),
         'fetchall'
     )
 
@@ -339,7 +339,7 @@ def cart(error_description=None):
     order.sum = f"{order.sum:.2f}"
 
     interest_products = db.exec(
-        DbQueries.Products.random(6),
+        DbQueries.Products.random(12),
         'fetchall'
     )
 
