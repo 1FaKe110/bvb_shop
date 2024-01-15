@@ -10,22 +10,22 @@
   <nav class="nav-bar">
     <ul class="nav-ul">
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+        <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+        <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+        <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+        <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
       </li>
       <li class="nav-li-active">
         {% if login %}
-        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+        <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
         {% else %}
-        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+        <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
         {% endif %}
       </li>
     </ul>
@@ -63,11 +63,11 @@
       <div class="error-message" id="passwordError"></div>
 
     </div>
-    <p class="account">Есть аккаунт? <a href="{{url_for('login')}}">Войти</a></p>
-    <p class="account">Забыли пароль? <a href="{{url_for('recover_password')}}">Восстановить</a></p>
+    <p class="account">Есть аккаунт? <a href="{{url_for('main_page.login')}}">Войти</a></p>
+    <p class="account">Забыли пароль? <a href="{{url_for('main_page.recover_password')}}">Восстановить</a></p>
     <button type="submit" id="registerButton" disabled>Зарегистрироваться</button>
   </form>
 </div>
 </body>
-<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+<script src="{{ url_for('main_page.static', filename='js/register.js') }}"></script>
 </html>

@@ -1,169 +1,171 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BVB: Категория: {{ category_name }}</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <title>BVB: Категория: {{ category_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
-  <nav class="nav-bar">
+    <nav class="nav-bar">
 
-    <ul class="nav-ul">
-      <li class="nav-li-active">
-        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
-      </li>
-      <li class="nav-li">
-        {% if login %}
-        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
-        {% else %}
-        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
-        {% endif %}
-      </li>
-    </ul>
-  </nav>
+        <ul class="nav-ul">
+            <li class="nav-li-active">
+                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li">
+                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
+            </li>
+            <li class="nav-li">
+                {% if login %}
+                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
+                {% else %}
+                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
 </div>
 
 
 <main>
-  <div class="content">
-    <div class="content-right">
-      <div class="search-block">
-        <div class="router">
-          <div class="router-block">
-            <p class="router-content">
-              {% if prev_category.name %}
-              <a href="{{ url_for('category', category_name=prev_category.name) }}">
-                {{prev_category.name}}</a>
-              {% else %}
-              <a href="{{ url_for('index') }}">Главная</a>
-              {% endif %}
-              / {{ category_name }}</p>
-          </div>
+    <div class="content">
+        <div class="content-right">
+            <div class="search-block">
+                <div class="router">
+                    <div class="router-block">
+                        <p class="router-content">
+                            {% if prev_category.name %}
+                            <a href="{{ url_for('main_page.category', category_name=prev_category.name) }}">
+                                {{prev_category.name}}</a>
+                            {% else %}
+                            <a href="{{ url_for('main_page.index') }}">Главная</a>
+                            {% endif %}
+                            / {{ category_name }}</p>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-text" name="search-text" id="search-text"
+                           placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                           autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+            {% if subcategories or products %}
+            {% if subcategories %}
+            <h2>Категории</h2>
+            <div class="categories">
+                {% for subcategory in subcategories %}
+                <a class="category-href" href="{{ url_for('main_page.category', category_name=subcategory.name) }}">
+                    <div class="category-card">
+                        {% if subcategory.image_path == '' %}
+                        <div class="img">
+                            <span class="material-icons">list</span>
+                        </div>
+                        {% else %}
+                        <div class="img">
+                            <img src="{{ subcategory.image_path }}" alt="{{subcategory.name}}"/>
+                        </div>
+                        {% endif %}
+                        <p class="category-name">{{ subcategory.name}}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if products %}
+            <h2>Товары</h2>
+            <div class="products">
+                {% for product in products %}
+                <a class="product-href"
+                   href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">
+                    {% if product.amount >= 5 %}
+                    <div class="product-card">
+                        {% if product.image_path == '' %}
+                        <div class="img-block">
+                            <span class="material-icons">qr_code_2</span>
+                        </div>
+                        {% else %}
+                        <div class="img-block">
+                            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                        </div>
+                        {% endif %}
+                        <div class="product-name-block">
+                            <p class="product-name-text">{{ product.name }}</p>
+                        </div>
+                        {% if product.in_card %}
+                        <div class="product-price-block-added">
+                            <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                        </div>
+                        {% else %}
+                        <div class="product-price-block">
+                            <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% elif 0 < product.amount < 5 %}
+                    <div class="product-card-almost-empty">
+                        {% if product.image_path == '' %}
+                        <div class="img-block">
+                            <span class="material-icons">qr_code_2</span>
+                        </div>
+                        {% else %}
+                        <div class="img-block">
+                            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                        </div>
+                        {% endif %}
+                        <div class="product-name">
+                            <p class="">{{ product.name }}</p>
+                        </div>
+                        {% if product.in_card %}
+                        <div class="product-price-block-added">
+                            <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                        </div>
+                        {% else %}
+                        <div class="product-price-block">
+                            <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="categories">
+                <div class="no-category">
+                    <div class="h-tag">
+                        <h5 class="aljbgl">Тут пока ничего нет</h5>
+                    </div>
+                    <div class="url">
+                        {% if prev_category.name %}
+                        <a href="{{ url_for('main_page.category', category_name=prev_category.name) }}">
+                            {{prev_category.name}}</a>
+                        {% else %}
+                        <a href="{{ url_for('main_page.index') }}">Главная</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
-        <div class="search-container">
-          <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
-          <div id="searchResults"></div>
-        </div>
-      </div>
-      {% if subcategories or products %}
-      {% if subcategories %}
-      <h2>Категории</h2>
-      <div class="categories">
-        {% for subcategory in subcategories %}
-        <a class="category-href" href="{{ url_for('category', category_name=subcategory.name) }}">
-          <div class="category-card">
-            {% if subcategory.image_path == '' %}
-            <div class="img">
-              <span class="material-icons">list</span>
-            </div>
-            {% else %}
-            <div class="img">
-              <img src="{{ subcategory.image_path }}" alt="{{subcategory.name}}"/>
-            </div>
-            {% endif %}
-            <p class="category-name">{{ subcategory.name}}</p>
-          </div>
-        </a>
-        {% endfor %}
-      </div>
-      {% endif %}
-      {% if products %}
-      <h2>Товары</h2>
-      <div class="products">
-        {% for product in products %}
-        <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
-          {% if product.amount >= 5 %}
-          <div class="product-card">
-            {% if product.image_path == '' %}
-            <div class="img">
-              <span class="material-icons">qr_code_2</span>
-            </div>
-            {% else %}
-            <div class="img">
-              <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-            </div>
-            {% endif %}
-            <div class="product-name">
-              <p class="">{{ product.name }}</p>
-            </div>
-            {% if product.in_card %}
-            <div class="product-price-added">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% else %}
-            <div class="product-price">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% endif %}
-          </div>
-          {% elif 0 < product.amount < 5 %}
-          <div class="product-card-almost-empty">
-            {% if product.image_path == '' %}
-            <div class="img">
-              <span class="material-icons">qr_code_2</span>
-            </div>
-            {% else %}
-            <div class="img">
-              <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-            </div>
-            {% endif %}
-            <div class="product-name">
-              <p class="">{{ product.name }}</p>
-            </div>
-            {% if product.in_card %}
-            <div class="product-price-added">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% else %}
-            <div class="product-price">
-              <p class="">{{ product.price }} р.</p>
-            </div>
-            {% endif %}
-          </div>
-          {% endif %}
-          {% endfor %}
-        </a>
-      </div>
-      {% endif %}
-      {% else %}
-      <div class="categories">
-        <div class="no-category">
-          <div class="h-tag">
-            <h5 class="aljbgl">Тут пока ничего нет</h5>
-          </div>
-          <div class="url">
-            {% if prev_category.name %}
-            <a href="{{ url_for('category', category_name=prev_category.name) }}">
-              {{prev_category.name}}</a>
-            {% else %}
-            <a href="{{ url_for('index') }}">Главная</a>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      {% endif %}
     </div>
-  </div>
 </main>
 
 <footer>
-  <div class="footer" style="height: 200px;"></div>
+    <div class="footer" style="height: 200px;"></div>
 </footer>
 </body>
 </html>

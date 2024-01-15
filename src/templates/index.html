@@ -5,6 +5,7 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main_page.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -15,22 +16,22 @@
   <nav class="nav-bar">
     <ul class="nav-ul">
       <li class="nav-li-active">
-        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+        <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+        <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+        <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+        <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
       </li>
       <li class="nav-li">
         {% if login %}
-        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+        <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
         {% else %}
-        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+        <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
         {% endif %}
       </li>
     </ul>
@@ -58,7 +59,7 @@
       <div class="categories">
         {% for category in categories %}
         <div class="category-block">
-          <a class="category-href" href="{{ url_for('category', category_name=category.name) }}">
+          <a class="category-href" href="{{ url_for('main_page.category', category_name=category.name) }}">
             <div class="category-card-main">
               {% if category.image_path == '../static/images/categories/categories-blank.png' %}
               <div class="img-main">
@@ -81,35 +82,61 @@
         <div class="block-name">
           <h3>Лучшие товары</h3>
         </div>
-        <div class="items-block">
-          {% for product in products %}
-          <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
-            <div class="category-card">
-              {% if product.image_path == '' %}
-              <div class="img">
-                <span class="material-icons">qr_code_2</span>
-              </div>
-              {% else %}
-              <div class="img">
-                <img class="top-rated-image" src="{{ product.image_path }}" alt="{{product.name}}"/>
-              </div>
-              {% endif %}
-              <div class="product-name">
-                <p class="">{{ product.name }}</p>
-              </div>
-              {% if product.in_card %}
-              <div class="product-price-added">
-                <p class="">{{ product.price }} р.</p>
-              </div>
-              {% else %}
-              <div class="product-price">
-                <p class="">{{ product.price }} р.</p>
-              </div>
-              {% endif %}
+         <div class="products">
+                {% for product in products %}
+                <a class="product-href" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">
+                  {% if product.amount >= 5 %}
+                  <div class="product-card">
+                    {% if product.image_path == '' %}
+                    <div class="img-block">
+                      <span class="material-icons">qr_code_2</span>
+                    </div>
+                    {% else %}
+                    <div class="img-block">
+                      <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                    </div>
+                    {% endif %}
+                    <div class="product-name-block">
+                      <p class="product-name-text">{{ product.name }}</p>
+                    </div>
+                    {% if product.in_card %}
+                    <div class="product-price-block-added">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                    </div>
+                    {% else %}
+                    <div class="product-price-block">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% elif 0 < product.amount < 5 %}
+                  <div class="product-card-almost-empty">
+                    {% if product.image_path == '' %}
+                    <div class="img-block">
+                      <span class="material-icons">qr_code_2</span>
+                    </div>
+                    {% else %}
+                    <div class="img-block">
+                      <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                    </div>
+                    {% endif %}
+                    <div class="product-name">
+                      <p class="">{{ product.name }}</p>
+                    </div>
+                    {% if product.in_card %}
+                    <div class="product-price-block-added">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                    </div>
+                    {% else %}
+                    <div class="product-price-block">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
+                    </div>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+                </a>
+                {% endfor %}
             </div>
-          </a>
-          {% endfor %}
-        </div>
       </div>
     </div>
   </div>

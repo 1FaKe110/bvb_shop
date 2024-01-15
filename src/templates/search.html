@@ -15,22 +15,22 @@
 
     <ul class="nav-ul">
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+        <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+        <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+        <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
       </li>
       <li class="nav-li">
-        <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+        <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
       </li>
       <li class="nav-li">
         {% if login %}
-        <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+        <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
         {% else %}
-        <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+        <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
         {% endif %}
       </li>
     </ul>
@@ -56,7 +56,7 @@
       <h2>Товары</h2>
       <div class="products">
         {% for product in products %}
-        <a class="product-href" href="{{ url_for('product', product_name=product.p_name, product_id=product.p_id) }}">
+        <a class="product-href" href="{{ url_for('main_page.product', product_name=product.p_name, product_id=product.p_id) }}">
           {% if product.p_amount >= 5 %}
           <div class="product-card">
             {% if product.p_image_path == '' %}
@@ -114,7 +114,7 @@
       <h2>Категории</h2>
       <div class="categories">
         {% for category in categories %}
-        <a class="category-href" href="{{ url_for('category', category_name=category.c_name) }}">
+        <a class="category-href" href="{{ url_for('main_page.category', category_name=category.c_name) }}">
           <div class="category-card">
             {% if category.c_image_path == '' %}
             <div class="img">
@@ -137,7 +137,7 @@
           <div class="h-tag">
             <h5 class="aljbgl">Тут пока ничего нет</h5>
             <p>По запросу: <span class="highlight">{{ user_request }}</span> не удалось ничего найти.</p>
-            <a class="highlight" href="{{url_for('index')}}">Главная страница</a>
+            <a class="highlight" href="{{url_for('main_page.index')}}">Главная страница</a>
           </div>
         </div>
       </div>

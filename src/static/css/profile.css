@@ -173,3 +173,19 @@ label {
   width: 100px; /* Задайте нужную ширину для метки */
   vertical-align: middle;
 }
+
+li.error {
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    color: red;
+}
+
+div.error {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}

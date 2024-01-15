@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>BVB: Корзина: {{ order.sum }} р.</title>
-<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
@@ -26,22 +26,22 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
             </li>
             <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
             </li>
             <li class="nav-li">
                 {% if login %}
-                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
                 {% else %}
-                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
                 {% endif %}
             </li>
         </ul>
@@ -87,11 +87,11 @@
                         </td>
                         <td class="product-name-cell">
                             <a class="product-name"
-                               href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">{{product.name}}</a>
+                               href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">{{product.name}}</a>
                             <p class="product-description">{{ product.description }}</p>
                         </td>
                         <td class="product-price-cell">
-                            <p class="product-price-value">{{ product.price }} р.</p>
+                            <p class="product-price-text-in-cell">{{ product.price }} р.</p>
                         </td>
                         <td class="product-buttons-cell">
                             <input type="button" class="add-to-card"
@@ -116,7 +116,7 @@
                 <div class="cart-total">
                     <div class="total">
                         <p class="sum-card-price"> Общая сумма заказа: {{order.sum}} р. </p>
-                        <a href="{{url_for('cart_clear')}}">Очистить корзину?</a>
+                        <a href="{{url_for('main_page.cart_clear')}}">Очистить корзину?</a>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
             {% else %}
             <div class="empty-cart">
                 <h4>Корзина пуста</h4>
-                <a class="to-main-page" href="{{ url_for('index')}}">Перейти к покупкам</a>
+                <a class="to-main-page" href="{{ url_for('main_page.index')}}">Перейти к покупкам</a>
             </div>
             {% endif %}
             {% if products %}
@@ -212,7 +212,7 @@
             <h4>Может заинтересовать</h4>
             <div class="products">
                 {% for product in interest_products %}
-                <a class="product-href" href="{{ url_for('product', product_name=product.name, product_id=product.id) }}">
+                <a class="product-href" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">
                   {% if product.amount >= 5 %}
                   <div class="product-card">
                     {% if product.image_path == '' %}
@@ -224,16 +224,16 @@
                       <img src="{{ product.image_path }}" alt="{{product.name}}"/>
                     </div>
                     {% endif %}
-                    <div class="product-name">
-                      <p class="">{{ product.name }}</p>
+                    <div class="product-name-block">
+                      <p class="product-name-text">{{ product.name }}</p>
                     </div>
                     {% if product.in_card %}
-                    <div class="product-price-added">
-                      <p class="">{{ product.price }} р.</p>
+                    <div class="product-price-block-added">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
                     </div>
                     {% else %}
-                    <div class="product-price">
-                      <p class="">{{ product.price }} р.</p>
+                    <div class="product-price-block">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
                     </div>
                     {% endif %}
                   </div>
@@ -252,18 +252,18 @@
                       <p class="">{{ product.name }}</p>
                     </div>
                     {% if product.in_card %}
-                    <div class="product-price-added">
-                      <p class="">{{ product.price }} р.</p>
+                    <div class="product-price-block-added">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
                     </div>
                     {% else %}
-                    <div class="product-price">
-                      <p class="">{{ product.price }} р.</p>
+                    <div class="product-price-block">
+                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
                     </div>
                     {% endif %}
                   </div>
                   {% endif %}
-                  {% endfor %}
                 </a>
+                {% endfor %}
             </div>
         </div>
     </div>

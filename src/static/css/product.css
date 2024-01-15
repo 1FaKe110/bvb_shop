@@ -59,9 +59,8 @@ main {
     align-items: flex-start;
     width: 1000px;
     min-height: 500px;
-    /* border: 1px solid #ccc; */
-    border-radius: 10px;
-    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
+    border-radius: 15px;
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);*/
 }
 
 
@@ -70,7 +69,7 @@ main {
     height: 270px;
     padding: 5px;
     background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 10px rgb(0 0 0 / 13%);
+    /*box-shadow: 0 0 10px rgb(0 0 0 / 13%);*/
     border-radius: 10px;
 }
 
@@ -387,3 +386,5 @@ input[type='button'].remove-from-card-button:hover {
     flex-wrap: wrap;
     overflow-wrap: anywhere;
 }
+
+

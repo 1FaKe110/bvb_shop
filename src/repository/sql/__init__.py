@@ -10,10 +10,10 @@ from repository.sql.tables.Reviews import Review
 
 class DbQueries:
 
-    Users = Users
-    Addresses = Addresses
-    Orders = Orders
-    Products = Products
-    Categories = Categories
-    Reviews = Review
+    Users = Users()
+    Addresses = Addresses()
+    Orders = Orders()
+    Products = Products()
+    Categories = Categories()
+    Reviews = Review()
 

@@ -19,35 +19,45 @@
 table {
     padding: 20px;
 }
+
 th {
     text-align: center;
 }
+
 td {
     padding: 10px;
     margin: 10px;
 }
+
 td.image-block-mini {
     width: 10%;
 }
+
 td.product-name-cell {
     width: 50%;
 }
+
 td.product-name-cell p {
     font-style: italic;
     font-size: 12px;
 }
+
 td.product-name-cell a {
     font-size: 18px;
 }
+
 td.product-price-cell {
     text-align: center;
 }
+
 td.product-buttons-cell {
     text-align: center;
 }
+
 td.product-amount-cell {
     text-align: center;
 }
+
 td.product-sum-cell p {
     text-align: center;
 }
@@ -112,7 +122,11 @@ td.product-sum-cell p {
     font-weight: bold;
 }
 
-.card-items .product-price-block {
+p.product-name-text {
+    margin-top: -5px;
+}
+
+.card-items .product-price-block, .card-items .product-price-block-added {
     width: 30%;
     display: flex;
     flex-direction: row;
@@ -123,15 +137,28 @@ td.product-sum-cell p {
     margin: 10px;
 }
 
-.product-price-block div {
+.product-price-block div, .product-price-block-added div {
     width: fit-content;
 }
 
-.card-items .product-price-block p {
+.card-items .product-price-block p, .card-items .product-price-block-added p {
     margin: 10px;
     padding: 10px;
     font-style: normal;
     text-wrap: nowrap;
+}
+
+p.product-price-text, p.product-price-text-added {
+    padding: 0;
+    margin-top: 2px;
+    padding: 10px;
+    padding-left: 25px;
+    padding-right: 25px;
+    background: #fff7d8;
+    border-radius: 10px;
+}
+p.product-price-text-added {
+    background: #96facf;
 }
 
 .card-items .product-price-block p.product-price-value {
@@ -224,7 +251,7 @@ input[type='button'].remove-from-card-button {
     color: #fff;
     cursor: pointer;
     display: inline-block;
-    font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-family: Inter, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: normal;
@@ -287,14 +314,17 @@ div.confirm-order {
     justify-content: center;
     align-items: center;
 }
+
 .input-fields div {
     margin: 10px;
     width: 250px;
 }
+
 .input-fields div input {
     margin-left: 5px;
     margin-right: 5px;
 }
+
 .input-fields div input[type='date'] {
     margin-left: 5px;
     margin-right: 5px;
@@ -432,6 +462,11 @@ a.product-name:hover {
 /* Интересующие продукты */
 
 .products {
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
+    border-radius: 15px;
+    padding: 10px;
     display: flex;
     flex-direction: row;
     align-content: center;
@@ -440,22 +475,26 @@ a.product-name:hover {
 }
 
 .product-href {
-    flex: 1 0 21%; /* explanation below */
     margin: 10px;
+    width: 250px;
+    height: 310px;
 }
 
-.product-card {
-    width: 100%;
-    padding: -10px;
-    margin: 10px;
+.product-card, .product-card-almost-empty {
+    background: #ffffff;
+    min-height: 250px;
+    padding: 0;
+    width: 250px;
+    margin: 0px;
     display: flex;
     flex-direction: column;
     align-content: center;
-    justify-content: flex-start;
+    justify-content: space-evenly;
     align-items: center;
-    min-height: fit-content;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    height: 310px;
+    flex-wrap: nowrap;
+    box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
 }
 
 .img-block img {
@@ -464,10 +503,27 @@ a.product-name:hover {
     margin: 10px;
     padding: 5px;
     border-radius: 10px;
-    /* background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 10px rgb(0 0 0 / 13%); */
 }
 
 .content-bottom h4 {
     text-align: center;
+}
+
+p.product-price-text-with-discount {
+    padding-left: 7px;
+    padding: 0;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 50px;
+    text-align: center;
+    display: flex;
+    padding-left: 25px;
+    padding-right: 25px;
+    background: #ffd8d8;
+    border-radius: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }

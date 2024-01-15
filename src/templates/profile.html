@@ -12,22 +12,22 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
+                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
+                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
+                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('cart', error_description=None)}}">Корзина</a>
+                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
             </li>
             <li class="nav-li-active">
                 {% if login %}
-                <a class="nav-a" href="{{url_for('profile')}}">Кабинет</a>
+                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
                 {% else %}
-                <a class="nav-a" href="{{url_for('login')}}">Войти</a>
+                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
                 {% endif %}
             </li>
         </ul>
@@ -37,6 +37,19 @@
 
 <main>
     <h2>Личный кабинет | <span>{{ user_info.fio }}</span></h2>
+
+    <div class="error">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="error-messages">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+    </div>
+
 
     <div class="two-boxes">
         <div class="content-left">
@@ -56,8 +69,8 @@
                 <label for="tel">Телефон</label>
                 <input type="tel" name="tel" id="tel" value="{{user_info.phone}}" readonly>
 
-                <a href="{{url_for('recover_password')}}">Сбросить пароль</a>
-                <a class="nav-a" href="{{url_for('logout')}}">Выйти</a>
+                <a href="{{url_for('main_page.recover_password')}}">Сбросить пароль</a>
+                <a class="nav-a" href="{{url_for('main_page.logout')}}">Выйти</a>
 <!--                <a href="#">Сменить номер телефона</a>-->
             </div>
         </div>
@@ -109,7 +122,7 @@
                     {% for order in orders %}
                     <tr>
                         <td style="width: 40px;">
-                            <a href="{{url_for('profile_order_details', order_id=order.order_id)}}">{{order.order_id}}</a></td>
+                            <a href="{{url_for('main_page.profile_order_details', order_id=order.order_id)}}">{{order.order_id}}</a></td>
                         <td style=""><p>{{order.address}}</p></td>
                         <td style=""><p>{{order.datetime[:10]}}</p></td>
                         <td style=""><p>{{order.name}}</p></td>
