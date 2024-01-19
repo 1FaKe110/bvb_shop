@@ -1,0 +1,33 @@
+/* Стили для маршрутной панели */
+.router {
+    padding-left: 15px;
+    padding-right: 30px;
+    padding-bottom: 5px;
+    border-left: 1px solid #f4f4f4;
+    border-right: 1px solid #f4f4f4;
+    border-radius: 10px;
+    box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 20px;
+    background: #fcfcfc;
+}
+
+.router-block {
+    top: 10px;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.router-content {
+    position: relative;
+    top: 5px;
+    margin: 0;
+    text-wrap: nowrap;
+}

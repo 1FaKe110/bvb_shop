@@ -3,7 +3,7 @@ from flask import render_template, request, Blueprint, jsonify
 from loguru import logger
 
 from assets.assets import check_session
-from database import db
+from repository.database import db
 from repository.sql import DbQueries
 from munch import DefaultMunch
 

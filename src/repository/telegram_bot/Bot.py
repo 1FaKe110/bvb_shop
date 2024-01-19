@@ -2,7 +2,7 @@ import json
 
 import telebot
 from loguru import logger
-from database import db
+from repository.database import db
 import os
 
 

@@ -1,0 +1,84 @@
+/* задний фон */
+body {
+    display: block;
+    background: linear-gradient(-30deg, #f8f8f8, #fdfdfd);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Плавное появление элементов */
+    /*background: linear-gradient(-30deg, #2f2c2c, #2d312f);*/
+}
+
+/* Стили для показа элементов после загрузки страницы */
+body.loaded {
+    opacity: 1;
+    transition: opacity 0.2s ease-in;
+}
+
+
+/* Стили для скрытия анимации загрузки после загрузки страницы */
+.loading-overlay {
+    opacity: 0;
+    transition: opacity 0.5s ease-out; /* Плавное исчезновение элементов */
+}
+
+html, body {
+    min-height: 100%;
+    height: fit-content(20em);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+
+/* Стили для фильтра по категориям и товарам */
+main {
+    top: 6px;
+    position: relative;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+/* main.right-side */
+.content-right, .content-top, .content-bottom  {
+    top: 35px;
+    position: relative;
+    width: 60%
+}
+
+
+/* main.left-side */
+.content-left {
+    position: relative;
+    top: 122px;
+}
+
+/* Стили для фильтра по категориям и товарам */
+#filter {
+    float: left;
+}
+
+#filter h2 {
+    margin-top: 0;
+}
+
+
+a {
+    text-decoration: NONE;
+    color: #4f3551
+}
+
+.error {
+    font-size: 14px;
+    font-weight: 400;
+    color: red;
+}

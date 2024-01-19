@@ -2,7 +2,10 @@
 <html>
 <head>
     <title>Вход</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/login.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
 <div class="top-panel">
@@ -51,5 +54,8 @@
         <button type="submit">Войти</button>
     </form>
 </div>
+<footer>
+  <div class="footer" style="height: 200px;"></div>
+</footer>
 </body>
 </html>

@@ -6,13 +6,13 @@ from flask_cors import CORS
 from flask import Flask, request, session
 
 from assets.assets import *
-from database import db
+from repository.database import db
 from loguru import logger
 
-from mail import Mailer
+from repository.mail import Mailer
 from repository.pages import Pages
 from repository.pages.main_page import main_page
-from telegram_bot.Bot import Telebot
+from repository.telegram_bot.Bot import Telebot
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch([{'host': os.getenv('elastic_host'), 'port': os.getenv('elastic_port')}])
@@ -232,7 +232,7 @@ def set_new_password(token):
 def recover_password():
     match request.method:
         case 'GET':
-            return pages.profile.handler.render_recover_password_page(session)
+            return pages.profile.handler.render_recover_password_page()
         case 'POST':
             return pages.profile.handler.recover_password_send_notify(session, mailer)
         case _:

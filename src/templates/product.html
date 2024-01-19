@@ -3,9 +3,10 @@
 <head>
     <title>{{ product.name }}</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/product.css') }}">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/review.js') }}"></script>
@@ -39,14 +40,14 @@
 
 
 <main>
-    <div class="search-block">
+      <div class="search-block">
         <div class="search-container">
-            <input type="text" class="search-text" name="search-text" id="search-text"
-                   placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                   autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
-            <div id="searchResults"></div>
+          <input type="text" class="search-text" name="search-text" id="search-text"
+                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+          <div id="searchResults"></div>
         </div>
-    </div>
+      </div>
     <div class="product">
         <div class="product-card">
             <div class="image-block">

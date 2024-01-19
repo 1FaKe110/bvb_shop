@@ -3,7 +3,7 @@ import hashlib
 from flask import redirect, url_for, render_template, request, Blueprint, flash
 from loguru import logger
 
-from database import db
+from repository.database import db
 from repository.sql import DbQueries
 from munch import DefaultMunch
 

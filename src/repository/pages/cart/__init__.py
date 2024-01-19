@@ -7,7 +7,7 @@ from tabulate import tabulate
 from telebot.apihelper import ApiTelegramException
 
 from assets.assets import check_session, get_next_order_id
-from database import db
+from repository.database import db
 from repository.sql import DbQueries
 from munch import DefaultMunch
 
@@ -26,7 +26,7 @@ class Cart:
         logger.debug(f"{cookies = }")
 
         interest_products = db.exec(
-            DbQueries.Products.Select.random(12),
+            DbQueries.Products.Select.random(4),
             'fetchall'
         )
 

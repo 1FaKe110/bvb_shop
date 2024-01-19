@@ -25,8 +25,8 @@ class Search:
         res = es.search(index="products-index",
                         body={"query": {
                             "match": {
-                                "p_name": {
-                                    "query": user_request,
+                                "name": {
+                                    "query": user_request.lower(),
                                     "boost": 1.0,
                                     "fuzziness": "2"
                                 }}}})
@@ -37,7 +37,7 @@ class Search:
                         body={"query": {
                             "match": {
                                 "c_name": {
-                                    "query": user_request,
+                                    "query": user_request.lower(),
                                     "boost": 1.0,
                                     "fuzziness": "2"
                                 }}}})

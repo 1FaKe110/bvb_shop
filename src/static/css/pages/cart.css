@@ -1,5 +1,4 @@
 .search-block {
-    margin-top: 20px;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -13,7 +12,7 @@
 }
 
 #searchResults {
-    top: 64px;
+    top: 44px;
 }
 
 table {
@@ -122,9 +121,6 @@ td.product-sum-cell p {
     font-weight: bold;
 }
 
-p.product-name-text {
-    margin-top: -5px;
-}
 
 .card-items .product-price-block, .card-items .product-price-block-added {
     width: 30%;
@@ -137,28 +133,15 @@ p.product-name-text {
     margin: 10px;
 }
 
-.product-price-block div, .product-price-block-added div {
+/* .product-price-block div, .product-price-block-added div {
     width: fit-content;
-}
+} */
 
-.card-items .product-price-block p, .card-items .product-price-block-added p {
+.card-items .product-price-block p, .card-items {
     margin: 10px;
     padding: 10px;
     font-style: normal;
     text-wrap: nowrap;
-}
-
-p.product-price-text, p.product-price-text-added {
-    padding: 0;
-    margin-top: 2px;
-    padding: 10px;
-    padding-left: 25px;
-    padding-right: 25px;
-    background: #fff7d8;
-    border-radius: 10px;
-}
-p.product-price-text-added {
-    background: #96facf;
 }
 
 .card-items .product-price-block p.product-price-value {
@@ -459,71 +442,3 @@ a.product-name:hover {
     font-size: 16px;
 }
 
-/* Интересующие продукты */
-
-.products {
-    border-left: 1px solid #f4f4f4;
-    border-right: 1px solid #f4f4f4;
-    box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
-    border-radius: 15px;
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
-
-.product-href {
-    margin: 10px;
-    width: 250px;
-    height: 310px;
-}
-
-.product-card, .product-card-almost-empty {
-    background: #ffffff;
-    min-height: 250px;
-    padding: 0;
-    width: 250px;
-    margin: 0px;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: space-evenly;
-    align-items: center;
-    border-radius: 10px;
-    height: 310px;
-    flex-wrap: nowrap;
-    box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
-}
-
-.img-block img {
-    width: 178px;
-    height: 178px;
-    margin: 10px;
-    padding: 5px;
-    border-radius: 10px;
-}
-
-.content-bottom h4 {
-    text-align: center;
-}
-
-p.product-price-text-with-discount {
-    padding-left: 7px;
-    padding: 0;
-    margin-left: 10px;
-    margin-right: 10px;
-    height: 50px;
-    text-align: center;
-    display: flex;
-    padding-left: 25px;
-    padding-right: 25px;
-    background: #ffd8d8;
-    border-radius: 10px;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-}

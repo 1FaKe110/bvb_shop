@@ -19,7 +19,7 @@ class Categories:
         def all_by_category_name(name):
             return (f"SELECT * "
                     f"FROM categories "
-                    f"WHERE parent_id = (SELECT id FROM categories WHERE name='{name}') "
+                    f"WHERE parent_id = (SELECT id FROM categories WHERE LOWER(name) = '{name.lower()}') "
                     f"ORDER BY id")
 
         @staticmethod

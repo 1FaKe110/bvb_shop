@@ -7,7 +7,7 @@ from flask import redirect, url_for, render_template, request, Blueprint, flash
 from loguru import logger
 
 from assets.assets import check_session
-from database import db
+from repository.database import db
 from repository.sql import DbQueries
 from munch import DefaultMunch
 
@@ -138,6 +138,12 @@ class Profile:
         if user is None:
             flash("Такой почты нет!", 'error')
             return render_template('recover_password.html')
+
+        logger.debug("Убираю старый пароль из бд")
+        hashed_password = hashlib.sha256(datetime.datetime.now().isoformat().encode()).hexdigest()
+        db.exec(
+            DbQueries.Users.Update.password_by_email(hashed_password, email)
+        )
 
         token = secrets.token_urlsafe(16)
         self.password_reset_tokens[token] = {

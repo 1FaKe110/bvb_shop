@@ -19,6 +19,7 @@ ENV smpt_host=smpt.timeweb.ru
 ENV smpt_port=25
 ENV smpt_login=ifake@test-bvb-shop.ru
 ENV smpt_password=vfvfgfgf10
+ENV localDns=test-bvb-shop.ru
 
 
 ENV BOT_TOKEN=6542986021:AAGhL8Yf4bTLdI5cf48Pf6ryksmaFJW6-7c

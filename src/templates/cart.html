@@ -2,11 +2,13 @@
 <html>
 <head>
     <title>BVB: Корзина: {{ order.sum }} р.</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/category.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/product.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cart.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
+<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/category.css') }}"> &lt;!&ndash; исправить этот импорт &ndash;&gt;-->
+<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/product.css') }}">&lt;!&ndash; исправить этот импорт &ndash;&gt;-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/cart.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/product-cart.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
@@ -212,57 +214,52 @@
             <h4>Может заинтересовать</h4>
             <div class="products">
                 {% for product in interest_products %}
-                <a class="product-href" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">
-                  {% if product.amount >= 5 %}
-                  <div class="product-card">
-                    {% if product.image_path == '' %}
-                    <div class="img-block">
-                      <span class="material-icons">qr_code_2</span>
+                    <div class="product-card">
+                        {% if product.image_path == '' %}
+                        <div class="img-block">
+                            <span class="material-icons">qr_code_2</span>
+                        </div>
+                        {% else %}
+                        <div class="img-block">
+                            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                        </div>
+                        {% endif %}
+                        <div class="product-name-block">
+                            <p class="product-name-text">{{ product.name }}</p>
+                        </div>
+                        {% if product.in_card %}
+                        <div class="product-price-block-added">
+                            <div class="info">
+                                <div class="product-price-block-left">
+                                    <span class="material-icons">local_offer</span>
+                                </div>
+                                <div class="product-price-block-right">
+                                    <p class="price"> за {{ product.price }} р.</p>
+                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buy-button">
+                            <a class="product-price-text" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
+                        </div>
+                        {% else %}
+                        <div class="product-price-block">
+                            <div class="info">
+                                <div class="product-price-block-left">
+                                    <span class="material-icons local-offer">local_offer</span>
+                                </div>
+                                <div class="product-price-block-right">
+                                    <p class="price"> {{ product.price }} р.</p>
+                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="buy-button">
+                            <a class="product-price-text" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div class="img-block">
-                      <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-                    </div>
-                    {% endif %}
-                    <div class="product-name-block">
-                      <p class="product-name-text">{{ product.name }}</p>
-                    </div>
-                    {% if product.in_card %}
-                    <div class="product-price-block-added">
-                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
-                    </div>
-                    {% else %}
-                    <div class="product-price-block">
-                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
-                    </div>
-                    {% endif %}
-                  </div>
-                  {% elif 0 < product.amount < 5 %}
-                  <div class="product-card-almost-empty">
-                    {% if product.image_path == '' %}
-                    <div class="img-block">
-                      <span class="material-icons">qr_code_2</span>
-                    </div>
-                    {% else %}
-                    <div class="img-block">
-                      <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-                    </div>
-                    {% endif %}
-                    <div class="product-name">
-                      <p class="">{{ product.name }}</p>
-                    </div>
-                    {% if product.in_card %}
-                    <div class="product-price-block-added">
-                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
-                    </div>
-                    {% else %}
-                    <div class="product-price-block">
-                      <p class="product-price-text">Купить за {{ product.price }} р.</p>
-                    </div>
-                    {% endif %}
-                  </div>
-                  {% endif %}
-                </a>
                 {% endfor %}
             </div>
         </div>

@@ -44,7 +44,7 @@ class Products:
             return (f"SELECT * "
                     f"FROM products "
                     f"WHERE category_id in "
-                    f"(SELECT id FROM categories WHERE name='{category_name}') "
+                    f"(SELECT id FROM categories WHERE LOWER(name) = '{category_name.lower()}') "
                     f"ORDER BY id")
 
         @staticmethod
@@ -64,11 +64,11 @@ class Products:
         @staticmethod
         def all_products_joined_categories_and_brands():
             return ("select p.id as p_id, "
-                    "p.name as p_name, "
-                    "p.price as p_price, "
-                    "p.amount as p_amount, "
-                    "p.image_path as p_image_path, "
-                    "p.brand as p_brand, "
+                    "p.name as name, "
+                    "p.price as price, "
+                    "p.amount as amount, "
+                    "p.image_path as image_path, "
+                    "p.brand as brand, "
                     "c.name as c_name, "
                     "c.parent_id as c_parent_id "
                     "from products p "
