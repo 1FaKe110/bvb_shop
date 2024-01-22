@@ -53,6 +53,7 @@ class Search:
                                products=products,
                                categories=categories,
                                user_request=user_request,
+                               current_url='/category',
                                session=check_session(session))
 
     @staticmethod

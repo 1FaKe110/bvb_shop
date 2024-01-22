@@ -34,12 +34,14 @@ class Login:
         if user_info is None:
             logger.info('Пользователь не найден')
             flash('Пользователь не найден', 'error')
-            return render_template('login.html')
+            return render_template('login.html',
+                                   current_url='/login',)
 
         if user_info.password != hashed_password:
             logger.info('Не верный пароль')
             flash('Не верный логин или пароль', 'error')
-            return render_template('login.html')
+            return render_template('login.html',
+                                   current_url='/login',)
 
         session['username'] = username  # устанавливаем сессию
         return redirect(url_for('main_page.index'))

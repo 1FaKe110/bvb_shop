@@ -1,18 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>BVB: Корзина: {{ order.sum }} р.</title>
+{% extends "base.html" %}
+
+{% block title %}BVB: Корзина: {{ order.sum }} р.{% endblock %}
+
+{% block head %}
+    {% block cssImports %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
-<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/category.css') }}"> &lt;!&ndash; исправить этот импорт &ndash;&gt;-->
-<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/product.css') }}">&lt;!&ndash; исправить этот импорт &ndash;&gt;-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/cart.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/product-cart.css') }}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% endblock %}
+
+    {% block jsImports %}
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    {% endblock %}
+
+    {{ super() }}
+
+    {% block preloadScript %}
     <script>
         {% if error_description %}
             alert('{{error_description}}');
@@ -22,44 +29,18 @@
             window.location.href = "/cart"
         {% endif %}
     </script>
-</head>
-<body>
-<div class="top-panel">
-    <nav class="nav-bar">
-        <ul class="nav-ul">
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
-            </li>
-            <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
-            </li>
-            <li class="nav-li">
-                {% if login %}
-                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
-                {% else %}
-                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
-                {% endif %}
-            </li>
-        </ul>
-    </nav>
-</div>
-<main>
+    {% endblock %}
+
+{% endblock %}
+
+{% block topPanel %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
     <div class="content">
         <div class="content-right">
-            <div class="search-block">
-                <div class="search-container">
-                    <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
-                </div>
-                <div id="searchResults"></div>
-            </div>
+            {% block searchBlock %}{{ super() }}{% endblock %}
             {% if products %}
             <div class="card-items">
                 <table>
@@ -212,7 +193,7 @@
         </div>
         <div class="content-bottom">
             <h4>Может заинтересовать</h4>
-            <div class="products">
+                <div class="products">
                 {% for product in interest_products %}
                     <div class="product-card">
                         {% if product.image_path == '' %}
@@ -264,9 +245,6 @@
             </div>
         </div>
     </div>
-</main>
-<footer>
-    <div class="footer" style="height: 200px;"></div>
-</footer>
-</body>
-</html>
+{% endblock %}
+
+{% block footer %}{% endblock %}

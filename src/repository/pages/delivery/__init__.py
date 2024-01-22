@@ -16,4 +16,6 @@ class Delivery:
     @staticmethod
     def render_page(session):
         logger.debug("rendering template: delivery.html")
-        return render_template('delivery.html', login=check_session(session))
+        return render_template('delivery.html',
+                               current_url='/delivery',
+                               login=check_session(session))

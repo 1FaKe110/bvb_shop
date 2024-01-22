@@ -49,6 +49,7 @@ class Category:
                                    category_name=category_name,
                                    subcategories=subcategories,
                                    products=products,
+                                   current_url='/category',
                                    login=check_session(session))
 
         subcategories = None
@@ -64,6 +65,7 @@ class Category:
                                    category_name=category_name,
                                    subcategories=subcategories,
                                    products=products,
+                                   current_url='/category',
                                    login=check_session(session))
 
         if not len(cart_data):
@@ -72,6 +74,7 @@ class Category:
                                    category_name=category_name,
                                    subcategories=subcategories,
                                    products=products,
+                                   current_url='/category',
                                    login=check_session(session))
 
         for _product in products:
@@ -84,4 +87,5 @@ class Category:
                                category_name=category_name,
                                subcategories=subcategories,
                                products=products,
+                               current_url='/category',
                                login=check_session(session))

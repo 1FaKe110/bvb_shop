@@ -1,38 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Вход</title>
+{% extends "base.html" %}
+
+{% block title %}Войти в профиль{% endblock %}
+
+{% block head %}
+    {% block cssImports %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/login.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</head>
-<body>
-<div class="top-panel">
-    <nav class="nav-bar">
-        <ul class="nav-ul">
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
-            </li>
-            <li class="nav-li-active">
-                {% if login %}
-                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
-                {% else %}
-                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
-                {% endif %}
-            </li>
-        </ul>
-    </nav>
-</div>
+    {% endblock %}
+    {% block jsImports %}{% endblock %}
+    {{ super() }}
+{% endblock %}
+
+{% block topPanel %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
 <div class="login-container">
     <h2>Вход в личный кабинет</h2>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -54,8 +38,7 @@
         <button type="submit">Войти</button>
     </form>
 </div>
-<footer>
-  <div class="footer" style="height: 200px;"></div>
-</footer>
-</body>
-</html>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

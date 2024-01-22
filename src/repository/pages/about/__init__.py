@@ -16,4 +16,7 @@ class About:
     @staticmethod
     def render_page(session):
         logger.debug("rendering template: about_us.html")
-        return render_template('about_us.html', login=check_session(session))
+        return render_template('about_us.html',
+                               login=check_session(session),
+                               current_url='/about'
+                               )

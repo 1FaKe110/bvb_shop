@@ -39,6 +39,7 @@ class Product:
                                category_name=category_name.name,
                                product=product,
                                user=user,
+                               current_url='/product',
                                login=check_session(session))
 
     @staticmethod

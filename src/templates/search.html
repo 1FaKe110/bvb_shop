@@ -1,44 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Поиск по запросу: {{ user_request }}</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/category.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/product-cart.css') }}">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-</head>
-<body>
-<div class="top-panel">
-  <nav class="nav-bar">
+{% extends "base.html" %}
 
-    <ul class="nav-ul">
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
-      </li>
-      <li class="nav-li">
-        {% if login %}
-        <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
-        {% else %}
-        <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
-        {% endif %}
-      </li>
-    </ul>
-  </nav>
-</div>
+{% block title %}Поиск по запросу: {{ user_request }}{% endblock %}
 
+{% block head %}
+    {% block cssImports %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/category.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/product-cart.css') }}">
+    {% endblock %}
+    {% block jsImports %}
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    {% endblock %}
+    {{ super() }}
+{% endblock %}
 
+{% block topPanel %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
 <main>
   <div class="content">
     <div class="content-right">
@@ -142,9 +123,6 @@
     </div>
   </div>
 </main>
+{% endblock %}
 
-<footer>
-  <div class="footer" style="height: 200px;"></div>
-</footer>
-</body>
-</html>
+{% block footer %}{% endblock %}

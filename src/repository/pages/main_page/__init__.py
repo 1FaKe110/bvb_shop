@@ -30,6 +30,7 @@ class MainPage:
         return render_template('index.html',
                                categories=categories,
                                products=products,
+                               current_url='/category',
                                login=check_session(session))
 
     @staticmethod

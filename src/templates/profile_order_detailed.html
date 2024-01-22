@@ -1,36 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Просмотр заказа</title>
+{% extends "base.html" %}
+
+{% block title %}Просмотр заказа{% endblock %}
+
+{% block head %}
+    {% block cssImports %}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/profile_order_detailed.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</head>
-<body>
-<div class="top-panel">
-    <nav class="nav-bar">
-        <ul class="nav-ul">
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
-            </li>
-            <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
-            </li>
-        </ul>
-    </nav>
-</div>
- <!-- добавить кнопку повторить заказ -->
+    {% endblock %}
+    {% block jsImports %}{% endblock %}
+    {{ super() }}
+{% endblock %}
 
+{% block topPanel %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
 <main>
     <!-- блок информации по заявлению -->
     <div class="content">
@@ -192,9 +178,6 @@
         </div>
     </div>
 </main>
+{% endblock %}
 
-<footer>
-    <div class="footer" style="height: 200px;"></div>
-</footer>
-</body>
-</html>
+{% block footer %}{% endblock %}

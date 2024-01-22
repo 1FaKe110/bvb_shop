@@ -1,75 +1,66 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <title>Регистрация</title>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style/login.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/login.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/register.css') }}">
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</head>
-<body>
-<div class="top-panel">
-  <nav class="nav-bar">
-    <ul class="nav-ul">
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
-      </li>
-      <li class="nav-li">
-        <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
-      </li>
-      <li class="nav-li-active">
-        {% if login %}
-        <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
-        {% else %}
-        <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block head %}
+{% block cssImports %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/login.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/register.css') }}">
+{% endblock %}
+{% block jsImports %}
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %}
+{{ super() }}
+{% endblock %}
+
+{% block topPanel %}
+{{ super() }}
+{% endblock %}
+
+{% block main %}
+<main>
+    <div class="login-container">
+        <h2>Регистрация</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="error-messages">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
-      </li>
-    </ul>
-  </nav>
-</div>
-<div class="login-container">
-  <h2>Регистрация</h2>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  <ul class="error-messages">
-    {% for category, message in messages %}
-    <li class="{{ category }}">{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% endwith %}
-  <form class="login-form" action="/register" method="post">
-    <div class="inputs">
-      <input type="text" name="fio" placeholder="ФИО" minlength="3" maxlength="50" required pattern=".*\s+.*"
-             title="ФИО должно содержать минимум 1 пробел">
-      <div class="error-message" id="fioError"></div>
+        {% endwith %}
+        <form class="login-form" action="/register" method="post">
+            <div class="inputs">
+                <input type="text" name="fio" placeholder="ФИО" minlength="3" maxlength="50" required pattern=".*\s+.*"
+                       title="ФИО должно содержать минимум 1 пробел">
+                <div class="error-message" id="fioError"></div>
 
-      <input type="tel" name="phone" placeholder="Номер телефона" maxlength="12" minlength="12" required pattern="\+7\d{10}"
-             title="Номер телефона должен начинаться с +7 и содержать еще 10 цифр">
-      <div class="error-message" id="phoneError"></div>
+                <input type="tel" name="phone" placeholder="Номер телефона" maxlength="12" minlength="12" required
+                       pattern="\+7\d{10}"
+                       title="Номер телефона должен начинаться с +7 и содержать еще 10 цифр">
+                <div class="error-message" id="phoneError"></div>
 
-      <input type="email" name="email" placeholder="Email" required>
-      <div class="error-message" id="emailError"></div>
-      <input type="text" name="username" placeholder="Имя пользователя" required minlength="5" maxlength="50"
-             title="Имя пользователя должно содержать минимум 5 символов">
-      <div class="error-message" id="usernameError"></div>
+                <input type="email" name="email" placeholder="Email" required>
+                <div class="error-message" id="emailError"></div>
+                <input type="text" name="username" placeholder="Имя пользователя" required minlength="5" maxlength="50"
+                       title="Имя пользователя должно содержать минимум 5 символов">
+                <div class="error-message" id="usernameError"></div>
 
-      <input type="password" name="password" id="password" placeholder="Пароль" required minlength="8" maxlength="40" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$">
-      <div id="passwordStrength" class="password-strength"></div>
-      <div class="error-message" id="passwordError"></div>
+                <input type="password" name="password" id="password" placeholder="Пароль" required minlength="8"
+                       maxlength="40" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$">
+                <div id="passwordStrength" class="password-strength"></div>
+                <div class="error-message" id="passwordError"></div>
 
+            </div>
+            <p class="account">Есть аккаунт? <a href="{{url_for('main_page.login')}}">Войти</a></p>
+            <p class="account">Забыли пароль? <a href="{{url_for('main_page.recover_password')}}">Восстановить</a></p>
+            <button type="submit" id="registerButton" disabled>Зарегистрироваться</button>
+        </form>
     </div>
-    <p class="account">Есть аккаунт? <a href="{{url_for('main_page.login')}}">Войти</a></p>
-    <p class="account">Забыли пароль? <a href="{{url_for('main_page.recover_password')}}">Восстановить</a></p>
-    <button type="submit" id="registerButton" disabled>Зарегистрироваться</button>
-  </form>
-</div>
-</body>
-<script src="{{ url_for('main_page.static', filename='js/register.js') }}"></script>
-</html>
+</main>
+{% endblock %}
+
+{% block footer %}{% endblock %}

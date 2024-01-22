@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+{% block head %}
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block cssImports %}{% endblock %}
+    {% block jsImports %}{% endblock %}
+    {% block preloadScript %}{% endblock %}
+</head>
+{% endblock %}
+
+<body>
+
+{% block topPanel %}
+<div class="top-panel">
+    <nav class="nav-bar">
+        <ul class="nav-ul">
+            <li class="nav-li{% if current_url in ['/category', '/products'] %}-active{% endif %}">
+                <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>
+            </li>
+            <li class="nav-li{% if current_url == '/about' %}-active{% endif %}">
+                <a class="nav-a" href="{{url_for('main_page.about')}}">О Нас / связаться с нами</a>
+            </li>
+            <li class="nav-li{% if current_url == '/delivery' %}-active{% endif %}">
+                <a class="nav-a" href="{{url_for('main_page.delivery')}}">Доставка</a>
+            </li>
+            <li class="nav-li{% if current_url == '/cart' %}-active{% endif %}">
+                <a class="nav-a" href="{{url_for('main_page.cart', error_description=None)}}">Корзина</a>
+            </li>
+            <li class="nav-li{% if current_url in ['/profile', '/login', '/register'] %}-active{% endif %}">
+                {% if login %}
+                <a class="nav-a" href="{{url_for('main_page.profile')}}">Кабинет</a>
+                {% else %}
+                <a class="nav-a" href="{{url_for('main_page.login')}}">Войти</a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block main %}
+
+{% block searchBlock %}
+<div class="search-block">
+    <div class="search-container">
+        <input type="text" class="search-text" name="search-text" id="search-text"
+     placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+     autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+    </div>
+    <div id="searchResults"></div>
+</div>
+{% endblock %}
+
+{% endblock %}
+
+
+{% block footer %}
+<footer>
+    <div class="footer" style="height: 200px;"></div>
+</footer>
+
+</body>
+</html>
+{% endblock %}
+

@@ -21,6 +21,11 @@
     padding: 10px;
     min-height: 500px;
     align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
 }
 
 

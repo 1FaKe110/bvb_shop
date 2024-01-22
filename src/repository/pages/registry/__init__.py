@@ -18,7 +18,8 @@ class Registry:
 
     @staticmethod
     def render_page():
-        return render_template('register.html')
+        return render_template('register.html',
+                               current_url='/register')
 
     @staticmethod
     def create_new_user(session):
@@ -37,7 +38,8 @@ class Registry:
         if user_info is not None:
             logger.error(f'Имя пользователя: {username} Занято')
             flash('Пользователь с таким логином уже существует', 'error')
-            return render_template('register.html')
+            return render_template('register.html',
+                                   current_url='/register')
 
         user_info = db.exec(
             DbQueries.Users.Select.all_by_phone(phone),
@@ -61,12 +63,14 @@ class Registry:
             if user_info.email == email:
                 logger.error('Пользователь с такой почтой уже существует')
                 flash('Пользователь с такой почтой уже существует', 'error')
-                return render_template('register.html')
+                return render_template('register.html',
+                                       current_url='/register')
 
             if user_info.phone == phone:
                 logger.error('Пользователь с таким номером телефона уже существует')
                 flash('Пользователь с таким номером телефона уже существует', 'error')
-                return render_template('register.html')
+                return render_template('register.html',
+                                       current_url='/register')
         else:
             logger.info("есть данные по пользователю, но он не зарегистрирован")
 

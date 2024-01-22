@@ -48,6 +48,7 @@ class Profile:
         return render_template('profile.html',
                                user_info=user_info,
                                orders=user_orders,
+                               current_url='/profile',
                                addresses=user_addresses,
                                login=True)
 
@@ -98,6 +99,7 @@ class Profile:
 
         return render_template('profile_order_detailed.html',
                                order=user_order,
+                               current_url='/profile',
                                login=check_session(session))
 
     def render_new_password_page(self, session, token):
@@ -125,7 +127,8 @@ class Profile:
 
     @staticmethod
     def render_recover_password_page():
-        return render_template('recover_password.html')
+        return render_template('recover_password.html',
+                               current_url='/profile')
 
     def recover_password_send_notify(self, session, mailer):
 
@@ -137,7 +140,8 @@ class Profile:
 
         if user is None:
             flash("Такой почты нет!", 'error')
-            return render_template('recover_password.html')
+            return render_template('recover_password.html',
+                                   current_url='/profile')
 
         logger.debug("Убираю старый пароль из бд")
         hashed_password = hashlib.sha256(datetime.datetime.now().isoformat().encode()).hexdigest()

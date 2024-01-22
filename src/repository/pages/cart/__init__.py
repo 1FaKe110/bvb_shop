@@ -29,6 +29,7 @@ class Cart:
             DbQueries.Products.Select.random(4),
             'fetchall'
         )
+        logger.debug(interest_products)
 
         if error_description:
             return render_template('cart.html',
@@ -37,6 +38,7 @@ class Cart:
                                    clear_cookie=True,
                                    error_description=error_description,
                                    interest_products=interest_products,
+                                   current_url='/cart',
                                    login=check_session(session))
 
         if cookies is None or len(json.loads(cookies)) < 1:
@@ -46,6 +48,7 @@ class Cart:
                                    clear_cookie=None,
                                    error_description=error_description,
                                    interest_products=interest_products,
+                                   current_url='/cart',
                                    login=check_session(session))
 
         order, products = self.extend_cookies_data(cookies)
@@ -56,6 +59,7 @@ class Cart:
                                    order=order,
                                    error_description=None,
                                    clear_cookie=None,
+                                   current_url='/cart',
                                    interest_products=interest_products,
                                    login=False)
 
@@ -77,6 +81,7 @@ class Cart:
                                address_list=address_list,
                                user_info=user_info,
                                interest_products=interest_products,
+                               current_url='/cart',
                                login=check_session(session))
 
     def add_new_order(self, session, bot):
@@ -137,10 +142,11 @@ class Cart:
                         next_order_id = get_next_order_id(db)
 
         if db.exec(
-            DbQueries.Addresses.Select.id_by_user_id_and_address(user_id, order_place),
-            'fetchone'
+                DbQueries.Addresses.Select.id_by_user_id_and_address(user_id, order_place),
+                'fetchone'
         ) is None:
-            logger.debug(f"Для пользователя user_id: {user_id} не найдено адреса {order_place}. Добавляем новый адрес")
+            logger.debug(
+                f"Для пользователя user_id: {user_id} не найдено адреса {order_place}. Добавляем новый адрес")
             db.exec(
                 DbQueries.Addresses.Insert.new_address(user_id, order_place)
             )
@@ -238,5 +244,6 @@ class Cart:
             order=None,
             clear_cookie=True,
             interest_products=interest_products,
+            current_url='/cart',
             login=check_session(session)
         )
