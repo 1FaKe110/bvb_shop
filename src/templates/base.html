@@ -15,9 +15,14 @@
 
 <body>
 
+{% block backgroudSparks %}{% endblock %}
+
 {% block topPanel %}
 <div class="top-panel">
     <nav class="nav-bar">
+        <div class="menu-expander">
+            <span class="material-icons menu-toggle">list</span>
+        </div>
         <ul class="nav-ul">
             <li class="nav-li{% if current_url in ['/category', '/products'] %}-active{% endif %}">
                 <a class="nav-a" href="{{url_for('main_page.index')}}">Главная</a>

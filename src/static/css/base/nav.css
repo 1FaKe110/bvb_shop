@@ -67,3 +67,52 @@ nav ul li a {
     color: #333;
     text-decoration: none;
 }
+
+.menu-toggle {
+    display: None;
+}
+
+
+/* Скрыть кнопку "Меню" на десктопе и планшете
+@media screen and (max-width: 992px) {
+    .menu-toggle {
+        display: block;
+        scale: 1.7;
+        padding: 10px;
+    }
+    .top-panel {
+        margin-top: 20px;
+    }
+    nav {
+        background-color: #e9e9e9;
+        padding: 10px;
+        position: relative;
+        top: 10px;
+        border-radius: 20px;
+        width: fit-content;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        transition: all 1s ease-in-out;
+    }
+    .nav-ul {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        transition: all .5s ease-in-out;
+    }
+    .nav-li-active, .nav-li {
+        display: inline;
+        box-shadow: 0 0 10px rgb(232 232 232 / 0%);
+        border-radius: 5px;
+        border: None;
+        transition: all .5s ease-in-out;
+        padding: 10px;
+    }
+}*/

@@ -50,3 +50,10 @@ function admin_alert(text) {
 window.addEventListener('load', function () {
     document.body.classList.add('loaded');
 });
+
+// Скрипт для добавления класса "menu-open" к родительскому блоку при нажатии на кнопку "Меню"
+//$(document).ready(function(){
+//    $('.menu-toggle').click(function(){
+//        $(this).parent().toggleClass('menu-open');
+//    });
+//});
