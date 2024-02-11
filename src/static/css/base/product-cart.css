@@ -1,18 +1,32 @@
 /* Стили для продуктов */
 .products {
     min-height: 350px;
-
     border-left: 1px solid #f4f4f4;
     border-right: 1px solid #f4f4f4;
     border-radius: 10px;
     box-shadow: inset 0px 0px 0px 1px rgb(229 229 229);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(auto, 400px));
+    justify-items: center;
+    gap: 20px;
+}
 
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: space-around;
-    justify-content: space-evenly;
-    align-items: center;
+@media (max-width: 1024px) {
+    .products {
+        grid-template-columns: repeat(3, minmax(auto, 400px));
+    }
+}
+
+@media (max-width: 768px) {
+    .products {
+        grid-template-columns: repeat(2, minmax(auto, 400px));
+    }
+}
+
+@media (max-width: 425px) {
+    .products {
+        grid-template-columns: repeat(1, minmax(auto, 400px));
+    }
 }
 
 p.product-name-text {
@@ -23,10 +37,9 @@ p.product-name-text {
 .product-card, .product-card-almost-empty {
     background: #ffffff;
     padding: 0;
-    margin: 10px;
     min-height: 370px;
     height: 370px;
-    width: 250px;
+    width: 100%;
 
     display: flex;
     flex-direction: column;
@@ -92,13 +105,10 @@ p.product-name-text {
 }
 
 .product-price-block-left span {
-    transform: scale(-1, 1);
-    width: 25px;
-    height: 25px;
     margin: 0;
-    padding: 10px;
-    scale: 1.3;
+    font-size: 32px;
     color: #2bd599;
+    transform: rotate(90deg);
 }
 
 .product-price-block-left {
@@ -149,7 +159,47 @@ p.product-name-text {
     border-radius: 10px;
 
     background: #fff7d8;
+    cursor: pointer;
 }
+
+.buy-button-inc {
+    display: none;
+    width: 80%;
+    justify-content: space-between;
+    padding: 4px 30px;
+    background: #fff7d8;
+    align-items: center;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.button-setcount {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    justify-content: center;
+    transition: 0.3s;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.button-setcount:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.count {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    justify-content: center;
+}
+
 a.product-price-text {
     display: flex;
     width: 140%;

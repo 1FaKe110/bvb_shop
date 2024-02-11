@@ -51,9 +51,18 @@ window.addEventListener('load', function () {
     document.body.classList.add('loaded');
 });
 
-// Скрипт для добавления класса "menu-open" к родительскому блоку при нажатии на кнопку "Меню"
-//$(document).ready(function(){
+ //Скрипт для добавления класса "menu-open" к родительскому блоку при нажатии на кнопку "Меню"
+// $(document).ready(function(){
 //    $('.menu-toggle').click(function(){
-//        $(this).parent().toggleClass('menu-open');
+//        $('.top-panel').toggleClass('menu-open');
 //    });
-//});
+// });
+
+ const menu_toggle = document.querySelector('.menu-toggle')
+ const menu = document.querySelector('.top-panel')
+
+ menu_toggle.addEventListener('click', () => {
+     menu.classList.toggle('menu-open')
+ })
+
+console.log(menu_toggle)

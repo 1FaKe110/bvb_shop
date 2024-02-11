@@ -88,10 +88,17 @@
     flex-direction: row;
 }
 
+@media (max-width: 768px) {
+    .categories {
+        flex-direction: column;
+    }
+}
+
 .category-block {
     margin: 15px;
     /*padding: 15px;*/
-    width: 480px;
+    max-width: 480px;
+    width: 100%;
 }
 
 .category-href {

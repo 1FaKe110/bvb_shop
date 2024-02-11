@@ -10,7 +10,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/product-cart.css') }}">
     {% endblock %}
     {% block jsImports %}
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/product.js') }}"></script>
     {% endblock %}
     {{ super() }}
 {% endblock %}
@@ -36,57 +37,61 @@
       {% if categories or products %}
       {% if products %}
       <h2>Товары</h2>
-      <div class="products">
-        {% for product in products %}
-        <div class="product-card">
-          {% if product.image_path == '' %}
-          <div class="img-block">
-            <span class="material-icons">qr_code_2</span>
-          </div>
-          {% else %}
-          <div class="img-block">
-            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-          </div>
-          {% endif %}
-          <div class="product-name-block">
-            <p class="product-name-text">{{ product.name }}</p>
-          </div>
-          {% if product.in_card %}
-          <div class="product-price-block-added">
-            <div class="info">
-              <div class="product-price-block-left">
-                <span class="material-icons">local_offer</span>
-              </div>
-              <div class="product-price-block-right">
-                <p class="price"> за {{ product.price }} р.</p>
-                <p class="amount">В наличии {{ product.amount }} шт.</p>
+      <div class="product-card">
+            {% if product.image_path == '' %}
+            <div class="img-block">
+              <span class="material-icons">qr_code_2</span>
+            </div>
+            {% else %}
+            <a href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}" class="img-block">
+              <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+            </a>
+            {% endif %}
+            <div class="product-name-block">
+              <p class="product-name-text">{{ product.name }}</p>
+            </div>
+            {% if product.in_card %}
+            <div class="product-price-block-added">
+              <div class="info">
+                <div class="product-price-block-left">
+                  <span class="material-icons">local_offer</span>
+                </div>
+                <div class="product-price-block-right">
+                  <p class="price"> за {{ product.price }} р.</p>
+                  <p class="amount">В наличии {{ product.amount }} шт.</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="buy-button">
-            <a class="product-price-text"
-               href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
-          </div>
-          {% else %}
-          <div class="product-price-block">
-            <div class="info">
-              <div class="product-price-block-left">
-                <span class="material-icons local-offer">local_offer</span>
-              </div>
-              <div class="product-price-block-right">
-                <p class="price"> {{ product.price }} р.</p>
-                <p class="amount">В наличии {{ product.amount }} шт.</p>
+            <div class="buy-button">
+              <div class="product-price-text">Купить</div>
+            </div>
+            <div class="buy-button-inc" >
+                <div class="button-setcount dec">-</div>
+                <span class="count">1</span>
+                <div class="button-setcount inc">+</div>
+            </div>
+            {% else %}
+            <div class="product-price-block">
+              <div class="info">
+                <div class="product-price-block-left">
+                  <span class="material-icons local-offer">local_offer</span>
+                </div>
+                <div class="product-price-block-right">
+                  <p class="price"> {{ product.price }} р.</p>
+                  <p class="amount">В наличии {{ product.amount }} шт.</p>
+                </div>
               </div>
             </div>
+            <div class="buy-button">
+              <div class="product-price-text">Купить</div>
+            </div>
+            <div class="buy-button-inc" >
+                <div class="button-setcount dec">-</div>
+                <span class="count">1</span>
+                <div class="button-setcount inc">+</div>
+            </div>
+            {% endif %}
           </div>
-          <div class="buy-button">
-            <a class="product-price-text"
-               href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
-          </div>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
       {% endif %}
       {% if categories %}
       <h2>Категории</h2>

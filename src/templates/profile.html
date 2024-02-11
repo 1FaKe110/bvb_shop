@@ -4,6 +4,7 @@
 
 {% block head %}
     {% block cssImports %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/reboot.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/profile.css') }}">
     {% endblock %}
@@ -16,7 +17,8 @@
 {% endblock %}
 
 {% block main %}
-<main>
+<div class="container">
+    <main>
     <h2>Личный кабинет | <span>{{ user_info.fio }}</span></h2>
 
     <div class="error">
@@ -120,6 +122,7 @@
         </div>
     </div>
 </main>
+</div>
 {% endblock %}
 
 {% block footer %}{% endblock %}

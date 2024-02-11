@@ -39,10 +39,12 @@
 .content-left {
     padding: 10px;
     margin: 20px;
-    width: 600px;
+    max-width: 600px;
+    width: 100%;
 }
 .content-right {
-    width: 800px;
+    max-width: 800px;
+    width: 100%;
 }
 
 .positions {

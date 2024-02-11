@@ -1,5 +1,18 @@
+/* media points */
+:root {
+    --default-xxl: 1600px;
+    --default-xl: 1400px;
+    --default-lg: 1200px;
+    --default-md: 1024px;
+    --default-sm: 768px;
+    --default-xs: 576px;
+    --default-xxs: 425px;
+}
+
+
 /* Стили для навигационной панели */
 .top-panel {
+    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,7 +25,6 @@ nav {
     background-color: #e9e9e9;
     padding: 10px;
     position: relative;
-    top: 10px;
     border-radius: 20px;
     width: fit-content;
     display: flex;
@@ -66,53 +78,127 @@ nav ul li a {
     padding: 20px;
     color: #333;
     text-decoration: none;
+    user-select: none;
 }
 
 .menu-toggle {
-    display: None;
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 3;
+    user-select: none;
 }
 
 
-/* Скрыть кнопку "Меню" на десктопе и планшете
-@media screen and (max-width: 992px) {
+
+
+/* Скрыть кнопку "Меню" на десктопе и планшете */
+/*@media screen and (max-width: 992px) {*/
+/*    .menu-toggle {*/
+/*        display: block;*/
+/*        scale: 1.7;*/
+/*        padding: 10px;*/
+/*    }*/
+/*    .top-panel {*/
+/*        margin-top: 20px;*/
+/*    }*/
+/*    nav {*/
+/*        background-color: #e9e9e9;*/
+/*        padding: 10px;*/
+/*        position: relative;*/
+/*        top: 10px;*/
+/*        border-radius: 20px;*/
+/*        width: fit-content;*/
+/*        display: flex;*/
+/*        flex-direction: column;*/
+/*        flex-wrap: nowrap;*/
+/*        align-content: center;*/
+/*        justify-content: center;*/
+/*        align-items: center;*/
+/*        transition: all 1s ease-in-out;*/
+/*    }*/
+/*    .nav-ul {*/
+/*        display: flex;*/
+/*        flex-direction: column;*/
+/*        flex-wrap: nowrap;*/
+/*        align-content: center;*/
+/*        justify-content: center;*/
+/*        align-items: center;*/
+/*        transition: all .5s ease-in-out;*/
+/*    }*/
+/*    .nav-li-active, .nav-li {*/
+/*        display: inline;*/
+/*        box-shadow: 0 0 10px rgb(232 232 232 / 0%);*/
+/*        border-radius: 5px;*/
+/*        border: None;*/
+/*        transition: all .5s ease-in-out;*/
+/*        padding: 10px;*/
+/*    }*/
+/*}*/
+
+
+/* Игорь - меню для мобилок/планшетов*/
+
+@media (max-width: 768px) {
+
     .menu-toggle {
-        display: block;
-        scale: 1.7;
-        padding: 10px;
+        display: inline-block;
     }
+
     .top-panel {
-        margin-top: 20px;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        flex-direction: column;
+        z-index: 2;
+        transition: 0.3s;
     }
-    nav {
-        background-color: #e9e9e9;
-        padding: 10px;
-        position: relative;
-        top: 10px;
-        border-radius: 20px;
-        width: fit-content;
+
+    nav.nav-bar {
         display: flex;
         flex-direction: column;
-        flex-wrap: nowrap;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
-        transition: all 1s ease-in-out;
+        height: 100dvh;
+        top: 0;
     }
-    .nav-ul {
+
+    nav ul {
         display: flex;
         flex-direction: column;
-        flex-wrap: nowrap;
-        align-content: center;
-        justify-content: center;
-        align-items: center;
-        transition: all .5s ease-in-out;
+        gap: 10px;
     }
-    .nav-li-active, .nav-li {
-        display: inline;
-        box-shadow: 0 0 10px rgb(232 232 232 / 0%);
-        border-radius: 5px;
-        border: None;
-        transition: all .5s ease-in-out;
-        padding: 10px;
+
+    nav ul li.nav-li-active {
+        border-bottom: none;
+        box-shadow: none;
+        background: #fff7d8;
+        padding: 0;
     }
-}*/
+
+    nav ul li.nav-li-active:hover {
+        border-bottom: none;
+        padding: 0;
+        background: #fff7d8;
+    }
+
+    nav ul li:hover {
+        padding: 0;
+        border-bottom: none;
+        box-shadow: none;
+        background: none;
+    }
+
+    nav ul li {
+        border-bottom: none;
+    }
+
+    nav ul li a {
+        display: block;
+    }
+
+    .menu-open {
+        left: 0;
+    }
+}

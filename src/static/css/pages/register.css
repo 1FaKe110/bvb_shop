@@ -24,7 +24,8 @@
     display: none;
     margin-top: -10px;
     margin-bottom: 15px;
-    width: 290px;
+    max-width: 290px;
+    width: 100%;
 }
 
 .invalid-input {
@@ -34,7 +35,8 @@
 .password-strength {
     height: 4px;
     margin-top: -18px;
-    width: 298px;
+    max-width: 298px;
+    width: 100%;
     border-radius: 10px;
 }
 

@@ -19,6 +19,10 @@ table {
     padding: 20px;
 }
 
+.card-desktop-table {
+    display: block;
+}
+
 th {
     text-align: center;
 }
@@ -173,6 +177,40 @@ td.product-sum-cell p {
     margin: 10px;
 }
 
+.card__mobile {
+    display: none;
+    padding: 20px;
+    border-radius: 10px;
+    gap: 10px;
+}
+
+.card__mobile-img {
+
+}
+
+.card__mobile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card__mobile-content p {
+    margin: 0;
+}
+
+.card__mobile-btns {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+}
+
+.card__mobile-price {
+    padding: 10px;
+    background: #faf99d;
+    text-align: center;
+    border-radius: 10px;
+}
 
 /* CSS button add */
 input[type='button'].add-to-card, input[type='submit'].submit-input-confirm {
@@ -300,7 +338,8 @@ div.confirm-order {
 
 .input-fields div {
     margin: 10px;
-    width: 250px;
+    max-width: 250px;
+    width: 100%;
 }
 
 .input-fields div input {
@@ -442,3 +481,29 @@ a.product-name:hover {
     font-size: 16px;
 }
 
+@media (max-width: 860px) {
+    .card-desktop-table {
+        display: none;
+    }
+
+    .card__mobile {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .input-fields {
+        flex-direction: column;
+    }
+
+    form.submit-form {
+        width: 100%;
+    }
+
+    .total {
+        flex-direction: column;
+    }
+}

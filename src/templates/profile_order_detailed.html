@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/profile_order_detailed.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/reboot.css') }}">
     {% endblock %}
     {% block jsImports %}{% endblock %}
     {{ super() }}
@@ -17,7 +18,8 @@
 {% endblock %}
 
 {% block main %}
-<main>
+<div class="container">
+    <main>
     <!-- блок информации по заявлению -->
     <div class="content">
         <div class="content-left">
@@ -178,6 +180,7 @@
         </div>
     </div>
 </main>
+</div>
 {% endblock %}
 
 {% block footer %}{% endblock %}

@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    /*max-width: 300px;*/
+}
+
+
 html {
     height: 100vh;
 }
@@ -21,7 +27,10 @@ body.loaded {
     min-height: 100vh;
     opacity: 1;
     transition: opacity 0.2s ease-in;
+
 }
+
+
 
 
 /* Стили для скрытия анимации загрузки после загрузки страницы */
@@ -33,19 +42,17 @@ body.loaded {
 html, body {
     min-height: 100%;
     height: fit-content(20em);
-    padding-left: 10px;
-    padding-right: 10px;
 }
 
 
 
 /* Стили для фильтра по категориям и товарам */
 main {
-    top: 6px;
     position: relative;
 }
 
 .content {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -57,9 +64,8 @@ main {
 
 /* main.right-side */
 .content-right, .content-top, .content-bottom  {
-    top: 35px;
     position: relative;
-    width: 60%
+    width: 100%
 }
 
 
@@ -88,4 +94,23 @@ a {
     font-size: 14px;
     font-weight: 400;
     color: red;
+}
+
+
+
+@media (max-width: 768px) {
+    body.loaded {
+        padding-top: 15px;
+    }
+
+    .content {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .content-right, .content-top, .content-bottom {
+        top: 0;
+        padding-top: 0;
+    }
 }

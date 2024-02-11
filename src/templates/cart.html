@@ -4,6 +4,7 @@
 
 {% block head %}
     {% block cssImports %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/reboot.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
@@ -12,9 +13,9 @@
     {% endblock %}
 
     {% block jsImports %}
-    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/product.js') }}"></script>
     {% endblock %}
 
     {{ super() }}
@@ -38,12 +39,13 @@
 {% endblock %}
 
 {% block main %}
+<div class="container">
     <div class="content">
         <div class="content-right">
             {% block searchBlock %}{{ super() }}{% endblock %}
             {% if products %}
             <div class="card-items">
-                <table>
+                <table class="card-desktop-table">
                     <thead>
                     <tr>
                         <th></th>
@@ -57,7 +59,7 @@
                     </thead>
                     <tbody>
                     {% for product in products %}
-                    <tr class="card-{{product.id}}">
+                    <tr class="card__desktop" >
                         <td class="remove-item">
                             <span class="material-icons" onclick="removeAll({{product.id}})" style="color: red;">close</span>
                         </td>
@@ -91,6 +93,25 @@
                             <p class="sum-item-price">{{ product.in_card * product.price }} р.</p>
                         </td>
                     </tr>
+                    <div class="card__mobile">
+                        <div class="card__mobile-img">
+                            <img src="{{product.image_path}}" alt="{{product.name}}">
+                        </div>
+                        <div class="card__mobile-content">
+                            <p class="card__mobile-name">{{product.name}}</p>
+                            <p class="card__mobile-descr">{{ product.description }}</p>
+                            <div class="card__mobile-btns">
+                                <input type="button" class="add-to-card"
+                                       onclick="addToCart({{product.id}}, {{product.price}}, {{product.amount}})"
+                                       value="+">
+                                <p class="card__mobile-amount">{{ product.in_card }}</p>
+                                <input type="button" class="remove-from-card-button"
+                                       onclick="removeFromCard({{product.id}})"
+                                       value="-">
+                            </div>
+                            <p class="card__mobile-price">{{ product.price }} р.</p>
+                        </div>
+                    </div>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -110,6 +131,71 @@
                 <a class="to-main-page" href="{{ url_for('main_page.index')}}">Перейти к покупкам</a>
             </div>
             {% endif %}
+
+        </div>
+        <div class="content-bottom">
+            <h4>Может заинтересовать</h4>
+                <div class="products">
+                {% for product in interest_products %}
+                    <div class="product-card">
+                        {% if product.image_path == '' %}
+                        <div class="img-block">
+                            <span class="material-icons">qr_code_2</span>
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}" class="img-block">
+                          <img src="{{ product.image_path }}" alt="{{product.name}}"/>
+                        </a>
+                        {% endif %}
+                        <div class="product-name-block">
+                            <p class="product-name-text">{{ product.name }}</p>
+                        </div>
+                        {% if product.in_card %}
+                        <div class="product-price-block-added">
+                            <div class="info">
+                                <div class="product-price-block-left">
+                                    <span class="material-icons">local_offer</span>
+                                </div>
+                                <div class="product-price-block-right">
+                                    <p class="price"> за {{ product.price }} р.</p>
+                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buy-button">
+                          <div class="product-price-text">Купить</div>
+                        </div>
+                        <div class="buy-button-inc" >
+                            <div class="button-setcount dec">-</div>
+                            <span class="count">1</span>
+                            <div class="button-setcount inc">+</div>
+                        </div>
+                        {% else %}
+                        <div class="product-price-block">
+                            <div class="info">
+                                <div class="product-price-block-left">
+                                    <span class="material-icons local-offer">local_offer</span>
+                                </div>
+                                <div class="product-price-block-right">
+                                    <p class="price"> {{ product.price }} р.</p>
+                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="buy-button">
+                          <div class="product-price-text">Купить</div>
+                        </div>
+                        <div class="buy-button-inc" >
+                            <div class="button-setcount dec">-</div>
+                            <span class="count">1</span>
+                            <div class="button-setcount inc">+</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
             {% if products %}
             <div class="confirm-order">
                 <h4 class="confirm-order-h">
@@ -190,61 +276,9 @@
                 </form>
             </div>
             {% endif %}
-        </div>
-        <div class="content-bottom">
-            <h4>Может заинтересовать</h4>
-                <div class="products">
-                {% for product in interest_products %}
-                    <div class="product-card">
-                        {% if product.image_path == '' %}
-                        <div class="img-block">
-                            <span class="material-icons">qr_code_2</span>
-                        </div>
-                        {% else %}
-                        <div class="img-block">
-                            <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-                        </div>
-                        {% endif %}
-                        <div class="product-name-block">
-                            <p class="product-name-text">{{ product.name }}</p>
-                        </div>
-                        {% if product.in_card %}
-                        <div class="product-price-block-added">
-                            <div class="info">
-                                <div class="product-price-block-left">
-                                    <span class="material-icons">local_offer</span>
-                                </div>
-                                <div class="product-price-block-right">
-                                    <p class="price"> за {{ product.price }} р.</p>
-                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="buy-button">
-                            <a class="product-price-text" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
-                        </div>
-                        {% else %}
-                        <div class="product-price-block">
-                            <div class="info">
-                                <div class="product-price-block-left">
-                                    <span class="material-icons local-offer">local_offer</span>
-                                </div>
-                                <div class="product-price-block-right">
-                                    <p class="price"> {{ product.price }} р.</p>
-                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="buy-button">
-                            <a class="product-price-text" href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}">Купить</a>
-                        </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
     </div>
+</div>
+
 {% endblock %}
 
 {% block footer %}{% endblock %}
