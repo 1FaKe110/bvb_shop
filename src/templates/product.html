@@ -3,113 +3,18 @@
 {% block title %}Продукт: {{ product.name }}{% endblock %}
 
 {% block head %}
-    {% block cssImports %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/product.css') }}">
-    {% endblock %}
-    {% block jsImports %}
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/review.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
-    {% endblock %}
-    {{ super() }}
+{% block cssImports %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/nav.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base/search.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pages/product.css') }}">
 {% endblock %}
-
-
-
-{% block topPanel %}
-    {{ super() }}
+{% block jsImports %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
 {% endblock %}
-
-{% block main %}
-<main>
-    <div class="search-block">
-        <div class="search-container">
-          <input type="text" class="search-text" name="search-text" id="search-text"
-                 placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
-                 autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
-          <div id="searchResults"></div>
-        </div>
-    </div>
-    <div class="product">
-        <div class="product-card">
-            <div class="image-block">
-                <div class="image">
-                    <img class="main-image" src="{{ product.image_path }}" alt="{{ product.name }}">
-                    <!-- Модальное окно для увеличенного изображения -->
-                    <div id="modal" class="modal">
-                        <span class="close">&times;</span>
-                        <img class="modal-content" id="modal-image" src="">
-                    </div>
-                </div>
-                <div class="product-name">
-                    <h5 class="name">Наименование: {{ product.name }}</h5>
-                </div>
-                <div class="product-operator-buttons">
-                    <input type="button" class="add-to-card" role="button" onclick="addToCart()"
-                           value="Добавить в корзину">
-                </div>
-            </div>
-            <div class="about-product">
-
-                <div class="router">
-                    <div class="router-block">
-                        <p>Категория: <a href="{{ url_for('main_page.category', category_name=category_name) }}">{{ category_name }}/ </a> {{ product.name }}</p>
-                    </div>
-                </div>
-                <p class="product-name-p">Наименование: {{ product.name }}</p>
-
-                <p class="brand">Производитель:
-                    <a class="brand-url" href="https://www.google.com/search?q={{ product.brand }}" target="_blank">{{ product.brand }}</a>
-                </p>
-
-                <p class="amount">Остаток: {{ product.amount }} шт.</p>
-
-                <div class="description">
-                    <p class="description-title">Описание:</p>
-                    <p class="description-data">{{ product.description }}</p>
-                </div>
-                <p class="price">Цена: {{ product.price }} р. </p>
-                <p class="order-type">Способ оплаты: Наличными при получении</p>
-            </div>
-        </div>
-    </div>
-    <div class="reviews">
-        <div class="review-block">
-            {% if login %}
-            <div class="new-review">
-                <form id="reviewForm">
-                    <textarea id="reviewText" name="review_text" placeholder="Будем рады получить от Вас отзыв :)"></textarea>
-                    <br>
-                    <div class="rating">
-                        <input type="radio" id="star5" name="rating" value="5"/><label for="star5"
-                                                                                       title="5 stars"></label>
-                        <input type="radio" id="star4" name="rating" value="4"/><label for="star4"
-                                                                                       title="4 stars"></label>
-                        <input type="radio" id="star3" name="rating" value="3"/><label for="star3"
-                                                                                       title="3 stars"></label>
-                        <input type="radio" id="star2" name="rating" value="2"/><label for="star2"
-                                                                                       title="2 stars"></label>
-                        <input type="radio" id="star1" name="rating" value="1"/><label for="star1"
-                                                                                       title="1 star"></label>
-                    </div>
-                    <br>
-                    <input type="button" class="new-review-button" maxlength="4096" value="Отправить отзыв" onclick="addNewReview({{ user.id }}, {{ product.id }})">
-                </form>
-
-                <div id="notification"
-                     style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f2f2f2; padding: 20px; box-shadow: 0 0 10px 2px #aaa;"></div>
-            </div>
-            {% endif %}
-            <div class="reviewsContainer" id="reviewsContainer"></div>
-        </div>
-    </div>
-</main>
-{% endblock %}
-
-<script>
+{{ super() }}
+<script defer>
     // Сохранение данных формы в cookies при отправке
     function addToCart() {
         var form = document.querySelector('.product-card');
@@ -243,6 +148,103 @@
     });
 
 </script>
+
+{% endblock %}
+
+
+{% block topPanel %}
+{{ super() }}
+{% endblock %}
+
+{% block main %}
+<main>
+    <div class="search-block">
+        <div class="search-container">
+            <input type="text" class="search-text" name="search-text" id="search-text"
+                   placeholder="Тут рыбы нет! Остальное есть. Нюхай-нюхай, ищи-ищи"
+                   autocomplete="on" onkeypress="runFunction(event)" onkeyup="searchHelper()">
+            <div id="searchResults"></div>
+        </div>
+    </div>
+    <div class="product">
+        <div class="product-card">
+            <div class="image-block">
+                <div class="image">
+                    <img class="main-image" src="{{ product.image_path }}" alt="{{ product.name }}">
+                    <!-- Модальное окно для увеличенного изображения -->
+                    <div id="modal" class="modal">
+                        <span class="close">&times;</span>
+                        <img class="modal-content" id="modal-image" src="">
+                    </div>
+                </div>
+                <div class="product-name">
+                    <h5 class="name">Наименование: {{ product.name }}</h5>
+                </div>
+                <div class="product-operator-buttons">
+                    <input type="button" class="add-to-card" role="button" onclick="addToCart()"
+                           value="Добавить в корзину">
+                </div>
+            </div>
+            <div class="about-product">
+
+                <div class="router">
+                    <div class="router-block">
+                        <p>Категория: <a href="{{ url_for('main_page.category', category_name=category_name) }}">{{
+                            category_name }}/ </a> {{ product.name }}</p>
+                    </div>
+                </div>
+                <p class="product-name-p">Наименование: {{ product.name }}</p>
+
+                <p class="brand">Производитель:
+                    <a class="brand-url" href="https://www.google.com/search?q={{ product.brand }}" target="_blank">{{
+                        product.brand }}</a>
+                </p>
+
+                <p class="amount">Остаток: {{ product.amount }} шт.</p>
+
+                <div class="description">
+                    <p class="description-title">Описание:</p>
+                    <p class="description-data">{{ product.description }}</p>
+                </div>
+                <p class="price">Цена: {{ product.price }} р. </p>
+                <p class="order-type">Способ оплаты: Наличными при получении</p>
+            </div>
+        </div>
+    </div>
+    <div class="reviews">
+        <div class="review-block">
+            {% if login %}
+            <div class="new-review">
+                <form id="reviewForm">
+                    <textarea id="reviewText" name="review_text"
+                              placeholder="Будем рады получить от Вас отзыв :)"></textarea>
+                    <br>
+                    <div class="rating">
+                        <input type="radio" id="star5" name="rating" value="5"/><label for="star5"
+                                                                                       title="5 stars"></label>
+                        <input type="radio" id="star4" name="rating" value="4"/><label for="star4"
+                                                                                       title="4 stars"></label>
+                        <input type="radio" id="star3" name="rating" value="3"/><label for="star3"
+                                                                                       title="3 stars"></label>
+                        <input type="radio" id="star2" name="rating" value="2"/><label for="star2"
+                                                                                       title="2 stars"></label>
+                        <input type="radio" id="star1" name="rating" value="1"/><label for="star1"
+                                                                                       title="1 star"></label>
+                    </div>
+                    <br>
+                    <input type="button" class="new-review-button" maxlength="4096" value="Отправить отзыв"
+                           onclick="addNewReview({{ user.id }}, {{ product.id }})">
+                </form>
+
+                <div id="notification"
+                     style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #f2f2f2; padding: 20px; box-shadow: 0 0 10px 2px #aaa;"></div>
+            </div>
+            {% endif %}
+            <div class="reviewsContainer" id="reviewsContainer"></div>
+        </div>
+    </div>
+</main>
+{% endblock %}
 
 {% block footer %}
 {% endblock %}
