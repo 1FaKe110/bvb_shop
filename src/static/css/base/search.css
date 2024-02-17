@@ -95,7 +95,7 @@ input[type='button'].add-to-card, input[type='button'].go-to-card-button {
   touch-action: manipulation;
   vertical-align: top;
   white-space: nowrap;
-  z-index: 20;
+  /*z-index: 20;*/
 }
 
 input[type='text']:hover {

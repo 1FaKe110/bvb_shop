@@ -140,15 +140,17 @@ class Cart:
                             break
                     else:
                         next_order_id = get_next_order_id(db)
-
-        if db.exec(
-                DbQueries.Addresses.Select.id_by_user_id_and_address(user_id, order_place),
+        user_address = db.exec(
+                DbQueries.Addresses.Select.id_by_user_id_and_address(user_id.id, order_place),
                 'fetchone'
-        ) is None:
+        )
+        logger.debug(f"Адрес:{order_place} пользователя id:{user_id} - {user_address}")
+
+        if user_address is None:
             logger.debug(
-                f"Для пользователя user_id: {user_id} не найдено адреса {order_place}. Добавляем новый адрес")
+                f"Для пользователя user_id: {user_id.id} не найдено адреса {order_place}. Добавляем новый адрес")
             db.exec(
-                DbQueries.Addresses.Insert.new_address(user_id, order_place)
+                DbQueries.Addresses.Insert.new_address(user_id.id, order_place)
             )
 
         cookies = request.cookies.get('formData', None)

@@ -144,7 +144,7 @@ def get_review(product_id):
 @main_page.route('/add_review', methods=['POST'])
 def add_review():
     match request.method:
-        case 'GET':
+        case 'POST':
             return pages.product.handler.add_review(session)
         case _:
             return flask.Response(status=405)
