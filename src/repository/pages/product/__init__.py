@@ -35,6 +35,8 @@ class Product:
             DbQueries.Categories.Select.by_id(product.category_id),
             'fetchone')
 
+        # interest_products =
+
         return render_template('product.html',
                                category_name=category_name.name,
                                product=product,

@@ -214,69 +214,69 @@
                 </div>
             </div>
         </div>
-         <div class="content-bottom">
-            <h4>Может заинтересовать</h4>
-                <div class="products">
-                {% for product in interest_products %}
-                    <div class="product-card">
-                        {% if product.image_path == '' %}
-                        <div class="img-block">
-                            <span class="material-icons">qr_code_2</span>
-                        </div>
-                        {% else %}
-                        <a href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}" class="img-block">
-                          <img src="{{ product.image_path }}" alt="{{product.name}}"/>
-                        </a>
-                        {% endif %}
-                        <div class="product-name-block">
-                            <p class="product-name-text">{{ product.name }}</p>
-                        </div>
-                        {% if product.in_card %}
-                        <div class="product-price-block-added">
-                            <div class="info">
-                                <div class="product-price-block-left">
-                                    <span class="material-icons">local_offer</span>
-                                </div>
-                                <div class="product-price-block-right">
-                                    <p class="price"> за {{ product.price }} р.</p>
-                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="buy-button">
-                          <div class="product-price-text">Купить</div>
-                        </div>
-                        <div class="buy-button-inc" >
-                            <div class="button-setcount dec">-</div>
-                            <span class="count">1</span>
-                            <div class="button-setcount inc">+</div>
-                        </div>
-                        {% else %}
-                        <div class="product-price-block">
-                            <div class="info">
-                                <div class="product-price-block-left">
-                                    <span class="material-icons local-offer">local_offer</span>
-                                </div>
-                                <div class="product-price-block-right">
-                                    <p class="price"> {{ product.price }} р.</p>
-                                    <p class="amount">В наличии {{ product.amount }} шт.</p>
-                                </div>
-                            </div>
+<!--        <div class="content-bottom">-->
+<!--            <h4>Может заинтересовать</h4>-->
+<!--            <div class="products">-->
+<!--            {% for product in interest_products %}-->
+<!--                <div class="product-card">-->
+<!--                    {% if product.image_path == '' %}-->
+<!--                    <div class="img-block">-->
+<!--                        <span class="material-icons">qr_code_2</span>-->
+<!--                    </div>-->
+<!--                    {% else %}-->
+<!--                    <a href="{{ url_for('main_page.product', product_name=product.name, product_id=product.id) }}" class="img-block">-->
+<!--                      <img src="{{ product.image_path }}" alt="{{product.name}}"/>-->
+<!--                    </a>-->
+<!--                    {% endif %}-->
+<!--                    <div class="product-name-block">-->
+<!--                        <p class="product-name-text">{{ product.name }}</p>-->
+<!--                    </div>-->
+<!--                    {% if product.in_card %}-->
+<!--                    <div class="product-price-block-added">-->
+<!--                        <div class="info">-->
+<!--                            <div class="product-price-block-left">-->
+<!--                                <span class="material-icons">local_offer</span>-->
+<!--                            </div>-->
+<!--                            <div class="product-price-block-right">-->
+<!--                                <p class="price"> за {{ product.price }} р.</p>-->
+<!--                                <p class="amount">В наличии {{ product.amount }} шт.</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="buy-button">-->
+<!--                      <div class="product-price-text">Купить</div>-->
+<!--                    </div>-->
+<!--                    <div class="buy-button-inc" >-->
+<!--                        <div class="button-setcount dec">-</div>-->
+<!--                        <span class="count">1</span>-->
+<!--                        <div class="button-setcount inc">+</div>-->
+<!--                    </div>-->
+<!--                    {% else %}-->
+<!--                    <div class="product-price-block">-->
+<!--                        <div class="info">-->
+<!--                            <div class="product-price-block-left">-->
+<!--                                <span class="material-icons local-offer">local_offer</span>-->
+<!--                            </div>-->
+<!--                            <div class="product-price-block-right">-->
+<!--                                <p class="price"> {{ product.price }} р.</p>-->
+<!--                                <p class="amount">В наличии {{ product.amount }} шт.</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
-                        </div>
-                        <div class="buy-button">
-                          <div class="product-price-text">Купить</div>
-                        </div>
-                        <div class="buy-button-inc" >
-                            <div class="button-setcount dec">-</div>
-                            <span class="count">1</span>
-                            <div class="button-setcount inc">+</div>
-                        </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
+<!--                    </div>-->
+<!--                    <div class="buy-button">-->
+<!--                      <div class="product-price-text">Купить</div>-->
+<!--                    </div>-->
+<!--                    <div class="buy-button-inc" >-->
+<!--                        <div class="button-setcount dec">-</div>-->
+<!--                        <span class="count">1</span>-->
+<!--                        <div class="button-setcount inc">+</div>-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+<!--                </div>-->
+<!--            {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="reviews">
             <div class="review-block">
                 {% if login %}
