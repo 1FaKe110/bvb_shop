@@ -106,7 +106,7 @@ class Cart:
             case None:
                 logger.debug("Пользователя нет. Добавляю нового не зарегистрированного пользователя")
                 new_created_user = db.exec(
-                    DbQueries.Users.Insert.new_unregistered_user(full_name, phone),
+                    DbQueries.Users.Insert.new_unregistered_user(phone, full_name),
                     'fetchone'
                 )
 
