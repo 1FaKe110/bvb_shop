@@ -104,7 +104,8 @@ function renderReviews(reviews) {
         const textReviewDiv = document.createElement('div');
         textReviewDiv.classList.add('textReview');
         const textReviewText = document.createElement('p');
-        textReviewText.innerHTML = review.review_text.replaceAll('\n', '</p><p>');
+        textReviewDiv.classList.add('textReviewСontent');
+        textReviewText.innerHTML = review.review_text.replaceAll('\\\n', '\n').replaceAll('\\n', '\n');
         textReviewDiv.appendChild(textReviewText);
 
 

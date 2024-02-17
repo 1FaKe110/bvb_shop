@@ -44,10 +44,12 @@ class Product:
 
     @staticmethod
     def get_reviews(product_id):
+        logger.debug(f"Получение отзывов по товару id:{product_id}")
         reviews = db.exec(
             DbQueries.Reviews.Select.review_by_product_id(product_id),
             'fetchall'
         )
+        logger.debug(reviews)
         return jsonify(reviews)
 
     @staticmethod
@@ -60,6 +62,7 @@ class Product:
         # Получаем данные от пользователя
         data = as_class(request.get_json())
         logger.debug(f"Добавление нового отзыва для товара с id: {data.product_id}")
+        logger.debug(f"- текст отзыва: {data.review_text = }")
 
         try:
             db.exec(

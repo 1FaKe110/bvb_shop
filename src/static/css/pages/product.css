@@ -380,6 +380,7 @@ input[type='button'].remove-from-card-button:hover {
     display: flex;
     flex-wrap: wrap;
     overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 
